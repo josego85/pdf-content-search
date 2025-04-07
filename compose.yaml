@@ -1,0 +1,86 @@
+
+services:
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+    networks:
+      - app_network
+
+  apache:
+    image: httpd:2.4
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+      - ./.docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
+      - ./.docker/apache/vhost.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
+    depends_on:
+      - php
+    networks:
+      - app_network
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www/html
+      - ./.docker/php.ini:/usr/local/etc/php/php.ini
+    environment:
+      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+    working_dir: /var/www/html
+    depends_on:
+      - database
+      - elasticsearch
+    networks:
+      - app_network
+    expose:
+      - "9000"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.1
+    environment:
+      - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  elasticsearch_data:
+    driver: local
+
+  database_data:
+
+networks:
+  app_network:
+    driver: bridge
