@@ -1,4 +1,3 @@
-CHANGELOG.md
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -30,6 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - PDF indexer command (`app:index-pdfs`)
   - Automatic text extraction from PDFs
   - Elasticsearch document indexing
+- Documentation:
+  - Comprehensive README.md with:
+    - Project description
+    - Installation instructions
+    - Docker setup guide
+    - Usage examples
+    - Development guidelines
+    - Contributing guidelines
+    - License information
 
 ### Changed
 - N/A
