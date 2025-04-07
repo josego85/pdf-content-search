@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Security configuration
 - Apache and PHP integration
 - Database configuration and persistence
+- Console Commands:
+  - PDF indexer command (`app:index-pdfs`)
+  - Automatic text extraction from PDFs
+  - Elasticsearch document indexing
 
 ### Changed
 - N/A
