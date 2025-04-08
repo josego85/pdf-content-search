@@ -14,7 +14,7 @@ class ElasticsearchService implements SearchEngineInterface
     private Client $client;
 
     public function __construct(string $host)
-    {        
+    {
         $this->client = ClientBuilder::create()
           ->setSSLVerification(false)
           ->setHosts([$host])
@@ -31,11 +31,11 @@ class ElasticsearchService implements SearchEngineInterface
         try {
             $this->client->index([
                 'index' => $index,
-                'id'    => $id,
-                'body'  => $data,
+                'id' => $id,
+                'body' => $data,
             ]);
         } catch (ClientResponseException|ServerResponseException|AuthenticationException $e) {
-            throw new \RuntimeException('Error indexing document: ' . $e->getMessage());
+            throw new \RuntimeException('Error indexing document: '.$e->getMessage());
         }
     }
 
@@ -44,7 +44,7 @@ class ElasticsearchService implements SearchEngineInterface
         try {
             return $this->client->search($params)->asArray();
         } catch (ClientResponseException|ServerResponseException|AuthenticationException $e) {
-            throw new \RuntimeException('Elasticsearch error: ' . $e->getMessage());
+            throw new \RuntimeException('Elasticsearch error: '.$e->getMessage());
         }
     }
 }

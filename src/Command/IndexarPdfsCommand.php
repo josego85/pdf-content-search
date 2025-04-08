@@ -17,7 +17,7 @@ use Symfony\Component\Finder\Finder;
 )]
 class IndexarPdfsCommand extends Command
 {
-    private string $pdfFolder = __DIR__ . '/../../var/pdfs';
+    private string $pdfFolder = __DIR__.'/../../var/pdfs';
 
     public function __construct(private readonly SearchEngineInterface $es)
     {
@@ -39,22 +39,24 @@ class IndexarPdfsCommand extends Command
         $finder = new Finder();
         $finder->files()->in($this->pdfFolder)->name('*.pdf');
 
-        if (!$finder->hasResults()) {
+        if (! $finder->hasResults()) {
             $output->writeln('<comment>No PDF files found.</comment>');
+
             return Command::SUCCESS;
         }
 
-        foreach($finder as $file) {
+        foreach ($finder as $file) {
             $filename = $file->getFilename();
             $path = $file->getRealPath();
 
             $output->writeln("📄 Indexing: <info>$filename</info>");
 
             try {
-                $text = shell_exec("pdftotext " . escapeshellarg($path) . " -");
-                
-                if(empty(trim($text))) {
-                    $output->writeln("<comment>⚠️ PDF content is empty or could not be extracted.</comment>");
+                $text = shell_exec('pdftotext '.escapeshellarg($path).' -');
+
+                if (empty(trim($text))) {
+                    $output->writeln('<comment>⚠️ PDF content is empty or could not be extracted.</comment>');
+
                     continue;
                 }
 
@@ -71,6 +73,7 @@ class IndexarPdfsCommand extends Command
         }
 
         $output->writeln('<info>✅ Process completed</info>');
+
         return Command::SUCCESS;
     }
 }

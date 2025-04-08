@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Loading states and error handling
   - Debounced search functionality
   - Document metadata display (date, score)
+- Development Tools:
+  - Added PHP-CS-Fixer for code style enforcement
+  - Configured Symfony and PSR-12 coding standards
+  - Added composer scripts for style checking
+  - VS Code integration setup
 
 ### Changed
 - Refactored `ElasticsearchService` to implement `SearchEngineInterface`
