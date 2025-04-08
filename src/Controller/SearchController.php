@@ -25,7 +25,7 @@ final class SearchController extends AbstractController
             if (empty($query)) {
                 return new JsonResponse([
                     'status' => 'error',
-                    'message' => 'Query parameter is required',
+                    'message' => 'Search query cannot be empty.',
                 ], Response::HTTP_BAD_REQUEST);
             }
 
@@ -41,10 +41,13 @@ final class SearchController extends AbstractController
                     ],
                     'highlight' => [
                         'fields' => [
-                            'text' => new \stdClass(),
+                            'text' => [
+                                'fragment_size' => 150,
+                                'number_of_fragments' => 3,
+                                'pre_tags' => ['<mark>'],
+                                'post_tags' => ['</mark>'],
+                            ],
                         ],
-                        'pre_tags' => ['<mark>'],
-                        'post_tags' => ['</mark>'],
                     ],
                 ],
             ];
@@ -58,7 +61,6 @@ final class SearchController extends AbstractController
                     'total' => $results['hits']['total']['value'] ?? 0,
                 ],
             ]);
-
         } catch (\Exception $e) {
             return new JsonResponse([
                 'status' => 'error',

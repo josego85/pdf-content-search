@@ -54,10 +54,10 @@
               >
                 🔎 View PDF at this page
               </a>
-          <p v-if="result.highlight?.content" 
-             class="text-gray-600 text-sm leading-relaxed mb-3"
-             v-html="result.highlight.content.join('...')">
-          </p>
+              <p v-if="result.highlight?.text" 
+                class="text-gray-600 text-sm leading-relaxed mb-3"
+                v-html="result.highlight.text.join('...')">
+              </p>
           <div class="flex items-center space-x-3 text-sm">
             <span class="text-gray-500">
               <svg class="h-4 w-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,5 +187,12 @@ export default {
   to {
     transform: rotate(360deg);
   }
+}
+
+mark {
+    background-color: yellow;
+    color: black;
+    padding: 0 2px;
+    border-radius: 2px;
 }
 </style>

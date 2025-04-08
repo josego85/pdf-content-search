@@ -41,6 +41,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Text extraction reliability
 - Search result context display
 - PDF viewer integration issues
+- Improved Content Highlighting:
+  - Resolved issue where similar words (e.g., "lose" instead of "Jose") were incorrectly highlighted.
+  - Adjusted frontend logic to highlight only exact matches for search terms.
+  - Enhanced backend query to improve precision in highlighting.
 
 ## [1.1.0] - 2025-04-08
 
