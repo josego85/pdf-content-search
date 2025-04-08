@@ -39,21 +39,12 @@ class ElasticsearchService implements SearchEngineInterface
         }
     }
 
-    public function search(string $index, string $query): array
+    public function search(array $params): array
     {
         try {
-            $response = $this->client->search([
-                'index' => $index,
-                'body'  => [
-                    'query' => [
-                        'match' => ['content' => $query],
-                    ],
-                ],
-            ]);
-
-            return $response->asArray();
+            return $this->client->search($params)->asArray();
         } catch (ClientResponseException|ServerResponseException|AuthenticationException $e) {
-            throw new \RuntimeException('Error during search: ' . $e->getMessage());
+            throw new \RuntimeException('Elasticsearch error: ' . $e->getMessage());
         }
     }
 }

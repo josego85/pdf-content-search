@@ -4,7 +4,6 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    elasticsearch.host: '%env(ELASTICSEARCH_HOST)%'
 
 services:
     # default configuration for services in *this* file
@@ -26,4 +25,7 @@ services:
 
     App\Service\ElasticsearchService:
         arguments:
-            $host: '%elasticsearch.host%'
+            $host: '%env(ELASTICSEARCH_HOST)%'
+
+    App\Interface\SearchEngineInterface:
+        alias: App\Service\ElasticsearchService
