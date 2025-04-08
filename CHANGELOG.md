@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved text extraction accuracy using `pdftotext`.
   - Enhanced metadata handling (e.g., total page count, file paths).
   - Improved error reporting for failed indexing operations.
+- SearchController constructor refactoring:
+  - Injected pdfPagesIndex from configuration instead of hardcoding the index name.
 
 ### Fixed
 - Fixed Search Issues:

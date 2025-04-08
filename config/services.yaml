@@ -31,3 +31,7 @@ services:
 
     App\Contract\SearchEngineInterface: '@App\Service\ElasticsearchService'
     App\Contract\PdfIndexerInterface: '@App\Service\ElasticsearchService'
+
+    App\Controller\SearchController:
+        arguments:
+            $pdfPagesIndex: '%elasticsearch.index_pdfs%'

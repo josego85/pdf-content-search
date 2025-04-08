@@ -12,7 +12,8 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SearchController extends AbstractController
 {
     public function __construct(
-        private readonly SearchEngineInterface $searchEngine
+        private readonly SearchEngineInterface $searchEngine,
+        private readonly string $pdfPagesIndex
     ) {
     }
 
@@ -30,7 +31,7 @@ final class SearchController extends AbstractController
             }
 
             $searchParams = [
-                'index' => 'pdf_pages',
+                'index' => $this->pdfPagesIndex,
                 'body' => [
                     'query' => [
                         'multi_match' => [
