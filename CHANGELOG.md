@@ -33,6 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved error reporting for failed indexing operations.
 - SearchController constructor refactoring:
   - Injected pdfPagesIndex from configuration instead of hardcoding the index name.
+- Dockerfile cleanup:
+  - Removed unused system package previously required for older workflows.
+- PDF folder restructuring:
+  - Changed location of indexed PDFs from var/pdfs/ to a more appropriate and web-accessible directory (public/pdfs/) for easier linking and access.
 
 ### Fixed
 - Fixed Search Issues:
