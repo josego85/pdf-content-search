@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-04-08
+
+### Added
+- PDF Page-Level Search:
+  - Individual page indexing for PDFs
+  - Page content extraction with context
+  - Page number tracking in search results
+  - Direct PDF page links in results
+- Enhanced Search Results:
+  - Context snippets with highlighted matches
+  - Page-specific navigation in PDFs
+  - PDF preview integration in browser
+  - Page count information display
+- Command Improvements:
+  - Page-by-page PDF processing
+  - Unique ID generation per page
+  - Better error handling per page
+  - Progress indicators for indexing
+
+### Changed
+- Refactored PDF indexing process:
+  - Split PDFs into individual pages
+  - Improved text extraction accuracy
+  - Enhanced metadata handling
+  - Better error reporting
+- Updated search interface:
+  - Added page-specific result display
+  - Improved result highlighting
+  - Enhanced PDF viewer integration
+  - Better result organization
+
+### Fixed
+- PDF page counting accuracy
+- Text extraction reliability
+- Search result context display
+- PDF viewer integration issues
+
 ## [1.1.0] - 2025-04-08
 
 ### Added

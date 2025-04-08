@@ -40,7 +40,20 @@
         <div v-for="(result, index) in results" 
              :key="result?._id || index" 
              class="result-item bg-white rounded-lg border border-gray-100 p-6 hover:shadow-md hover:border-blue-100 transition-all duration-200">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ result._source?.title }}</h3>
+             <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                {{ result._source?.title }}
+              </h3>
+              <div class="text-sm text-gray-500 mb-2">
+                📄 Page {{ result._source?.page }} of {{ result._source?.total_pages }}
+              </div>
+              <a
+                :href="`${result._source?.path}#page=${result._source?.page}`"
+                target="_blank"
+                rel="noopener"
+                class="text-blue-600 hover:underline text-sm mb-2 inline-block"
+              >
+                🔎 View PDF at this page
+              </a>
           <p v-if="result.highlight?.content" 
              class="text-gray-600 text-sm leading-relaxed mb-3"
              v-html="result.highlight.content.join('...')">

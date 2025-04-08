@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Interface\SearchEngineInterface;
+use App\Contract\SearchEngineInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,14 +30,21 @@ final class SearchController extends AbstractController
             }
 
             $searchParams = [
-                'index' => 'documents',
+                'index' => 'pdf_pages',
                 'body' => [
                     'query' => [
                         'multi_match' => [
                             'query' => $query,
-                            'fields' => ['title^2', 'content'],
+                            'fields' => ['title^2', 'text'],
                             'fuzziness' => 'AUTO',
                         ],
+                    ],
+                    'highlight' => [
+                        'fields' => [
+                            'text' => new \stdClass(),
+                        ],
+                        'pre_tags' => ['<mark>'],
+                        'post_tags' => ['</mark>'],
                     ],
                 ],
             ];

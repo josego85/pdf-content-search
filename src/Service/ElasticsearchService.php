@@ -2,49 +2,63 @@
 
 namespace App\Service;
 
-use App\Interface\SearchEngineInterface;
+use App\Contract\PdfIndexerInterface;
+use App\Contract\SearchEngineInterface;
+use App\Shared\Traits\SafeCallerTrait;
 use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\ClientBuilder;
-use Elastic\Elasticsearch\Exception\AuthenticationException;
-use Elastic\Elasticsearch\Exception\ClientResponseException;
-use Elastic\Elasticsearch\Exception\ServerResponseException;
 
-class ElasticsearchService implements SearchEngineInterface
+class ElasticsearchService implements SearchEngineInterface, PdfIndexerInterface
 {
+    use SafeCallerTrait;
+
     private Client $client;
 
-    public function __construct(string $host)
-    {
+    public function __construct(
+        string $host,
+        private readonly string $pdfPagesIndex
+    ) {
         $this->client = ClientBuilder::create()
-          ->setSSLVerification(false)
-          ->setHosts([$host])
-          ->build();
+            ->setSSLVerification(false)
+            ->setHosts([$host])
+            ->build();
     }
 
-    public function getClient(): Client
+    public function indexDocument(string $index, string $id, array $data): void
     {
-        return $this->client;
-    }
-
-    public function index(string $index, string $id, array $data): void
-    {
-        try {
-            $this->client->index([
+        $this->safeCall(
+            fn () => $this->client->index([
                 'index' => $index,
                 'id' => $id,
                 'body' => $data,
-            ]);
-        } catch (ClientResponseException|ServerResponseException|AuthenticationException $e) {
-            throw new \RuntimeException('Error indexing document: '.$e->getMessage());
-        }
+            ]),
+            'Indexing document failed'
+        );
     }
 
-    public function search(array $params): array
+    public function indexPdfPage(
+        string $id,
+        string $title,
+        int $page,
+        string $text,
+        string $path,
+        int $totalPages
+    ): void {
+        $this->indexDocument($this->pdfPagesIndex, $id, [
+            'title' => $title,
+            'page' => $page,
+            'text' => $text,
+            'path' => $path,
+            'total_pages' => $totalPages,
+            'date' => date('Y-m-d H:i:s'),
+        ]);
+    }
+
+    public function search(array $query): array
     {
-        try {
-            return $this->client->search($params)->asArray();
-        } catch (ClientResponseException|ServerResponseException|AuthenticationException $e) {
-            throw new \RuntimeException('Elasticsearch error: '.$e->getMessage());
-        }
+        return $this->safeCall(
+            fn () => $this->client->search($query)->asArray(),
+            'Search query failed'
+        );
     }
 }
