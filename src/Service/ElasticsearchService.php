@@ -2,13 +2,14 @@
 
 namespace App\Service;
 
+use App\Interface\SearchEngineInterface;
 use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\ClientBuilder;
 use Elastic\Elasticsearch\Exception\AuthenticationException;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
 
-class ElasticsearchService
+class ElasticsearchService implements SearchEngineInterface
 {
     private Client $client;
 
@@ -16,7 +17,7 @@ class ElasticsearchService
     {        
         $this->client = ClientBuilder::create()
           ->setSSLVerification(false)
-          ->setHosts(['http://elasticsearch:9200'])
+          ->setHosts([$host])
           ->build();
     }
 
@@ -25,16 +26,16 @@ class ElasticsearchService
         return $this->client;
     }
 
-    public function indexDocument(string $index, string $id, array $body): void
+    public function index(string $index, string $id, array $data): void
     {
         try {
             $this->client->index([
                 'index' => $index,
                 'id'    => $id,
-                'body'  => $body,
+                'body'  => $data,
             ]);
         } catch (ClientResponseException|ServerResponseException|AuthenticationException $e) {
-            throw new \RuntimeException('Error al indexar documento: ' . $e->getMessage());
+            throw new \RuntimeException('Error indexing document: ' . $e->getMessage());
         }
     }
 
@@ -52,7 +53,7 @@ class ElasticsearchService
 
             return $response->asArray();
         } catch (ClientResponseException|ServerResponseException|AuthenticationException $e) {
-            throw new \RuntimeException('Error en la búsqueda: ' . $e->getMessage());
+            throw new \RuntimeException('Error during search: ' . $e->getMessage());
         }
     }
 }

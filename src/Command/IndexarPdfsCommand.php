@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Service\ElasticsearchService;
+use App\Interface\SearchEngineInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,7 +19,7 @@ class IndexarPdfsCommand extends Command
 {
     private string $pdfFolder = __DIR__ . '/../../var/pdfs';
 
-    public function __construct(private readonly ElasticsearchService $es)
+    public function __construct(private readonly SearchEngineInterface $es)
     {
         parent::__construct();
     }
@@ -58,7 +58,7 @@ class IndexarPdfsCommand extends Command
                     continue;
                 }
 
-                $this->es->indexDocument('documents', uniqid(), [
+                $this->es->index('documents', uniqid(), [
                     'title' => $filename,
                     'content' => $text,
                     'date' => date('Y-m-d H:i:s'),
