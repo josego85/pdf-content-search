@@ -75,6 +75,25 @@ services:
       timeout: 10s
       retries: 3
 
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.1
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q 'Looking good'"]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
 volumes:
   elasticsearch_data:
     driver: local

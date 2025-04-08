@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Configured Symfony and PSR-12 coding standards
   - Added composer scripts for style checking
   - VS Code integration setup
+- Monitoring Tools:
+  - Added Kibana 8.17.1 integration
+  - Configured health checks for Kibana
+  - Added Elasticsearch monitoring dashboard
+  - Integrated with existing Elasticsearch setup
 
 ### Changed
 - Refactored `ElasticsearchService` to implement `SearchEngineInterface`
