@@ -1,6 +1,6 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.1.0-blue.svg)](https://github.com/yourusername/pdf-content-search)
+[![Version](https://img.shields.io/badge/Version-1.2.1-blue.svg)](https://github.com/yourusername/pdf-content-search)
 [![PHP Version](https://img.shields.io/badge/PHP-8.3-blue.svg)](https://www.php.net/)
 [![Symfony Version](https://img.shields.io/badge/Symfony-7.2-green.svg)](https://symfony.com/)
 [![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.17.1-005571.svg)](https://www.elastic.co/)
@@ -13,21 +13,37 @@
 [![PHP-CS-Fixer](https://img.shields.io/badge/PHP--CS--Fixer-3.49-yellow.svg)](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-
 A Symfony application to search content within PDF files using Elasticsearch and Vue.js.
 
 ## Table of Contents
+- [Features](#features)
 - [Description](#description)
 - [Technologies](#technologies)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Docker Setup](#docker-setup)
+- [Configuration](#configuration)
+- [PDF Management](#pdf-management)
 - [Usage](#usage)
 - [Development](#development)
 - [Elasticsearch](#elasticsearch)
+- [Maintenance](#maintenance)
 - [Troubleshooting](#troubleshooting)
+- [Security](#security)
 - [Contributing](#contributing)
 - [License](#license)
+
+## Features
+- 📄 Page-Level PDF Search
+- 🔍 Real-time Search Results
+- 🎯 Content Highlighting (Exact matches only)
+- 📊 Relevance Scoring
+- 📱 Responsive Design
+- 🚀 Fast Elasticsearch Backend
+- 🔄 Automatic PDF Processing
+- 📋 Page Context Display
+- 🔗 Direct PDF Page Links
+- 📈 Search Analytics via Kibana
 
 ## Description
 This application allows users to search for content within PDF files using Elasticsearch for efficient text searching and indexing, with a modern Vue.js frontend.
@@ -42,6 +58,7 @@ This application allows users to search for content within PDF files using Elast
 - Docker 27.5.1 & Docker Compose
 - Node.js 22.x
 - PostgreSQL 16
+- Apache 2.4
 
 ## Requirements
 - Docker 27.5.1 and Docker Compose
@@ -49,6 +66,7 @@ This application allows users to search for content within PDF files using Elast
 - Composer 2.x
 - Node.js 22.x and npm
 - pdftotext utility (poppler-utils)
+- At least 4GB RAM (for Elasticsearch)
 
 ## Installation
 1. Clone the repository:
@@ -88,27 +106,53 @@ docker compose ps
 - Application: http://localhost
 - Elasticsearch: http://localhost:9200
 - Kibana: http://localhost:5601
+- PostgreSQL: localhost:5432
 
-## Usage
-1. Ensure you have PDF files in the `var/pdfs/` directory
+## Configuration
+### Environment Variables
+```dotenv
+# PostgreSQL
+POSTGRES_DB=app
+POSTGRES_PASSWORD=!ChangeMe!
+POSTGRES_USER=app
+POSTGRES_VERSION=16
 
-2. Index the PDF files:
+# Elasticsearch
+ELASTICSEARCH_HOST=http://elasticsearch:9200
+```
+
+### Docker Services
+- `apache`: HTTP Server (2.4)
+- `php`: PHP-FPM 8.3
+- `elasticsearch`: Search Engine (8.17.1)
+- `kibana`: Analytics Dashboard (8.17.1)
+- `database`: PostgreSQL 16
+
+## PDF Management
+1. Create PDF directories:
+```bash
+mkdir -p public/pdfs
+```
+
+2. Place your PDFs in `public/pdfs/`
+
+3. Index the PDFs:
 ```bash
 docker compose exec php bin/console app:index-pdfs
 ```
 
-3. Access the application at `http://localhost`
-
-4. Search Features:
-   - Full-text search across PDF contents
-   - Real-time search results
-   - Content highlighting
-   - Relevance scoring
-   - Document metadata display
-   - Fuzzy matching for typo tolerance
+## Usage
+1. Access the application at `http://localhost`
+2. Use the search bar to find content in PDFs
+3. Results will show:
+   - PDF filename
+   - Page number
+   - Content context
+   - Highlighted matches
+   - Direct link to PDF page
 
 ## Development
-1. Start the development environment:
+1. Start development environment:
 ```bash
 docker compose up -d
 npm run watch
@@ -154,41 +198,62 @@ curl http://localhost:9200/_cat/indices
    - Monitor cluster health
    - Analyze search performance
 
+## Maintenance
+1. Clear caches:
+```bash
+docker compose exec php bin/console cache:clear
+```
+
+2. Update dependencies:
+```bash
+docker compose exec php composer update
+docker compose exec php npm update
+```
+
+3. Rebuild containers:
+```bash
+docker compose down
+docker compose build --no-cache
+docker compose up -d
+```
+
 ## Troubleshooting
 1. Elasticsearch Issues:
 ```bash
-# Check cluster health
+# Check health
 docker compose exec elasticsearch curl -X GET "localhost:9200/_cluster/health"
-
 # View logs
 docker compose logs elasticsearch
 ```
 
 2. Frontend Issues:
 ```bash
-# Clear npm cache
+# Clear cache
 npm cache clean --force
-
-# Rebuild assets
+# Rebuild
 npm run build
 ```
 
 3. PDF Indexing Issues:
 ```bash
-# Check PDF directory
-ls var/pdfs/
-
-# Run indexer in verbose mode
+# Check directory
+ls public/pdfs/
+# Verbose indexing
 docker compose exec php bin/console app:index-pdfs -vv
 ```
 
+## Security
+- Change default PostgreSQL credentials
+- Enable Elasticsearch security in production
+- Configure HTTPS for production
+- Set proper file permissions
+
 ## Contributing
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
 
 ## License
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
-For more information, please visit [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+Licensed under GNU General Public License v3.0 - see [LICENSE](LICENSE) file.

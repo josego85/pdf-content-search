@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2025-04-08
+
+### Added
+- Documentation Improvements:
+  - Expanded README.md with detailed sections:
+    - Features: Highlighting key functionalities like page-level PDF search, real-time results, and content highlighting.
+    - Technologies: Comprehensive list of tools and frameworks used.
+    - Requirements: Clear prerequisites for running the project.
+    - Installation: Step-by-step guide for setting up the project.
+    - Docker Setup: Instructions for building and running containers.
+    - Configuration: Explanation of environment variables and service bindings.
+    - PDF Management: Instructions for organizing and indexing PDFs.
+    - Usage: Detailed guide on how to use the application.
+    - Development: Added frontend and backend development workflows.
+    - Elasticsearch: Commands for managing indices and monitoring cluster health.
+    - Maintenance: Steps for clearing caches, updating dependencies, and rebuilding containers.
+    - Troubleshooting: Common issues and solutions for Elasticsearch, frontend, and PDF indexing.
+    - Security: Recommendations for securing the application in production.
+    - Contributing: Guidelines for contributing to the project.
+
+### Changed
+- Refactored PDF indexing process:
+  - Split PDFs into individual pages for better granularity.
+  - Improved text extraction accuracy using `pdftotext`.
+  - Enhanced metadata handling (e.g., total page count, file paths).
+  - Improved error reporting for failed indexing operations.
+
+### Fixed
+- Fixed Search Issues:
+  - Resolved issue where similar words (e.g., "lose" instead of "Jose") were incorrectly highlighted.
+  - Adjusted frontend logic to highlight only exact matches for search terms using regular expressions.
+  - Enhanced backend query precision for Elasticsearch highlighting.
+  - Fixed context display in search results for better readability.
+- Addressed missing or unclear instructions in the README.md:
+  - Added steps for verifying dependencies and services.
+  - Clarified Docker commands for starting and stopping containers.
+  - Included examples for debugging and troubleshooting common issues.
+  
 ## [1.2.0] - 2025-04-08
 
 ### Added
