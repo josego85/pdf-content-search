@@ -1,0 +1,12 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Running PHP-CS-Fixer check..."
+composer cs-check
+
+if [ $? -ne 0 ]; then
+  echo "❌ Code style violations detected. Please fix them before committing."
+  exit 1
+fi
+
+echo "✅ Code is clean. Proceeding with commit."

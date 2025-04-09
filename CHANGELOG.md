@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Defined and enforced strict, explicit code style rules across the entire codebase.
 - Applied PHP-CS-Fixer to refactor and standardize formatting across multiple PHP files.
 
+### Tooling
+
+- Added [Husky](https://typicode.github.io/husky) to enforce code style checks before commits.
+- Configured a `pre-commit` Git hook to automatically run `composer cs-fix-check`.
+- Commits are now blocked if PHP-CS-Fixer detects style violations, ensuring consistent formatting across the team.
+
 ## [1.2.1] - 2025-04-08
 
 ### Added

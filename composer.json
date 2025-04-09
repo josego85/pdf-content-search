@@ -77,8 +77,8 @@
         "symfony/polyfill-php82": "*"
     },
     "scripts": {
-        "cs-check": "php-cs-fixer fix --dry-run --diff",
-        "cs-fix": "php-cs-fixer fix",
+        "cs-check": "php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.dist.php",
+        "cs-fix": "php-cs-fixer fix --config=.php-cs-fixer.dist.php",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
