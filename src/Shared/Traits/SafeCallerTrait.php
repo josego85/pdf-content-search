@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Shared\Traits;
 
 use Elastic\Elasticsearch\Exception\ElasticsearchException;
@@ -11,7 +13,7 @@ trait SafeCallerTrait
         try {
             return $fn();
         } catch (ElasticsearchException $e) {
-            throw new \RuntimeException($errorMessage.': '.$e->getMessage(), 0, $e);
+            throw new \RuntimeException($errorMessage . ': ' . $e->getMessage(), 0, $e);
         }
     }
 }

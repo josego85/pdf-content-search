@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Contract\PdfIndexerInterface;
@@ -17,7 +19,7 @@ use Symfony\Component\Finder\Finder;
 )]
 class IndexarPdfsCommand extends Command
 {
-    private string $pdfFolder = __DIR__.'/../../public/pdfs';
+    private string $pdfFolder = __DIR__ . '/../../public/pdfs';
 
     public function __construct(private readonly PdfIndexerInterface $es)
     {
@@ -38,7 +40,7 @@ class IndexarPdfsCommand extends Command
         $finder = new Finder();
         $finder->files()->in($this->pdfFolder)->name('*.pdf');
 
-        if (! $finder->hasResults()) {
+        if (!$finder->hasResults()) {
             $output->writeln('<comment>No PDF files found.</comment>');
 
             return Command::SUCCESS;
@@ -52,7 +54,7 @@ class IndexarPdfsCommand extends Command
             $output->writeln("📄 Indexing: <info>$filename</info>");
 
             // Get total pages
-            $pageCountOutput = shell_exec('pdfinfo '.escapeshellarg($path));
+            $pageCountOutput = shell_exec('pdfinfo ' . escapeshellarg($path));
             preg_match('/Pages:\\s+(\\d+)/i', $pageCountOutput, $matches);
             $totalPages = isset($matches[1]) ? (int) $matches[1] : 0;
 
@@ -64,16 +66,16 @@ class IndexarPdfsCommand extends Command
 
             // Process each page
             for ($page = 1; $page <= $totalPages; ++$page) {
-                $text = shell_exec("pdftotext -layout -f $page -l $page ".escapeshellarg($path).' -');
+                $text = shell_exec("pdftotext -layout -f $page -l $page " . escapeshellarg($path) . ' -');
 
-                if (! empty(trim($text))) {
+                if (!empty(trim($text))) {
                     try {
                         $this->es->indexPdfPage(
-                            $pdfId.'_page_'.$page,
+                            $pdfId . '_page_' . $page,
                             $filename,
                             $page,
                             trim($text),
-                            '/pdfs/'.$filename,
+                            '/pdfs/' . $filename,
                             $totalPages
                         );
                     } catch (\Exception $e) {
