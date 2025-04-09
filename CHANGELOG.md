@@ -11,14 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improved PHP-CS-Fixer configuration:
   - Added full rule set aligned with PHP 8.3 best practices.
-  - Removed dependency on external preset packages (e.g., `ergebnis/php-cs-fixer-config`).
   - Defined and enforced strict, explicit code style rules across the entire codebase.
 - Applied PHP-CS-Fixer to refactor and standardize formatting across multiple PHP files.
+- Introduced `.editorconfig` to define consistent formatting rules across editors:
+  - Enforces 4-space indentation for PHP, 2 spaces for YAML, JSON, JS.
+  - Uses LF line endings and trims trailing whitespace.
+  - Ensures consistent newline behavior and UTF-8 encoding.
 
 ### Tooling
 
 - Added [Husky](https://typicode.github.io/husky) to enforce code style checks before commits.
-- Configured a `pre-commit` Git hook to automatically run `composer cs-fix-check`.
+- Configured a `pre-commit` Git hook to automatically run `composer cs-check`.
 - Commits are now blocked if PHP-CS-Fixer detects style violations, ensuring consistent formatting across the team.
 
 ## [1.2.1] - 2025-04-08
