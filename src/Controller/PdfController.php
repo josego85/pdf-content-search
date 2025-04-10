@@ -15,7 +15,7 @@ final class PdfController extends AbstractController
     public function viewer(Request $request): Response
     {
         $pdfPath = $request->query->get('path');
-        $highlight = $request->query->get('q');
+        $highlight = $request->query->get('highlight');
         $page = (int) $request->query->get('page', 1);
 
         return $this->render('pdf/viewer.html.twig', [

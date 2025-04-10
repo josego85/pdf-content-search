@@ -11,8 +11,8 @@
 
     <script>
         window.pdfPath = "{{ path }}";
-        window.highlightTerm = "{{ highlight }}";
-        window.pageNumber = {{ page|default(1) }};
+        window.pageNumber = {{ page }};
+        window.highlight = "{{ highlight|escape('js') }}";
     </script>
 {% endblock %}
 

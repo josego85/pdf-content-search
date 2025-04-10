@@ -47,7 +47,7 @@
                 📄 Page {{ result._source?.page }} of {{ result._source?.total_pages }}
               </div>
               <a
-                :href="`/viewer?path=${encodeURIComponent(result._source?.path.replace('/pdfs/', ''))}&q=${encodeURIComponent(searchQuery)}&page=${result._source?.page}`"
+                :href="getViewerLink(result)"
                 target="_blank"
                 rel="noopener"
                 class="text-blue-600 hover:underline text-sm mb-2 inline-block"
@@ -153,6 +153,26 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+    getViewerLink(result) {
+      const path = encodeURIComponent(result._source?.path.replace('/pdfs/', ''));
+      const page = result._source?.page;
+      const highlights = result.highlight?.text || [];
+      const highlightTerms = highlights
+        .map(text => {
+          const regex = /<mark>(.*?)<\/mark>/g;
+          const matches = [];
+          let match;
+
+          while ((match = regex.exec(text)) !== null) {
+            matches.push(match[1]);
+          }
+          return matches;
+        })
+        .flat();
+        
+      const highlightParam = encodeURIComponent(JSON.stringify(highlightTerms));
+      return `/viewer?path=${path}&page=${page}&highlight=${highlightParam}`;
     },
     formatDate(dateString) {
       if (!dateString) return '';

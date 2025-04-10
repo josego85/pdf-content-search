@@ -7,13 +7,15 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 
 GlobalWorkerOptions.workerSrc = '/build/pdf.worker.js';
 
-const pdfPath = `/pdfs/${window.pdfPath}`;
-const highlightTerm = (window.highlightTerm || '').toLowerCase();
-const pageNumber = parseInt(window.pageNumber || 1, 10);
+function normalizeString(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
 
+const highlightTerms = JSON.parse(decodeURIComponent(window.highlight || '[]'));
+const pdfPath = `/pdfs/${window.pdfPath}`;
+const pageNumber = parseInt(window.pageNumber || 1, 10);
 const canvas = document.getElementById('pdf-canvas');
 const container = document.querySelector('.container');
-
 const eventBus = new EventBus();
 
 getDocument(pdfPath).promise
@@ -46,17 +48,23 @@ getDocument(pdfPath).promise
             textLayer.render();
 
             setTimeout(() => {
-                if (!highlightTerm) return;
+                if (highlightTerms.length === 0) return;
 
                 const spans = textLayerDiv.querySelectorAll('span');
                 spans.forEach(span => {
                     const originalText = span.textContent;
-                    if (originalText.toLowerCase().includes(highlightTerm)) {
-                        span.innerHTML = originalText.replace(
-                            new RegExp(`(${highlightTerm})`, 'gi'),
-                            '<mark>$1</mark>'
-                        );
-                    }
+
+                    highlightTerms.forEach(term => {
+                        const normalizedOriginalText = normalizeString(originalText);
+                        const normalizedTerm = normalizeString(term);
+
+                        if (normalizedOriginalText.includes(normalizedTerm)) {
+                            span.innerHTML = originalText.replace(
+                                new RegExp(`(${term})`, 'gi'),
+                                '<mark>$1</mark>'
+                            );
+                        }
+                    });
                 });
             }, 200);
         });
