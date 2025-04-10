@@ -21,8 +21,9 @@ Encore
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
     .addEntry('app', './assets/app.js')
+    .addEntry('pdfViewer', './assets/pdfViewer.js')
 
-    .enableVueLoader(() => {}, { version: 3 })
+    .enableVueLoader(() => { }, { version: 3 })
 
     .enablePostCssLoader()
 
@@ -72,6 +73,20 @@ Encore
 
     // uncomment if you're having problems with a jQuery plugin
     //.autoProvidejQuery()
-;
+    // webpack.config.js (ejemplo avanzado)
+
+    .enableSassLoader()
+    ;
+
+Encore.configureDefinePlugin(options => {
+    options.__VUE_OPTIONS_API__ = true;
+    options.__VUE_PROD_DEVTOOLS__ = false;
+});
+
+Encore.copyFiles({
+    from: './node_modules/pdfjs-dist/build',
+    to: '[name].[ext]',
+    pattern: /pdf\.worker(\.js|\.map)?$/
+});
 
 module.exports = Encore.getWebpackConfig();

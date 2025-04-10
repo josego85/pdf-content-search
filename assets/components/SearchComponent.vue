@@ -47,7 +47,7 @@
                 📄 Page {{ result._source?.page }} of {{ result._source?.total_pages }}
               </div>
               <a
-                :href="`${result._source?.path}#page=${result._source?.page}`"
+                :href="`/viewer?path=${encodeURIComponent(result._source?.path.replace('/pdfs/', ''))}&q=${encodeURIComponent(searchQuery)}&page=${result._source?.page}`"
                 target="_blank"
                 rel="noopener"
                 class="text-blue-600 hover:underline text-sm mb-2 inline-block"

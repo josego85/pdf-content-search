@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-04-10
+
+### Added
+
+- **PDF Viewer Integration**:
+  - Added a new PDF viewer route (`/viewer`) that allows users to open a PDF document at a specific page using `?path=...&page=...`.
+  - Integrated [PDF.js](https://mozilla.github.io/pdf.js/) from Mozilla to render PDF pages directly in the browser using a `<canvas>` and a dynamic text layer.
+  - Implemented search term highlighting for a given query using `?q=...`, applied on the specified page.
+  - Highlighting is case-insensitive and styled using `<mark>` elements injected into the text layer.
+  - Currently highlights only the **first occurrence** of the search term per span (limitation to be improved in future versions).
+
 ## [1.2.2] - 2025-04-09
 
 ### Added
