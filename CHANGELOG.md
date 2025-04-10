@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Implemented search term highlighting for a given query using `?q=...`, applied on the specified page.
   - Highlighting is case-insensitive and styled using `<mark>` elements injected into the text layer.
   - Currently highlights only the **first occurrence** of the search term per span (limitation to be improved in future versions).
+- **Project Management**:
+  - Added `TODO.md` document to track pending features, improvements, and technical debt.
+  - Serves as a lightweight roadmap for contributors and team members.
 
 ## [1.2.2] - 2025-04-09
 
