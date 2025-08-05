@@ -1,4 +1,6 @@
 import './styles/app.css';
+import './styles/pdfViewer.scss';
+
 import { createApp } from 'vue';
 import SearchComponent from './components/SearchComponent.vue';
 

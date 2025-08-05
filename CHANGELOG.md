@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-08-05
+
+### Added
+
+- **PDF Viewer Integration**:
+  - Added a new PDF viewer route (`/viewer`) that allows users to open a PDF document at a specific page using `?path=...&page=...`.
+  - Integrated [PDF.js](https://mozilla.github.io/pdf.js/) from Mozilla to render PDF pages directly in the browser using a `<canvas>` and a dynamic text layer.
+  - Implemented search term highlighting for a given query using `?q=...`, applied on the specified page.
+  - Highlighting is case-insensitive and styled using `<mark>` elements injected into the text layer.
+  - The highlight feature now retrieves terms directly from the **Elasticsearch results** (search highlights), enabling a more seamless experience when navigating between results.
+  - Added parsing and injection of the highlighted terms into the PDF viewer dynamically, improving the user experience.
+  - **Limitations**: Currently highlights only the **first occurrence** of the search term per span (this limitation will be improved in future versions).
+  - **Improved the highlight feature to correctly show all matches including those with accented characters, fixing issues where accented terms were partially or incorrectly highlighted.**
+
+- **Project Management**:
+  - Added `TODO.md` document to track pending features, improvements, and technical debt.
+  - Serves as a lightweight roadmap for contributors and team members.
+
+- **Accent and Special Character Normalization**:
+  - The indexer now replaces accented characters and special variations of vowels (e.g., á, é, í, ó, ú, ü) with their plain equivalents (a, e, i, o, u) during indexing.
+  - This improves the consistency of search queries and results when users omit accents.
+
+### Changed
+
+- **Indexer and Search Refactoring**:
+  - Major refactor of the indexer and search logic to improve maintainability and search consistency.
+  - Normalized input during both indexing and querying phases to better handle special characters and improve match accuracy.
+
+- **Search Results Handling**:
+  - The highlight terms fetched from Elasticsearch are now processed and passed to the PDF viewer for more accurate highlighting.
+  - The search terms in Elasticsearch are parsed to ensure they are appropriately reflected in the PDF viewer.
+  - Enhanced handling of search results to integrate smoothly with the PDF viewer.
+
+### Known Issues
+
+- **Character Encoding**:
+  - There may be issues with certain characters (e.g., accented characters) not being properly highlighted in the PDF viewer. This issue will be addressed in future versions.
+  - The rendering of accented characters such as `José` in the highlights might not be perfect due to encoding differences between the PDF content and the search terms.
+
 ## [1.2.2] - 2025-04-09
 
 ### Added

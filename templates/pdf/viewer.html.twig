@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('pdfViewer') }}
+{% endblock %}
+
+{% block body %}
+    <div class="container" style="position: relative;">
+        <canvas id="pdf-canvas"></canvas>
+    </div>
+
+    <script>
+        window.pdfPath = "{{ path }}";
+        window.pageNumber = {{ page }};
+        window.highlight = "{{ highlight|escape('js') }}";
+    </script>
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('pdfViewer') }}
+{% endblock %}
