@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **build:** Upgraded Symfony from version 7.2 to 7.3.
 - **build:** Upgraded PHP from version 8.3 to 8.4.
+- **docs:** Updated application version badge in `README.md`.
 
 ### Fixed
 - Missing `intl` PHP extension warning in Symfony during runtime.
