@@ -1,8 +1,8 @@
 # PDF Content Search
 
 [![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)](https://github.com/yourusername/pdf-content-search)
-[![PHP Version](https://img.shields.io/badge/PHP-8.3-blue.svg)](https://www.php.net/)
-[![Symfony Version](https://img.shields.io/badge/Symfony-7.2-green.svg)](https://symfony.com/)
+[![PHP Version](https://img.shields.io/badge/PHP-8.4.11-blue.svg)](https://www.php.net/)
+[![Symfony Version](https://img.shields.io/badge/Symfony-7.3.2-green.svg)](https://symfony.com/)
 [![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.17.1-005571.svg)](https://www.elastic.co/)
 [![Kibana](https://img.shields.io/badge/Kibana-8.17.1-005571.svg)](https://www.elastic.co/kibana/)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.5.x-brightgreen.svg)](https://vuejs.org/)
@@ -49,8 +49,8 @@ A Symfony application to search content within PDF files using Elasticsearch and
 This application allows users to search for content within PDF files using Elasticsearch for efficient text searching and indexing, with a modern Vue.js frontend.
 
 ## Technologies
-- PHP 8.3
-- Symfony 7.2
+- PHP 8.4.11
+- Symfony 7.3.2
 - Elasticsearch 8.17.1
 - Kibana 8.17.1
 - Vue.js 3.5.x
@@ -62,7 +62,7 @@ This application allows users to search for content within PDF files using Elast
 
 ## Requirements
 - Docker 27.5.1 and Docker Compose
-- PHP 8.3
+- PHP 8.4.11
 - Composer 2.x
 - Node.js 22.x and npm
 - pdftotext utility (poppler-utils)
@@ -123,7 +123,7 @@ ELASTICSEARCH_HOST=http://elasticsearch:9200
 
 ### Docker Services
 - `apache`: HTTP Server (2.4)
-- `php`: PHP-FPM 8.3
+- `php`: PHP-FPM 8.4.11
 - `elasticsearch`: Search Engine (8.17.1)
 - `kibana`: Analytics Dashboard (8.17.1)
 - `database`: PostgreSQL 16
