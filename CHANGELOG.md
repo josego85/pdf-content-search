@@ -8,15 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.1] - 2025-08-05
 
 ### Added
-
-- Please install the "intl" PHP extension for best performance.
+- Support for the PHP `intl` extension to enhance internationalization features and improve overall performance.
 
 ### Changed
+- **build:** Upgraded Symfony from version 7.2 to 7.3.
+- **build:** Upgraded PHP from version 8.3 to 8.4.
 
-- build: update Symfony 7.2 to 7.3
-- build: update PHP 8.3 to 8.4
-
-Please install the "intl" PHP extension for best performance.
+### Fixed
+- Missing `intl` PHP extension warning in Symfony during runtime.
 
 ## [1.3.0] - 2025-08-05
 

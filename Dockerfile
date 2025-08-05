@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libicu-dev \
     poppler-utils \
     gnupg \
     ca-certificates \
@@ -22,10 +23,11 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
     pdo_pgsql \
     mbstring \
+    intl \
     exif \
     pcntl \
     bcmath \
-    gd
+    gd    
 
 # 3. Install Node.js and npm properly
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
