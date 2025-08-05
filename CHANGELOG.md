@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.0] - 2025-04-10
+## [1.3.0] - 2025-08-05
 
 ### Added
 
@@ -17,12 +17,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The highlight feature now retrieves terms directly from the **Elasticsearch results** (search highlights), enabling a more seamless experience when navigating between results.
   - Added parsing and injection of the highlighted terms into the PDF viewer dynamically, improving the user experience.
   - **Limitations**: Currently highlights only the **first occurrence** of the search term per span (this limitation will be improved in future versions).
-  
+
 - **Project Management**:
   - Added `TODO.md` document to track pending features, improvements, and technical debt.
   - Serves as a lightweight roadmap for contributors and team members.
 
+- **Accent and Special Character Normalization**:
+  - The indexer now replaces accented characters and special variations of vowels (e.g., á, é, í, ó, ú, ü) with their plain equivalents (a, e, i, o, u) during indexing.
+  - This improves the consistency of search queries and results when users omit accents.
+
 ### Changed
+
+- **Indexer and Search Refactoring**:
+  - Major refactor of the indexer and search logic to improve maintainability and search consistency.
+  - Normalized input during both indexing and querying phases to better handle special characters and improve match accuracy.
 
 - **Search Results Handling**:
   - The highlight terms fetched from Elasticsearch are now processed and passed to the PDF viewer for more accurate highlighting.
