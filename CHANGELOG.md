@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The highlight feature now retrieves terms directly from the **Elasticsearch results** (search highlights), enabling a more seamless experience when navigating between results.
   - Added parsing and injection of the highlighted terms into the PDF viewer dynamically, improving the user experience.
   - **Limitations**: Currently highlights only the **first occurrence** of the search term per span (this limitation will be improved in future versions).
+  - **Improved the highlight feature to correctly show all matches including those with accented characters, fixing issues where accented terms were partially or incorrectly highlighted.**
 
 - **Project Management**:
   - Added `TODO.md` document to track pending features, improvements, and technical debt.
