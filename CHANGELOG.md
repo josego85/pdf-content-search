@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-08-05
+
+### Added
+
+- Please install the "intl" PHP extension for best performance.
+
+### Changed
+
+- build: update Symfony 7.2 to 7.3
+- build: update PHP 8.3 to 8.4
+
+Please install the "intl" PHP extension for best performance.
+
 ## [1.3.0] - 2025-08-05
 
 ### Added
@@ -185,7 +198,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Docker infrastructure:
   - PostgreSQL 16 with health checks
   - Apache 2.4 web server
-  - PHP-FPM 8.4 configuration
+  - PHP-FPM 8.3 configuration
   - Elasticsearch 8.17.1 integration
 - Basic project configuration:
   - Docker Compose setup

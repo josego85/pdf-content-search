@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.4.11-fpm
 
 # 1. Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
 
 # 2. Install required PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-install \
+    && docker-php-ext-install \
     pdo_pgsql \
     mbstring \
     exif \
