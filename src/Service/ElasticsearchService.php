@@ -40,7 +40,11 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
     public function deleteIndex(): void
     {
         $params = ['index' => $this->pdfPagesIndex];
-        $this->client->indices()->delete($params);
+
+        // Check if index exists before deleting
+        if ($this->client->indices()->exists($params)->asBool()) {
+            $this->client->indices()->delete($params);
+        }
     }
 
     public function createIngestPipeline(string $pipelineId = 'remove_accents'): void

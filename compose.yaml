@@ -56,6 +56,8 @@ services:
       - xpack.security.enabled=false
       - xpack.security.enrollment.enabled=false
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - action.destructive_requires_name=false
     ulimits:
       memlock:
         soft: -1

@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Search Architecture (SOLID)**:
+  - `QueryBuilderInterface` contract for search engine abstraction
+  - `SearchStrategy` enum (HYBRID, EXACT, PREFIX) for configurable search behavior
+  - `QueryParser` service for advanced search operators (`"quotes"`, `+required`, `-exclude`)
+  - `SearchQueryBuilder` with intelligent hybrid search: exact matches prioritized, fuzzy only for 5+ char words
+
+### Changed
+- **Search Logic**:
+  - Refactored search to prioritize exact matches (10x boost), then word matches (5x), then fuzzy (1x)
+  - Fixes issue where "jos" incorrectly matched "job" - now only exact or close matches
+  - `SearchController` now depends on `QueryBuilderInterface` (Dependency Inversion Principle)
+
+### Fixed
+- Elasticsearch single-node configuration (`cluster.routing.allocation.disk.threshold_enabled=false`)
+- `ElasticsearchService::deleteIndex()` now checks index existence before deletion
+
 ## [1.3.1] - 2025-08-05
 
 ### Added
