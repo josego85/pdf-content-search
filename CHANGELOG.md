@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Refactored search to prioritize exact matches (10x boost), then word matches (5x), then fuzzy (1x)
   - Fixes issue where "jos" incorrectly matched "job" - now only exact or close matches
   - `SearchController` now depends on `QueryBuilderInterface` (Dependency Inversion Principle)
+- **build:** Updated PHP from version 8.4.11 to 8.4.14
 
 ### Fixed
 - Elasticsearch single-node configuration (`cluster.routing.allocation.disk.threshold_enabled=false`)
