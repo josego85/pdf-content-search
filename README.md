@@ -2,9 +2,9 @@
 
 [![Version](https://img.shields.io/badge/Version-1.3.1-blue.svg)](https://github.com/yourusername/pdf-content-search)
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.14-blue.svg)](https://www.php.net/)
-[![Symfony Version](https://img.shields.io/badge/Symfony-7.3.2-green.svg)](https://symfony.com/)
-[![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.17.1-005571.svg)](https://www.elastic.co/)
-[![Kibana](https://img.shields.io/badge/Kibana-8.17.1-005571.svg)](https://www.elastic.co/kibana/)
+[![Symfony Version](https://img.shields.io/badge/Symfony-7.3.6-green.svg)](https://symfony.com/)
+[![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.17.10-005571.svg)](https://www.elastic.co/)
+[![Kibana](https://img.shields.io/badge/Kibana-8.17.10-005571.svg)](https://www.elastic.co/kibana/)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.5.x-brightgreen.svg)](https://vuejs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.x-38bdf8.svg)](https://tailwindcss.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
@@ -51,8 +51,8 @@ This application allows users to search for content within PDF files using Elast
 ## Technologies
 - PHP 8.4.14
 - Symfony 7.3.2
-- Elasticsearch 8.17.1
-- Kibana 8.17.1
+- Elasticsearch 8.17.10
+- Kibana 8.17.10
 - Vue.js 3.5.x
 - Tailwind CSS 3.4.x
 - Docker 27.5.1 & Docker Compose
@@ -124,8 +124,8 @@ ELASTICSEARCH_HOST=http://elasticsearch:9200
 ### Docker Services
 - `apache`: HTTP Server (2.4)
 - `php`: PHP-FPM 8.4.14
-- `elasticsearch`: Search Engine (8.17.1)
-- `kibana`: Analytics Dashboard (8.17.1)
+- `elasticsearch`: Search Engine (8.17.10)
+- `kibana`: Analytics Dashboard (8.17.10)
 - `database`: PostgreSQL 16
 
 ## PDF Management

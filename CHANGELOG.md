@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixes issue where "jos" incorrectly matched "job" - now only exact or close matches
   - `SearchController` now depends on `QueryBuilderInterface` (Dependency Inversion Principle)
 - **build:** Updated PHP from version 8.4.11 to 8.4.14
+- **build:** Updated ElasticSearch from version 8.17.1 to 8.17.10
+- **build:** Updated Kibana from version 8.17.1 to 8.17.10
 - **build(deps):** Updated Composer dependencies to latest compatible versions
 
 ### Fixed
