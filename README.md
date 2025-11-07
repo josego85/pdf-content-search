@@ -10,7 +10,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-22.x-339933.svg)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-27.5.1-2496ED.svg)](https://www.docker.com/)
-[![PHP-CS-Fixer](https://img.shields.io/badge/PHP--CS--Fixer-3.49-yellow.svg)](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer)
+[![PHP-CS-Fixer](https://img.shields.io/badge/PHP--CS--Fixer-3.89.2-yellow.svg)](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 A Symfony application to search content within PDF files using Elasticsearch and Vue.js.
