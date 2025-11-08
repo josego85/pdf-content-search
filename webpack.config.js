@@ -86,7 +86,7 @@ Encore.configureDefinePlugin(options => {
 Encore.copyFiles({
     from: './node_modules/pdfjs-dist/build',
     to: '[name].[ext]',
-    pattern: /pdf\.worker(\.js|\.map)?$/
+    pattern: /pdf\.worker\.(mjs|js|map)$/
 });
 
 module.exports = Encore.getWebpackConfig();

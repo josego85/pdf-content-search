@@ -4,18 +4,25 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Contract\QueryBuilderInterface;
 use App\Contract\SearchEngineInterface;
+use App\Search\SearchStrategy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Search controller.
+ * Single Responsibility: Handle HTTP requests for search operations.
+ * Dependency Inversion: Depends on QueryBuilderInterface, not concrete implementation.
+ */
 final class SearchController extends AbstractController
 {
     public function __construct(
         private readonly SearchEngineInterface $searchEngine,
-        private readonly string $pdfPagesIndex
+        private readonly QueryBuilderInterface $queryBuilder
     ) {
     }
 
@@ -32,29 +39,14 @@ final class SearchController extends AbstractController
                 ], Response::HTTP_BAD_REQUEST);
             }
 
-            $searchParams = [
-                'index' => $this->pdfPagesIndex,
-                'body' => [
-                    'query' => [
-                        'multi_match' => [
-                            'query' => $query,
-                            'fields' => ['title^2', 'text'],
-                            'fuzziness' => 'AUTO',
-                        ],
-                    ],
-                    'highlight' => [
-                        'fields' => [
-                            'text' => [
-                                'fragment_size' => 150,
-                                'number_of_fragments' => 3,
-                                'pre_tags' => ['<mark>'],
-                                'post_tags' => ['</mark>'],
-                            ],
-                        ],
-                    ],
-                ],
-            ];
+            // Get strategy from request (defaults to HYBRID)
+            $strategyParam = $request->query->get('strategy', 'hybrid');
+            $strategy = SearchStrategy::tryFrom($strategyParam) ?? SearchStrategy::HYBRID;
 
+            // Build query using builder pattern
+            $searchParams = $this->queryBuilder->build($query, $strategy);
+
+            // Execute search
             $results = $this->searchEngine->search($searchParams);
 
             return new JsonResponse([

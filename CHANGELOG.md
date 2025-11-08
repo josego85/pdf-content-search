@@ -5,6 +5,79 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-11-08
+
+### Added
+- **PDF Highlighting System**:
+  - Intelligent hybrid word boundary detection for accurate highlighting
+  - Automatic detection of malformed PDF text layers (words without spaces)
+  - Context-aware matching: strict word boundaries for normal text, permissive for malformed PDFs
+  - Support for special characters in word boundaries (bullets, em-dashes, etc.)
+  - Position mapping system for precise character-level highlighting across normalized and original text
+- **Search Architecture (SOLID)**:
+  - `QueryBuilderInterface` contract for search engine abstraction
+  - `SearchStrategy` enum (HYBRID, EXACT, PREFIX) for configurable search behavior
+  - `QueryParser` service for advanced search operators (`"quotes"`, `+required`, `-exclude`)
+  - `SearchQueryBuilder` with intelligent hybrid search: exact matches prioritized, fuzzy only for 5+ char words
+- **Docker Infrastructure**:
+  - Multi-stage Docker setup (development and production)
+  - Alpine-based images for 71% size reduction (525MB dev, ~250MB prod vs 1.82GB)
+  - Separate Dockerfiles for dev and prod environments
+  - `.dockerignore` for optimized builds
+  - Comprehensive Docker documentation in `docs/docker.md`
+
+### Changed
+- **PDF.js Upgrade**:
+  - Upgraded PDF.js from v2.16.105 (2022) to v5.4.394 (2025)
+  - Migrated to modern PDF.js v5 API (`TextLayer` class instead of `TextLayerBuilder`)
+  - Updated webpack configuration to copy `.mjs` worker files for PDF.js v5
+  - Improved text layer rendering with better spacing and positioning
+- **PDF Highlighting**:
+  - Refactored highlighting algorithm to mark all occurrences (previously only first occurrence)
+  - Implemented word boundary validation to prevent false matches (e.g., "java" in "javascript")
+  - Uses ultra-minimal CSS with `all: unset` to prevent text duplication
+  - Highlight color changed to soft yellow (#fef3c7) matching search results preview
+  - Text rendered on canvas with transparent text layer overlay for clean highlighting
+  - Removed debugging console.log statements for production-ready code
+- **Search Logic**:
+  - Refactored search to prioritize exact matches (10x boost), then word matches (5x), then fuzzy (1x)
+  - Fixes issue where "jos" incorrectly matched "job" - now only exact or close matches
+  - `SearchController` now depends on `QueryBuilderInterface` (Dependency Inversion Principle)
+- **Docker Configuration**:
+  - Migrated from Debian to Alpine Linux base images
+  - Reorganized Docker files: `.docker/dev/` and `.docker/prod/` structure
+  - Renamed `compose.yaml` to `docker-compose.yml` (production base)
+  - `docker-compose.override.yml` auto-loaded for development
+  - Apache and PHP configs moved to `.docker/dev/` subdirectories
+- **Documentation**:
+  - Moved Docker documentation from README to `docs/docker.md`
+  - Simplified README with link to detailed Docker docs
+- **build:** Updated PHP from version 8.4.11 to 8.4.14
+- **build:** Updated ElasticSearch from version 8.17.1 to 8.17.10
+- **build:** Updated Kibana from version 8.17.1 to 8.17.10
+- **build(deps):** Updated Composer dependencies to latest compatible versions
+- **build(deps):** Updated npm dependencies:
+  - Vue.js from 3.5.13 to 3.5.24
+  - @vue/compiler-sfc from 3.5.13 to 3.5.24
+  - postcss from 8.5.3 to 8.5.6
+  - Fixed dependency versions (removed ^ ranges) for reproducible builds
+  - Fixed 2 low severity npm vulnerabilities (brace-expansion, tmp)
+
+### Removed
+- Root `Dockerfile` in favor of organized `.docker/dev/` and `.docker/prod/` structure
+- `compose.override.yaml` replaced by `docker-compose.override.yml`
+- Makefile commands (using standard `docker-compose` commands)
+
+### Fixed
+- **PDF Highlighting Issues**:
+  - Fixed text duplication/overlapping in PDF viewer caused by visible text in both canvas and text layer
+  - Corrected word boundary detection to properly skip compound words like "javascript" when searching "java"
+  - Fixed highlighting to find all occurrences instead of just the first one per span
+  - Resolved issues with highlighting words containing accents (e.g., "José" when searching "jose")
+  - Fixed text layer dimensions to match viewport size in PDF.js v5
+- Elasticsearch single-node configuration (`cluster.routing.allocation.disk.threshold_enabled=false`)
+- `ElasticsearchService::deleteIndex()` now checks index existence before deletion
+
 ## [1.3.1] - 2025-08-05
 
 ### Added

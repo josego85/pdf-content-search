@@ -1,0 +1,57 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+docker-compose*.yml
+.dockerignore
+.docker/dev
+.docker/prod
+.docker/apache
+.docker/php.ini
+
+# Documentation
+docs/
+README.md
+CHANGELOG.md
+TODO.md
+LICENSE
+*.md
+
+# IDE & Editor
+.vscode
+.idea
+*.sublime-*
+.editorconfig
+
+# Dependencies (will be installed in container)
+node_modules
+vendor
+
+# Build artifacts
+var/cache/*
+var/log/*
+var/sessions/*
+.build
+public/build
+
+# Tests
+tests
+phpunit.xml.dist
+.php-cs-fixer.cache
+.php-cs-fixer.dist.php
+
+# Environment
+.env
+.env.*
+!.env.test
+
+# NPM
+.npm
+.husky
+
+# Misc
+*.log
+.DS_Store
+Thumbs.db

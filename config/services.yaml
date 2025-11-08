@@ -32,6 +32,12 @@ services:
     App\Contract\SearchEngineInterface: '@App\Service\ElasticsearchService'
     App\Contract\PdfIndexerInterface: '@App\Service\ElasticsearchService'
 
-    App\Controller\SearchController:
+    # Search services - SOLID architecture
+    App\Search\QueryParser: ~
+
+    App\Search\SearchQueryBuilder:
         arguments:
             $pdfPagesIndex: '%elasticsearch.index_pdfs%'
+
+    # Bind interface to implementation (Dependency Inversion Principle)
+    App\Contract\QueryBuilderInterface: '@App\Search\SearchQueryBuilder'
