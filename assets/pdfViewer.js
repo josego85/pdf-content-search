@@ -28,7 +28,6 @@ const highlightTerms = JSON.parse(decodeURIComponent(window.highlight || '[]'))
     .map(term => normalize(term))
     .filter(term => term.length > 0);
 
-console.log('🔍 Terms to highlight:', highlightTerms);
 const pdfPath = `/pdfs/${window.pdfPath}`;
 const pageNumber = parseInt(window.pageNumber || '1', 10);
 
@@ -100,8 +99,6 @@ pdfjsLib.getDocument(pdfPath).promise
                 });
 
                 const normalizedFullText = positionMap.map(p => p.char).join('');
-                console.log('📄 Normalized full text (first 200 chars):', normalizedFullText.substring(0, 200));
-                console.log('📏 Total text length:', normalizedFullText.length);
 
                 // Step 1: Collect all matches first (don't modify spans yet)
                 const allMatches = [];
@@ -141,7 +138,6 @@ pdfjsLib.getDocument(pdfPath).promise
                             // Don't match it even in hybrid mode
                             if (spaceRatio >= 0.15) {
                                 isHybridMatch = false;
-                                console.log(`⚠️ Skipped "${term}" at ${index} (compound word in normal text, space ratio: ${(spaceRatio * 100).toFixed(1)}%)`);
                             } else {
                                 // Low space ratio (<15%) indicates malformed PDF
                                 // But still check: if EITHER side has letters, it might be part of compound word
@@ -156,24 +152,19 @@ pdfjsLib.getDocument(pdfPath).promise
                                 } else if (beforeIsAlpha && term.length < 8) {
                                     // Also skip if before-side has letters (e.g., "script" in "javascript◦")
                                     isHybridMatch = false;
-                                    console.log(`⚠️ Skipped "${term}" at ${index} (likely part of compound word, starts with "...${beforeChar}")`);
                                 } else {
                                     // Malformed PDF text - accept the match
                                     isHybridMatch = true;
-                                    console.log(`🔧 Hybrid match for "${term}" at ${index} (malformed PDF text detected, space ratio: ${(spaceRatio * 100).toFixed(1)}%)`);
                                 }
                             }
                         }
 
                         if (!isValidMatch && !isHybridMatch) {
-                            console.log(`⚠️ Skipped "${term}" at position ${index} (not a complete word, context: "${normalizedFullText.substring(Math.max(0, index - 5), index + term.length + 5)}")`);
                             startIndex = index + 1;
                             continue;
                         }
 
                         foundCount++;
-                        const matchType = isHybridMatch ? 'hybrid' : 'exact';
-                        console.log(`✅ Found "${term}" at position ${index} (occurrence #${foundCount}, ${matchType}), context: "${normalizedFullText.substring(Math.max(0, index - 10), index + term.length + 10)}"`);
                         allMatches.push({
                             startPos: index,
                             endPos: index + term.length - 1
@@ -181,8 +172,6 @@ pdfjsLib.getDocument(pdfPath).promise
 
                         startIndex = index + 1;
                     }
-
-                    console.log(`🔢 Total valid occurrences of "${term}": ${foundCount}`);
                 });
 
                 // Step 2: Group matches by span and apply all highlights at once
@@ -263,8 +252,6 @@ pdfjsLib.getDocument(pdfPath).promise
 
                     span.innerHTML = html;
                 });
-
-                console.log('✨ Total matches highlighted:', totalHits);
             }, 300);
         });
     })

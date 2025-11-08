@@ -1,12 +1,12 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.3.1-blue.svg)](https://github.com/yourusername/pdf-content-search)
+[![Version](https://img.shields.io/badge/Version-1.4.0-blue.svg)](https://github.com/yourusername/pdf-content-search)
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.14-blue.svg)](https://www.php.net/)
 [![Symfony Version](https://img.shields.io/badge/Symfony-7.3.6-green.svg)](https://symfony.com/)
 [![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.17.10-005571.svg)](https://www.elastic.co/)
 [![Kibana](https://img.shields.io/badge/Kibana-8.17.10-005571.svg)](https://www.elastic.co/kibana/)
-[![Vue.js](https://img.shields.io/badge/Vue.js-3.5.x-brightgreen.svg)](https://vuejs.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.x-38bdf8.svg)](https://tailwindcss.com/)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3.5.24-brightgreen.svg)](https://vuejs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.17-38bdf8.svg)](https://tailwindcss.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-22.x-339933.svg)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-27.5.1-2496ED.svg)](https://www.docker.com/)
@@ -36,13 +36,17 @@ A Symfony application to search content within PDF files using Elasticsearch and
 ## Features
 - 📄 Page-Level PDF Search
 - 🔍 Real-time Search Results
-- 🎯 Content Highlighting (Exact matches only)
+- 🎯 Intelligent Content Highlighting
+  - Smart word boundary detection (avoids "java" in "javascript")
+  - Support for accented characters (finds "José" when searching "jose")
+  - Handles malformed PDF text layers automatically
+  - Highlights all occurrences on the page
 - 📊 Relevance Scoring
 - 📱 Responsive Design
 - 🚀 Fast Elasticsearch Backend
 - 🔄 Automatic PDF Processing
 - 📋 Page Context Display
-- 🔗 Direct PDF Page Links
+- 🔗 Direct PDF Page Links with In-Page Highlighting
 - 📈 Search Analytics via Kibana
 
 ## Description
@@ -53,8 +57,9 @@ This application allows users to search for content within PDF files using Elast
 - Symfony 7.3.2
 - Elasticsearch 8.17.10
 - Kibana 8.17.10
-- Vue.js 3.5.x
-- Tailwind CSS 3.4.x
+- Vue.js 3.5.24
+- PDF.js 5.4.394
+- Tailwind CSS 3.4.17
 - Docker 27.5.1 & Docker Compose
 - Node.js 22.x
 - PostgreSQL 16
@@ -138,9 +143,13 @@ docker compose exec php bin/console app:index-pdfs
 3. Results will show:
    - PDF filename
    - Page number
-   - Content context
-   - Highlighted matches
+   - Content context with highlighted matches
    - Direct link to PDF page
+4. Click on "View PDF at this page" to see the PDF with:
+   - All matching words highlighted in yellow
+   - Smart highlighting that respects word boundaries
+   - Support for accented and special characters
+   - Automatic handling of malformed PDF text layers
 
 ## Development
 1. Start development environment:

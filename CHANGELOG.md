@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.4.0] - 2025-11-08
 
 ### Added
 - **PDF Highlighting System**:
@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Uses ultra-minimal CSS with `all: unset` to prevent text duplication
   - Highlight color changed to soft yellow (#fef3c7) matching search results preview
   - Text rendered on canvas with transparent text layer overlay for clean highlighting
+  - Removed debugging console.log statements for production-ready code
 - **Search Logic**:
   - Refactored search to prioritize exact matches (10x boost), then word matches (5x), then fuzzy (1x)
   - Fixes issue where "jos" incorrectly matched "job" - now only exact or close matches
@@ -55,6 +56,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **build:** Updated ElasticSearch from version 8.17.1 to 8.17.10
 - **build:** Updated Kibana from version 8.17.1 to 8.17.10
 - **build(deps):** Updated Composer dependencies to latest compatible versions
+- **build(deps):** Updated npm dependencies:
+  - Vue.js from 3.5.13 to 3.5.24
+  - @vue/compiler-sfc from 3.5.13 to 3.5.24
+  - postcss from 8.5.3 to 8.5.6
+  - Fixed dependency versions (removed ^ ranges) for reproducible builds
+  - Fixed 2 low severity npm vulnerabilities (brace-expansion, tmp)
 
 ### Removed
 - Root `Dockerfile` in favor of organized `.docker/dev/` and `.docker/prod/` structure
