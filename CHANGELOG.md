@@ -13,16 +13,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `SearchStrategy` enum (HYBRID, EXACT, PREFIX) for configurable search behavior
   - `QueryParser` service for advanced search operators (`"quotes"`, `+required`, `-exclude`)
   - `SearchQueryBuilder` with intelligent hybrid search: exact matches prioritized, fuzzy only for 5+ char words
+- **Docker Infrastructure**:
+  - Multi-stage Docker setup (development and production)
+  - Alpine-based images for 71% size reduction (525MB dev, ~250MB prod vs 1.82GB)
+  - Separate Dockerfiles for dev and prod environments
+  - `.dockerignore` for optimized builds
+  - Comprehensive Docker documentation in `docs/docker.md`
 
 ### Changed
 - **Search Logic**:
   - Refactored search to prioritize exact matches (10x boost), then word matches (5x), then fuzzy (1x)
   - Fixes issue where "jos" incorrectly matched "job" - now only exact or close matches
   - `SearchController` now depends on `QueryBuilderInterface` (Dependency Inversion Principle)
+- **Docker Configuration**:
+  - Migrated from Debian to Alpine Linux base images
+  - Reorganized Docker files: `.docker/dev/` and `.docker/prod/` structure
+  - Renamed `compose.yaml` to `docker-compose.yml` (production base)
+  - `docker-compose.override.yml` auto-loaded for development
+  - Apache and PHP configs moved to `.docker/dev/` subdirectories
+- **Documentation**:
+  - Moved Docker documentation from README to `docs/docker.md`
+  - Simplified README with link to detailed Docker docs
 - **build:** Updated PHP from version 8.4.11 to 8.4.14
 - **build:** Updated ElasticSearch from version 8.17.1 to 8.17.10
 - **build:** Updated Kibana from version 8.17.1 to 8.17.10
 - **build(deps):** Updated Composer dependencies to latest compatible versions
+
+### Removed
+- Root `Dockerfile` in favor of organized `.docker/dev/` and `.docker/prod/` structure
+- `compose.override.yaml` replaced by `docker-compose.override.yml`
+- Makefile commands (using standard `docker-compose` commands)
 
 ### Fixed
 - Elasticsearch single-node configuration (`cluster.routing.allocation.disk.threshold_enabled=false`)

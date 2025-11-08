@@ -92,21 +92,14 @@ npm run dev
 ```
 
 ## Docker Setup
-1. Build and start the containers:
+
+**Quick Start:**
 ```bash
-docker compose up -d --build
+docker-compose build
+docker-compose up -d
 ```
 
-2. Verify containers are running:
-```bash
-docker compose ps
-```
-
-3. Access services:
-- Application: http://localhost
-- Elasticsearch: http://localhost:9200
-- Kibana: http://localhost:5601
-- PostgreSQL: localhost:5432
+For detailed Docker documentation, configuration, and production setup, see **[docs/docker.md](docs/docker.md)**.
 
 ## Configuration
 ### Environment Variables
@@ -121,12 +114,10 @@ POSTGRES_VERSION=16
 ELASTICSEARCH_HOST=http://elasticsearch:9200
 ```
 
-### Docker Services
-- `apache`: HTTP Server (2.4)
-- `php`: PHP-FPM 8.4.14
-- `elasticsearch`: Search Engine (8.17.10)
-- `kibana`: Analytics Dashboard (8.17.10)
-- `database`: PostgreSQL 16
+### Services
+- Application: http://localhost
+- Elasticsearch: http://localhost:9200
+- Kibana: http://localhost:5601
 
 ## PDF Management
 1. Create PDF directories:

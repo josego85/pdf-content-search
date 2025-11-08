@@ -1,0 +1,44 @@
+# ============================================
+# Base Docker Compose - Production
+# Development override in docker-compose.override.yml
+# ============================================
+services:
+  apache:
+    image: httpd:2.4-alpine
+    volumes:
+      # Read-only in production, no source mount
+      - app_data:/var/www/html:ro
+      - ./.docker/dev/apache/apache.conf:/usr/local/apache2/conf/httpd.conf:ro
+      - ./.docker/dev/apache/vhost.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf:ro
+    restart: unless-stopped
+
+  php:
+    build:
+      context: .
+      dockerfile: .docker/prod/app/Dockerfile
+    volumes:
+      # Use named volume, not source mount
+      - app_data:/var/www/html
+      - ./.docker/dev/php/php.ini:/usr/local/etc/php/php.ini:ro
+    environment:
+      - APP_ENV=prod
+      - APP_DEBUG=0
+      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+    restart: unless-stopped
+
+  database:
+    restart: unless-stopped
+
+  elasticsearch:
+    ports: []  # Don't expose in production
+    environment:
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m  # Less memory in prod
+    restart: unless-stopped
+
+  kibana:
+    ports: []  # Don't expose in production
+    restart: unless-stopped
+
+volumes:
+  app_data:
+    driver: local
