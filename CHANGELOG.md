@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **PDF Highlighting System**:
+  - Intelligent hybrid word boundary detection for accurate highlighting
+  - Automatic detection of malformed PDF text layers (words without spaces)
+  - Context-aware matching: strict word boundaries for normal text, permissive for malformed PDFs
+  - Support for special characters in word boundaries (bullets, em-dashes, etc.)
+  - Position mapping system for precise character-level highlighting across normalized and original text
 - **Search Architecture (SOLID)**:
   - `QueryBuilderInterface` contract for search engine abstraction
   - `SearchStrategy` enum (HYBRID, EXACT, PREFIX) for configurable search behavior
@@ -21,6 +27,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive Docker documentation in `docs/docker.md`
 
 ### Changed
+- **PDF.js Upgrade**:
+  - Upgraded PDF.js from v2.16.105 (2022) to v5.4.394 (2025)
+  - Migrated to modern PDF.js v5 API (`TextLayer` class instead of `TextLayerBuilder`)
+  - Updated webpack configuration to copy `.mjs` worker files for PDF.js v5
+  - Improved text layer rendering with better spacing and positioning
+- **PDF Highlighting**:
+  - Refactored highlighting algorithm to mark all occurrences (previously only first occurrence)
+  - Implemented word boundary validation to prevent false matches (e.g., "java" in "javascript")
+  - Uses ultra-minimal CSS with `all: unset` to prevent text duplication
+  - Highlight color changed to soft yellow (#fef3c7) matching search results preview
+  - Text rendered on canvas with transparent text layer overlay for clean highlighting
 - **Search Logic**:
   - Refactored search to prioritize exact matches (10x boost), then word matches (5x), then fuzzy (1x)
   - Fixes issue where "jos" incorrectly matched "job" - now only exact or close matches
@@ -45,6 +62,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Makefile commands (using standard `docker-compose` commands)
 
 ### Fixed
+- **PDF Highlighting Issues**:
+  - Fixed text duplication/overlapping in PDF viewer caused by visible text in both canvas and text layer
+  - Corrected word boundary detection to properly skip compound words like "javascript" when searching "java"
+  - Fixed highlighting to find all occurrences instead of just the first one per span
+  - Resolved issues with highlighting words containing accents (e.g., "José" when searching "jose")
+  - Fixed text layer dimensions to match viewport size in PDF.js v5
 - Elasticsearch single-node configuration (`cluster.routing.allocation.disk.threshold_enabled=false`)
 - `ElasticsearchService::deleteIndex()` now checks index existence before deletion
 

@@ -10,7 +10,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "pdfjs-dist": "^2.16.105",
+    "pdfjs-dist": "5.4.394",
     "vue": "^3.5.13"
   },
   "devDependencies": {

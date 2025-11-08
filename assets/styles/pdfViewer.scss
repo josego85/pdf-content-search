@@ -2,24 +2,28 @@
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    color: transparent;
+    overflow: hidden;
     line-height: 1;
     white-space: pre;
     pointer-events: none;
 }
 
 .textLayer span {
-    color: black;
     position: absolute;
     white-space: pre;
-    transform-origin: 0 0;
+    transform-origin: 0% 0%;
+    /* PDF.js v5 renders text on canvas - keep transparent */
+    color: transparent !important;
 }
 
 .textLayer mark {
-    background-color: yellow;
-    color: black;
-    padding: 0 2px;
-    border-radius: 2px;
+    /* Yellow highlight background */
+    background-color: #fef3c7;
+    /* CRITICAL: Must be transparent - text is on canvas */
+    color: transparent !important;
+    /* Zero spacing - inherit everything from parent */
+    all: unset;
+    background-color: #fef3c7;
+    /* Ensure it's inline and doesn't break layout */
+    display: inline;
 }
