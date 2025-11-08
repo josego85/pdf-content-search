@@ -1,5 +1,5 @@
 <template>
-  <div :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : 'space-y-4'">
+  <div :class="viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6' : 'space-y-3 sm:space-y-4'">
     <ResultCard
       v-for="(result, index) in results"
       :key="result?._id || index"
