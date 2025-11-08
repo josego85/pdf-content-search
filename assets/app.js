@@ -2,12 +2,9 @@ import './styles/app.css';
 import './styles/pdfViewer.scss';
 
 import { createApp } from 'vue';
-import SearchComponent from './components/SearchComponent.vue';
+import Search from './components/search/Search.vue';
 
-const app = createApp({
-    components: {
-        'search-component': SearchComponent
-    }
-});
+// Mount Search component directly (required for runtime-only build)
+const app = createApp(Search);
 
 app.mount('#app');

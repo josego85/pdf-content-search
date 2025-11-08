@@ -23,7 +23,10 @@ Encore
     .addEntry('app', './assets/app.js')
     .addEntry('pdfViewer', './assets/pdfViewer.js')
 
-    .enableVueLoader(() => { }, { version: 3 })
+    .enableVueLoader(() => { }, {
+        version: 3,
+        runtimeCompilerBuild: false  // Runtime-only build for smaller bundle size (~33KB reduction)
+    })
 
     .enablePostCssLoader()
 

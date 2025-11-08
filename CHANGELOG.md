@@ -5,6 +5,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-11-08
+
+### Added
+- **Professional Search UI**:
+  - Modern gradient background design (gray-50 → blue-50 → gray-100)
+  - Hero section with centered icon and professional typography
+  - Enhanced search box with keyboard shortcuts (/ to focus, ESC to clear)
+  - Search performance metrics display (result count and duration in ms)
+  - Grid/List view toggle for search results
+  - Favorites system with localStorage persistence
+  - Professional loading states with dual-ring spinner
+  - Improved empty states with actionable suggestions
+  - Initial state showing feature benefits (Lightning Fast, Smart Highlighting, In-Page Highlighting)
+
+### Changed
+- **Comprehensive Responsive Design Implementation**:
+  - **CRITICAL FIX**: Added viewport meta tag to `base.html.twig` (essential for proper mobile rendering)
+  - **Mobile-First Strategy**: Implemented progressive enhancement from mobile (320px) → tablet (640px+) → desktop (1024px+)
+  - **Responsive Breakpoints**:
+    - Mobile (default): 0-640px - Single column layout, compact UI, essential features
+    - Tablet (sm): 640px+ - Two column grid, medium spacing, expanded features
+    - Desktop (md/lg): 768px+ - Full feature set, maximum spacing, complete text labels
+  - **Touch Optimization**:
+    - All interactive elements meet 44x44px minimum touch target size
+    - Added `touch-manipulation` CSS for better mobile interaction
+    - Improved button and control sizes for tablet/mobile devices
+  - **Typography Scaling**:
+    - Hero title: `text-3xl` (mobile) → `sm:text-4xl` (tablet) → `md:text-5xl` (desktop)
+    - Search input: `py-3` (mobile) → `sm:py-4` (tablet) → `md:py-5` (desktop)
+    - All text elements scale progressively across breakpoints
+  - **Component-Specific Improvements**:
+    - **Search Container**: Responsive padding `px-4 sm:px-6 lg:px-8`, `py-6 sm:py-8 md:py-12`
+    - **Hero**: Scaled icons and text with horizontal padding to prevent clipping
+    - **Search Bar**: Optimized input padding, simplified placeholder for mobile, responsive clear button
+    - **Controls**: Conditional text display (hide verbose labels on mobile), responsive icons
+    - **Results Grid**: Smart breakpoints `grid-cols-1 sm:grid-cols-2`, progressive gap sizing
+    - **Result Cards**: Compact badges on mobile, icon-only "View PDF" button on small screens, improved text truncation
+    - **State Components**: All loading, empty, error, and initial states fully responsive
+  - **Layout Optimizations**:
+    - Progressive spacing: smaller margins/padding on mobile, larger on desktop
+    - Responsive border radius: `rounded-xl sm:rounded-2xl`
+    - Flexible grid layouts with proper breakpoint transitions
+  - **Accessibility Enhancements**:
+    - Added ARIA labels to all interactive buttons
+    - Improved semantic HTML with `lang="en"` attribute
+    - Better keyboard navigation support
+    - Enhanced screen reader compatibility
+  - **Technical Improvements**:
+    - Added `flex-shrink-0` to prevent unwanted layout collapse
+    - Used `break-words` for proper long text handling
+    - Implemented `min-w-0` for correct flexbox text truncation
+    - Replaced `space-x` with `gap` utilities for better mobile support
+    - All interactive states include `active:` pseudo-classes for touch feedback
+- **Modular Component Architecture (SOLID Principles)**:
+  - Refactored `SearchComponent.vue` (440 lines) into 9 specialized components
+  - Applied Single Responsibility Principle for better maintainability
+  - Component structure: `search/Search.vue` with `Hero`, `Bar`, `Controls`, `Results`, `ResultCard`, and 4 state components
+- **Vue.js Optimization**:
+  - Enabled runtime-only build (~33KB bundle size reduction)
+  - Updated `webpack.config.js` with `runtimeCompilerBuild: false`
+  - Migrated from DOM template compilation to direct component mounting
+  - Simplified `templates/search.html.twig` (removed `<search-component>` tag)
+- **Component Naming Convention**:
+  - Adopted Vue 3 Style Guide enterprise conventions
+  - Path-based naming: components named by context, not redundant prefixes
+  - Cleaner imports: `import Hero from './Hero.vue'` vs `import SearchHero from './SearchHero.vue'`
+
+### Removed
+- Monolithic `SearchComponent.vue` replaced by modular architecture
+
 ## [1.4.0] - 2025-11-08
 
 ### Added
