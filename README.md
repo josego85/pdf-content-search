@@ -54,7 +54,7 @@ This application allows users to search for content within PDF files using Elast
 
 ## Technologies
 - PHP 8.4.14
-- Symfony 7.3.2
+- Symfony 7.3.6
 - Elasticsearch 8.17.10
 - Kibana 8.17.10
 - Vue.js 3.5.24
