@@ -56,19 +56,25 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy application files first (so .docker/ directory is available)
-COPY . .
-
-# Copy PHP configuration files (now .docker/ is in build context)
+# Copy PHP configuration files first (specific files only)
 COPY .docker/dev/php/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY .docker/dev/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
-# Install PHP dependencies (skip scripts first, run them after)
+# Copy dependency manifests first (for better layer caching)
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies (will be cached unless composer.json/lock changes)
 RUN composer install --prefer-dist --no-interaction --no-scripts \
     && composer dump-autoload --optimize
 
-# Install Node dependencies
+# Copy Node dependency manifests
+COPY package.json package-lock.json ./
+
+# Install Node dependencies (will be cached unless package.json/lock changes)
 RUN npm install --ignore-scripts
+
+# Copy application files (this layer only rebuilds when code changes)
+COPY . .
 
 # Set permissions
 RUN mkdir -p var/cache var/log var/sessions public/pdfs \
