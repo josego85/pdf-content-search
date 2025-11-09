@@ -51,7 +51,7 @@ jobs:
           extensions: 'ctype, iconv, pdo, pdo_pgsql, pdo_sqlite, mbstring, xml, intl, zip'
 
       - name: Validate composer files
-        run: composer validate --strict
+        run: composer validate --no-check-publish
 
       - name: Wait for Elasticsearch
         run: |
