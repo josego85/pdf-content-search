@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `actions/cache@v4.2.0` → SHA `1bd1e32a3bdc45362d1e726936510720a7c30a57`
   - `actions/setup-node@v4.0.3` → SHA `1e60f620b9541d16bece96c5465dc8ee9832be0b` (corrected from invalid SHA)
   - `actions/upload-artifact@v4.4.0` → SHA `50769540e7f4bd5e21e526ee35c689e35e0d6874` (corrected from invalid SHA)
-  - `github/codeql-action/*@v3.27.9` → SHA `f09c1c0a94de965c15400f5634aa42fac8fb8f88`
+  - `github/codeql-action/*@v4.31.0` → SHA `4e94bd11f71e507f7f87df81788dff88d1dacbfb`
   - `actions/dependency-review-action@v4.5.0` → SHA `4081b87be9a7a6fe33bf4aef766c4b6d5c28e7db`
   - Comments with version tags maintained for reference and easier updates
 
