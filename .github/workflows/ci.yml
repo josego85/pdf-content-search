@@ -19,6 +19,7 @@ jobs:
   php-tests:
     name: PHP Tests (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
+    if: false  # Temporarily disabled - no tests implemented yet
 
     strategy:
       fail-fast: false
