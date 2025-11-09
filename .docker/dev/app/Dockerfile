@@ -23,8 +23,9 @@ RUN apk add --no-cache \
     vim \
     unzip
 
-# Install PHP extensions
+# Install PHP extensions + Xdebug (in single layer for build deps)
 RUN apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS \
     postgresql-dev \
     libpng-dev \
     libjpeg-turbo-dev \
@@ -42,14 +43,9 @@ RUN apk add --no-cache --virtual .build-deps \
         pcntl \
         bcmath \
         gd \
-    && apk del .build-deps
-
-# Install Xdebug for code coverage (development only)
-# Version 3.4.0 is compatible with PHP 8.4
-RUN apk add --no-cache --virtual .xdebug-deps $PHPIZE_DEPS \
     && pecl install xdebug-3.4.0 \
     && docker-php-ext-enable xdebug \
-    && apk del .xdebug-deps
+    && apk del .build-deps
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
