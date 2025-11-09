@@ -5,6 +5,80 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Comprehensive CI/CD Pipeline**:
+  - **CI Workflow**: Automated testing, code style checks, and frontend build validation
+    - PHPUnit tests for PHP 8.4
+    - PHP-CS-Fixer code style validation
+    - Frontend asset build verification
+    - Composer dependency caching for faster builds
+    - npm caching for optimized workflow performance
+  - **CodeQL Security Analysis**: Automated static code analysis for JavaScript/TypeScript
+    - Scheduled weekly security scans every Monday at 6:00 AM UTC
+    - Runs on push to main/develop branches and pull requests
+    - Security vulnerability detection for JavaScript codebase
+  - **Security Audit Workflow**: Comprehensive dependency vulnerability scanning
+    - npm audit for JavaScript dependencies (moderate severity threshold)
+    - Composer audit for PHP dependencies
+    - Dependency Review action for pull requests
+    - Daily scheduled security audits at 2:00 AM UTC
+    - Audit reports uploaded as artifacts with 30-day retention
+    - Manual trigger capability via workflow_dispatch
+  - **Dependabot Configuration**: Automated dependency updates
+    - Weekly updates for Composer (PHP) dependencies every Monday
+    - Weekly updates for npm (JavaScript) dependencies every Monday
+    - Weekly updates for GitHub Actions
+    - Docker base image updates
+    - Grouped updates for Symfony, Babel, and Webpack ecosystems
+    - Intelligent major version ignoring for critical packages (Vue.js, Webpack)
+    - Automatic PR creation with proper labels and conventional commit messages
+  - **CI/CD Badges**: Added workflow status badges to README
+    - CI build status
+    - CodeQL security analysis status
+    - Security audit status
+- **Composite Actions for Code Reusability**:
+  - **setup-php-project**: Reusable action for PHP project setup
+    - Configures PHP with specified version and extensions
+    - Implements Composer dependency caching
+    - Installs dependencies automatically
+    - Supports customization via inputs (php-version, extensions, tools)
+  - **setup-node-project**: Reusable action for Node.js project setup
+    - Configures Node.js with specified version
+    - Implements npm caching automatically
+    - Installs dependencies with npm ci
+    - Supports customization via inputs (node-version)
+
+### Changed
+- **Workflow Triggers**: Enhanced workflow execution triggers to run on feature branches
+  - All workflows now trigger on `main`, `develop`, `feature/**`, and `claude/**` branches
+  - Enables CI/CD testing during feature development before PR creation
+  - Maintains PR-based triggers for main/develop branches
+  - Improves feedback loop for developers working on feature branches
+- **PHP Tests Job**: Temporarily disabled in CI workflow
+  - Job configured but not executed (`if: false`)
+  - Easy to re-enable when tests are implemented
+  - Code style and frontend build checks remain active
+- **Workflow Architecture Refactoring**: Major DRY improvements
+  - Eliminated ~60% code duplication across workflows
+  - Reduced workflow complexity from 250 to ~150 lines total
+  - Centralized PHP/Node.js setup logic in composite actions
+  - Single source of truth for dependency management
+  - Easier maintenance: Update SHA in one place vs seven places
+  - Improved readability: Focus on business logic vs boilerplate
+
+### Security
+- **Pinned GitHub Actions to SHA**: All workflow actions now use commit SHA instead of tags for supply chain attack prevention
+  - `actions/checkout@v5.0.0` → SHA `71cf2267d89c5cb81562390fa70a37fa40b1305e`
+  - `shivammathur/setup-php@v2.31.1` → SHA `c541c155eee45413f5b09a52248675b1a2575231`
+  - `actions/cache@v4.2.0` → SHA `1bd1e32a3bdc45362d1e726936510720a7c30a57`
+  - `actions/setup-node@v4.0.3` → SHA `1e60f620b9541d16bece96c5465dc8ee9832be0b`
+  - `actions/upload-artifact@v5.0.0` → SHA `330a01c490aca151604b8cf639adc76d48f6c5d4`
+  - `github/codeql-action/*@v4.31.2` → SHA `0499de31b99561a6d14a36a5f662c2a54f91beee`
+  - `actions/dependency-review-action@v4.8.1` → SHA `40c09b7dc99638e5ddb0bfd91c1673effc064d8a`
+  - Comments with version tags maintained for reference and easier updates
+
 ## [1.5.0] - 2025-11-08
 
 ### Added

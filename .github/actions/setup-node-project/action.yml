@@ -1,0 +1,27 @@
+name: 'Setup Node.js Project'
+description: 'Setup Node.js with npm caching and dependency installation'
+author: 'PDF Content Search Team'
+
+inputs:
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '22'
+  install-dependencies:
+    description: 'Whether to run npm ci'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
+
+    - name: Install npm dependencies
+      if: inputs.install-dependencies == 'true'
+      shell: bash
+      run: npm ci
