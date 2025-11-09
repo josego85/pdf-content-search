@@ -70,22 +70,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - **Pinned GitHub Actions to SHA**: All workflow actions now use commit SHA instead of tags for supply chain attack prevention
-  - `actions/checkout@v5.0.0` → SHA `ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493`
+  - `actions/checkout@v5.0.0` → SHA `71cf2267d89c5cb81562390fa70a37fa40b1305e`
   - `shivammathur/setup-php@v2.31.1` → SHA `c541c155eee45413f5b09a52248675b1a2575231`
   - `actions/cache@v4.2.0` → SHA `1bd1e32a3bdc45362d1e726936510720a7c30a57`
-  - `actions/setup-node@v4.0.3` → SHA `1e60f620b9541d16bece96c5465dc8ee9832be0b` (corrected from invalid SHA)
-  - `actions/upload-artifact@v4.4.0` → SHA `50769540e7f4bd5e21e526ee35c689e35e0d6874` (corrected from invalid SHA)
-  - `github/codeql-action/*@v4.31.0` → SHA `4e94bd11f71e507f7f87df81788dff88d1dacbfb`
+  - `actions/setup-node@v4.0.3` → SHA `1e60f620b9541d16bece96c5465dc8ee9832be0b`
+  - `actions/upload-artifact@v5.0.0` → SHA `330a01c490aca151604b8cf639adc76d48f6c5d4`
+  - `github/codeql-action/*@v4.31.2` → SHA `0499de31b99561a6d14a36a5f662c2a54f91beee`
   - `actions/dependency-review-action@v4.8.1` → SHA `40c09b7dc99638e5ddb0bfd91c1673effc064d8a`
   - Comments with version tags maintained for reference and easier updates
-
-### Fixed
-- **Invalid GitHub Action SHAs**: Corrected multiple invalid SHA references
-  - `actions/setup-node`: SHA `39370e3970a6d050c480ffad4ff0ed4d3fdee109` (v4.1.0) was invalid
-    - Updated to verified SHA `1e60f620b9541d16bece96c5465dc8ee9832be0b` (v4.0.3)
-  - `actions/upload-artifact`: SHA `ea165b0a5b72aea0dcaa07424c9dbcb8bb9e5a63` (v4.5.0) was invalid
-    - Updated to verified SHA `50769540e7f4bd5e21e526ee35c689e35e0d6874` (v4.4.0)
-  - Fixed action download errors in all workflows (CI, CodeQL, Security Audit)
 
 ## [1.5.0] - 2025-11-08
 
