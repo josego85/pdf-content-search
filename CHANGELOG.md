@@ -49,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - **Pinned GitHub Actions to SHA**: All workflow actions now use commit SHA instead of tags for supply chain attack prevention
   - `actions/checkout@v5.0.0` → SHA `ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493`
-  - `shivammathur/setup-php@v2.31.1` → SHA `e6f75134d35b9f8607a14e3c6e8c3e5a3e7cf8c7`
+  - `shivammathur/setup-php@v2.31.1` → SHA `c541c155eee45413f5b09a52248675b1a2575231`
   - `actions/cache@v4.2.0` → SHA `1bd1e32a3bdc45362d1e726936510720a7c30a57`
   - `actions/setup-node@v4.0.3` → SHA `1e60f620b9541d16bece96c5465dc8ee9832be0b` (corrected from invalid SHA)
   - `actions/upload-artifact@v4.4.0` → SHA `50769540e7f4bd5e21e526ee35c689e35e0d6874` (corrected from invalid SHA)
