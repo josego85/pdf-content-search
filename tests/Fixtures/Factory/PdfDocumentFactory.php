@@ -15,8 +15,11 @@ final class PdfDocumentFactory
     private const DEFAULT_CONTENT = 'Sample PDF content for testing search functionality.';
 
     private string $filename;
+
     private int $pageCount;
+
     private array $pageContents;
+
     private string $path;
 
     public function __construct()
@@ -33,33 +36,38 @@ final class PdfDocumentFactory
     {
         $this->filename = $filename;
         $this->path = '/pdfs/' . $filename;
+
         return $this;
     }
 
     public function withPageCount(int $pageCount): self
     {
         $this->pageCount = $pageCount;
+
         return $this;
     }
 
     public function withPageContent(int $page, string $content): self
     {
         $this->pageContents[$page] = $content;
+
         return $this;
     }
 
     public function withAllPagesContent(string $content): self
     {
         $this->pageContents = [];
-        for ($i = 1; $i <= $this->pageCount; $i++) {
+        for ($i = 1; $i <= $this->pageCount; ++$i) {
             $this->pageContents[$i] = $content . " (Page {$i})";
         }
+
         return $this;
     }
 
     public function withPath(string $path): self
     {
         $this->path = $path;
+
         return $this;
     }
 
@@ -96,14 +104,15 @@ final class PdfDocumentFactory
     public function buildAllPages(): array
     {
         $pages = [];
-        for ($i = 1; $i <= $this->pageCount; $i++) {
+        for ($i = 1; $i <= $this->pageCount; ++$i) {
             $pages[] = $this->buildPageDocument($i);
         }
+
         return $pages;
     }
 
     /**
-     * Creates a document with search-specific content
+     * Creates a document with search-specific content.
      */
     public static function createSearchable(): self
     {
@@ -116,7 +125,7 @@ final class PdfDocumentFactory
     }
 
     /**
-     * Creates a document with accented characters for testing normalization
+     * Creates a document with accented characters for testing normalization.
      */
     public static function createWithAccents(): self
     {
@@ -128,7 +137,7 @@ final class PdfDocumentFactory
     }
 
     /**
-     * Creates a document with special operators for testing query parsing
+     * Creates a document with special operators for testing query parsing.
      */
     public static function createWithOperators(): self
     {

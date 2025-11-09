@@ -25,6 +25,7 @@ final class SearchQueryBuilderTest extends TestCase
     private const PREFIX_MAX_EXPANSIONS = 50;
 
     private SearchQueryBuilder $builder;
+
     private QueryParser $parser;
 
     protected function setUp(): void
@@ -437,7 +438,7 @@ final class SearchQueryBuilderTest extends TestCase
         $mustClauses = $boolQuery['must'];
 
         // Should have 2 phrase clauses
-        $phraseClauses = array_filter($mustClauses, fn($clause) => isset($clause['match_phrase']));
+        $phraseClauses = array_filter($mustClauses, static fn ($clause) => isset($clause['match_phrase']));
         $this->assertCount(2, $phraseClauses);
     }
 

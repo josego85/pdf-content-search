@@ -18,12 +18,19 @@ final class SearchResultFactory
     private const DEFAULT_SCORE = 1.5;
 
     private string $id;
+
     private string $title;
+
     private int $page;
+
     private int $totalPages;
+
     private string $text;
+
     private string $path;
+
     private array $highlight;
+
     private float $score;
 
     public function __construct()
@@ -39,48 +46,56 @@ final class SearchResultFactory
     public function withId(string $id): self
     {
         $this->id = $id;
+
         return $this;
     }
 
     public function withTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
     public function withPage(int $page): self
     {
         $this->page = $page;
+
         return $this;
     }
 
     public function withTotalPages(int $totalPages): self
     {
         $this->totalPages = $totalPages;
+
         return $this;
     }
 
     public function withText(string $text): self
     {
         $this->text = $text;
+
         return $this;
     }
 
     public function withPath(string $path): self
     {
         $this->path = $path;
+
         return $this;
     }
 
     public function withHighlight(array $highlight): self
     {
         $this->highlight = $highlight;
+
         return $this;
     }
 
     public function withScore(float $score): self
     {
         $this->score = $score;
+
         return $this;
     }
 
@@ -106,9 +121,9 @@ final class SearchResultFactory
     }
 
     /**
-     * Creates a complete Elasticsearch response structure
+     * Creates a complete Elasticsearch response structure.
      */
-    public function buildEsResponse(array $hits = null): array
+    public function buildEsResponse(?array $hits = null): array
     {
         if ($hits === null) {
             $hits = [$this->build()];
@@ -135,12 +150,12 @@ final class SearchResultFactory
     }
 
     /**
-     * Creates multiple results with sequential pages
+     * Creates multiple results with sequential pages.
      */
     public static function createMultiple(int $count, string $baseTitle = self::DEFAULT_TITLE): array
     {
         $results = [];
-        for ($i = 1; $i <= $count; $i++) {
+        for ($i = 1; $i <= $count; ++$i) {
             $results[] = self::create()
                 ->withId("{$baseTitle}_page_{$i}")
                 ->withTitle($baseTitle)
@@ -148,6 +163,7 @@ final class SearchResultFactory
                 ->withScore(1.0 / $i)
                 ->build();
         }
+
         return $results;
     }
 

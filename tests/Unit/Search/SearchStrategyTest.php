@@ -34,7 +34,7 @@ final class SearchStrategyTest extends TestCase
 
     public function testAllStrategyValuesAreUnique(): void
     {
-        $values = array_map(fn(SearchStrategy $case) => $case->value, SearchStrategy::cases());
+        $values = array_map(static fn (SearchStrategy $case) => $case->value, SearchStrategy::cases());
 
         $this->assertCount(3, $values, 'Expected exactly 3 strategy cases');
         $this->assertCount(3, array_unique($values), 'All strategy values must be unique');

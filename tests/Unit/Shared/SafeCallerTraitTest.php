@@ -28,7 +28,7 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $expectedResult = 'success';
-        $callable = fn() => $expectedResult;
+        $callable = static fn () => $expectedResult;
 
         // Act
         $result = $this->subject->executeSafeCall($callable, self::ERROR_MESSAGE);
@@ -41,7 +41,7 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $expectedResult = ['key' => 'value', 'number' => 42];
-        $callable = fn() => $expectedResult;
+        $callable = static fn () => $expectedResult;
 
         // Act
         $result = $this->subject->executeSafeCall($callable, self::ERROR_MESSAGE);
@@ -53,7 +53,7 @@ final class SafeCallerTraitTest extends TestCase
     public function testSafeCallReturnsNullWhenCallableReturnsNull(): void
     {
         // Arrange
-        $callable = fn() => null;
+        $callable = static fn () => null;
 
         // Act
         $result = $this->subject->executeSafeCall($callable, self::ERROR_MESSAGE);
@@ -66,7 +66,7 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $elasticsearchException = new TestElasticsearchException(self::ELASTICSEARCH_ERROR);
-        $callable = function () use ($elasticsearchException) {
+        $callable = static function () use ($elasticsearchException) {
             throw $elasticsearchException;
         };
 
@@ -81,7 +81,7 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $elasticsearchException = new TestElasticsearchException(self::ELASTICSEARCH_ERROR);
-        $callable = function () use ($elasticsearchException) {
+        $callable = static function () use ($elasticsearchException) {
             throw $elasticsearchException;
         };
 
@@ -100,7 +100,7 @@ final class SafeCallerTraitTest extends TestCase
         // Arrange
         $originalMessage = 'Index not found';
         $elasticsearchException = new TestElasticsearchException($originalMessage);
-        $callable = function () use ($elasticsearchException) {
+        $callable = static function () use ($elasticsearchException) {
             throw $elasticsearchException;
         };
 
@@ -118,8 +118,9 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $data = ['a' => 1, 'b' => 2, 'c' => 3];
-        $callable = function () use ($data) {
+        $callable = static function () use ($data) {
             $sum = array_sum($data);
+
             return $sum * 2;
         };
 
@@ -133,7 +134,7 @@ final class SafeCallerTraitTest extends TestCase
     public function testSafeCallDoesNotCatchOtherExceptions(): void
     {
         // Arrange
-        $callable = function () {
+        $callable = static function () {
             throw new \InvalidArgumentException('This is not an ElasticsearchException');
         };
 
@@ -150,7 +151,7 @@ final class SafeCallerTraitTest extends TestCase
     public function testSafeCallHandlesDifferentReturnTypes(mixed $expectedValue): void
     {
         // Arrange
-        $callable = fn() => $expectedValue;
+        $callable = static fn () => $expectedValue;
 
         // Act
         $result = $this->subject->executeSafeCall($callable, self::ERROR_MESSAGE);
@@ -176,7 +177,7 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $elasticsearchException = new TestElasticsearchException(self::ELASTICSEARCH_ERROR);
-        $callable = function () use ($elasticsearchException) {
+        $callable = static function () use ($elasticsearchException) {
             throw $elasticsearchException;
         };
 

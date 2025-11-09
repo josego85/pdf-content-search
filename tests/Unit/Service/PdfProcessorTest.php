@@ -44,7 +44,7 @@ final class PdfProcessorTest extends TestCase
     public function testExtractPageCountReturnsZeroWhenPagesNotFound(): void
     {
         // Arrange
-        $output = "Invalid output without pages";
+        $output = 'Invalid output without pages';
 
         // Parse logic
         preg_match('/Pages:\\s+(\\d+)/i', $output, $matches);
@@ -99,10 +99,10 @@ final class PdfProcessorTest extends TestCase
     {
         // Test case insensitivity
         $testCases = [
-            "Pages: 5",
-            "PAGES: 5",
-            "pages: 5",
-            "PaGeS: 5",
+            'Pages: 5',
+            'PAGES: 5',
+            'pages: 5',
+            'PaGeS: 5',
         ];
 
         foreach ($testCases as $output) {
@@ -183,7 +183,7 @@ final class PdfProcessorTest extends TestCase
     public function testExtractPageCountReturnsInteger(): void
     {
         // Type safety test
-        $output = "Pages: 42";
+        $output = 'Pages: 42';
         preg_match('/Pages:\\s+(\\d+)/i', $output, $matches);
         $result = isset($matches[1]) ? (int) $matches[1] : 0;
 
@@ -192,7 +192,7 @@ final class PdfProcessorTest extends TestCase
 
     public function testExtractPageCountHandlesLargeNumbers(): void
     {
-        $output = "Pages: 9999";
+        $output = 'Pages: 9999';
         preg_match('/Pages:\\s+(\\d+)/i', $output, $matches);
         $result = isset($matches[1]) ? (int) $matches[1] : 0;
 
@@ -201,7 +201,7 @@ final class PdfProcessorTest extends TestCase
 
     public function testExtractPageCountIgnoresNonNumericValues(): void
     {
-        $output = "Pages: abc";
+        $output = 'Pages: abc';
         preg_match('/Pages:\\s+(\\d+)/i', $output, $matches);
         $result = isset($matches[1]) ? (int) $matches[1] : 0;
 

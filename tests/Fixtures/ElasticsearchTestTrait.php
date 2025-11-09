@@ -17,7 +17,7 @@ use Psr\Http\Message\StreamInterface;
 trait ElasticsearchTestTrait
 {
     /**
-     * Creates a mock Elasticsearch Client
+     * Creates a mock Elasticsearch Client.
      */
     protected function createElasticsearchClientMock(): MockObject|Client
     {
@@ -25,7 +25,7 @@ trait ElasticsearchTestTrait
     }
 
     /**
-     * Creates a mock Elasticsearch response with the given data
+     * Creates a mock Elasticsearch response with the given data.
      */
     protected function createElasticsearchResponse(array $data): ElasticsearchResponse
     {
@@ -40,7 +40,7 @@ trait ElasticsearchTestTrait
     }
 
     /**
-     * Creates a mock for a successful Elasticsearch operation
+     * Creates a mock for a successful Elasticsearch operation.
      */
     protected function createSuccessResponse(array $additionalData = []): ElasticsearchResponse
     {
@@ -52,7 +52,7 @@ trait ElasticsearchTestTrait
     }
 
     /**
-     * Creates a mock for a search response
+     * Creates a mock for a search response.
      */
     protected function createSearchResponse(array $hits = []): ElasticsearchResponse
     {
@@ -79,7 +79,7 @@ trait ElasticsearchTestTrait
     }
 
     /**
-     * Creates a mock for an index exists response
+     * Creates a mock for an index exists response.
      */
     protected function createIndexExistsResponse(bool $exists): ElasticsearchResponse
     {
@@ -94,7 +94,7 @@ trait ElasticsearchTestTrait
     }
 
     /**
-     * Configures the client mock to expect a search call
+     * Configures the client mock to expect a search call.
      */
     protected function expectSearchCall(
         MockObject $client,
@@ -103,7 +103,7 @@ trait ElasticsearchTestTrait
     ): void {
         $client->expects($this->once())
             ->method('search')
-            ->with($this->callback(function ($params) use ($expectedQuery) {
+            ->with($this->callback(static function ($params) {
                 // Verify the query structure
                 return isset($params['index'])
                     && isset($params['body']);
@@ -112,7 +112,7 @@ trait ElasticsearchTestTrait
     }
 
     /**
-     * Configures the client mock to expect an index call
+     * Configures the client mock to expect an index call.
      */
     protected function expectIndexCall(
         MockObject $client,
@@ -121,7 +121,7 @@ trait ElasticsearchTestTrait
     ): void {
         $client->expects($this->once())
             ->method('index')
-            ->with($this->callback(function ($params) use ($expectedIndex) {
+            ->with($this->callback(static function ($params) use ($expectedIndex) {
                 return $params['index'] === $expectedIndex
                     && isset($params['id'])
                     && isset($params['body']);
@@ -130,7 +130,7 @@ trait ElasticsearchTestTrait
     }
 
     /**
-     * Configures the client mock to expect a create index call
+     * Configures the client mock to expect a create index call.
      */
     protected function expectCreateIndexCall(
         MockObject $client,
@@ -143,7 +143,7 @@ trait ElasticsearchTestTrait
     }
 
     /**
-     * Configures the client mock to expect a delete index call
+     * Configures the client mock to expect a delete index call.
      */
     protected function expectDeleteIndexCall(
         MockObject $client,
