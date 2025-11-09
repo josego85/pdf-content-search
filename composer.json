@@ -1,6 +1,8 @@
 {
+    "name": "josego85/pdf-content-search",
+    "description": "A Symfony application to search content within PDF files using Elasticsearch and Vue.js",
     "type": "project",
-    "license": "proprietary",
+    "license": "GPL-3.0-or-later",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
