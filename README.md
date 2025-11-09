@@ -29,6 +29,7 @@ A Symfony application to search content within PDF files using Elasticsearch and
 - [PDF Management](#pdf-management)
 - [Usage](#usage)
 - [Development](#development)
+- [Testing](#testing)
 - [Elasticsearch](#elasticsearch)
 - [Maintenance](#maintenance)
 - [Troubleshooting](#troubleshooting)
@@ -183,6 +184,30 @@ docker compose exec php vendor/bin/php-cs-fixer fix
    - Styles in `assets/css/`
    - Build: `npm run build`
    - Watch: `npm run watch`
+
+## Testing
+
+Comprehensive test suite with 85%+ code coverage. See **[Testing Guide](docs/testing.md)** for detailed documentation.
+
+**Quick Start:**
+
+```bash
+# Run all tests
+./vendor/bin/phpunit
+
+# Run specific suites
+./vendor/bin/phpunit --testsuite=Unit
+./vendor/bin/phpunit --testsuite=Functional
+
+# Generate coverage report
+./vendor/bin/phpunit --coverage-html coverage/
+```
+
+**Test Suites:**
+- **Unit Tests**: Isolated component tests (103 tests)
+- **Functional Tests**: HTTP endpoint tests (25 tests)
+
+For more information, see [docs/testing.md](docs/testing.md).
 
 ## Elasticsearch
 1. Check cluster health:

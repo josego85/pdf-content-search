@@ -1,0 +1,62 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+3 0 obj
+<< /Length 153 >>
+stream
+BT
+/F1 12 Tf
+50 750 Td
+(This is page 1. It contains sample text for testing PDF search functionality. Keywords: machine learning, algorithm, test.) Tj
+ET
+endstream
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /Contents 3 0 R /MediaBox [0 0 612 792] >>
+endobj
+5 0 obj
+<< /Length 135 >>
+stream
+BT
+/F1 12 Tf
+50 750 Td
+(This is page 2. It has different content about natural language processing and deep learning techniques.) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /Contents 5 0 R /MediaBox [0 0 612 792] >>
+endobj
+7 0 obj
+<< /Length 135 >>
+stream
+BT
+/F1 12 Tf
+50 750 Td
+(This is page 3. Final page with information about data science and artificial intelligence applications.) Tj
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /Contents 7 0 R /MediaBox [0 0 612 792] >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R] /Count 3 >>
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000059 00000 n 
+0000000109 00000 n 
+0000000159 00000 n 
+0000000209 00000 n 
+0000000259 00000 n 
+0000000309 00000 n 
+0000000359 00000 n 
+0000000409 00000 n 
+trailer
+<< /Size 9 /Root 1 0 R >>
+startxref
+1228
+%%EOF

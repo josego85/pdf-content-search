@@ -23,8 +23,9 @@ RUN apk add --no-cache \
     vim \
     unzip
 
-# Install PHP extensions
+# Install PHP extensions + PCOV for code coverage
 RUN apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS \
     postgresql-dev \
     libpng-dev \
     libjpeg-turbo-dev \
@@ -32,6 +33,7 @@ RUN apk add --no-cache --virtual .build-deps \
     icu-dev \
     libxml2-dev \
     oniguruma-dev \
+    linux-headers \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_pgsql \
@@ -41,6 +43,9 @@ RUN apk add --no-cache --virtual .build-deps \
         pcntl \
         bcmath \
         gd \
+    && pecl install pcov-1.0.11 \
+    && docker-php-ext-enable pcov \
+    && php -m | grep -i pcov \
     && apk del .build-deps
 
 # Install Composer
@@ -48,15 +53,25 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy application files first
-COPY . .
+# Copy PHP configuration files first (specific files only)
+COPY .docker/dev/php/php.ini /usr/local/etc/php/conf.d/custom.ini
+COPY .docker/dev/php/pcov.ini /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini
 
-# Install PHP dependencies (skip scripts first, run them after)
+# Copy dependency manifests first (for better layer caching)
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies (will be cached unless composer.json/lock changes)
 RUN composer install --prefer-dist --no-interaction --no-scripts \
     && composer dump-autoload --optimize
 
-# Install Node dependencies
+# Copy Node dependency manifests
+COPY package.json package-lock.json ./
+
+# Install Node dependencies (will be cached unless package.json/lock changes)
 RUN npm install --ignore-scripts
+
+# Copy application files (this layer only rebuilds when code changes)
+COPY . .
 
 # Set permissions
 RUN mkdir -p var/cache var/log var/sessions public/pdfs \

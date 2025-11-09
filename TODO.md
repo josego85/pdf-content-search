@@ -4,9 +4,7 @@
 - Use Nginx  
 - Security  
 - Optimize Elasticsearch  
-- Optimize Indexing  
-- CI/CD  
-- Testing with PHPUnit  
+- Optimize Indexing
 - PHP Stan  
 - Composer audit in CI/CD  
 - Pagination on the frontend for searches  
