@@ -38,6 +38,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - CI build status
     - CodeQL security analysis status
     - Security audit status
+- **Composite Actions for Code Reusability**:
+  - **setup-php-project**: Reusable action for PHP project setup
+    - Configures PHP with specified version and extensions
+    - Implements Composer dependency caching
+    - Installs dependencies automatically
+    - Supports customization via inputs (php-version, extensions, tools)
+  - **setup-node-project**: Reusable action for Node.js project setup
+    - Configures Node.js with specified version
+    - Implements npm caching automatically
+    - Installs dependencies with npm ci
+    - Supports customization via inputs (node-version)
 
 ### Changed
 - **Workflow Triggers**: Enhanced workflow execution triggers to run on feature branches
@@ -49,6 +60,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Job configured but not executed (`if: false`)
   - Easy to re-enable when tests are implemented
   - Code style and frontend build checks remain active
+- **Workflow Architecture Refactoring**: Major DRY improvements
+  - Eliminated ~60% code duplication across workflows
+  - Reduced workflow complexity from 250 to ~150 lines total
+  - Centralized PHP/Node.js setup logic in composite actions
+  - Single source of truth for dependency management
+  - Easier maintenance: Update SHA in one place vs seven places
+  - Improved readability: Focus on business logic vs boilerplate
 
 ### Security
 - **Pinned GitHub Actions to SHA**: All workflow actions now use commit SHA instead of tags for supply chain attack prevention
