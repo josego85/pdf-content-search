@@ -26,7 +26,7 @@ Comprehensive testing suite for PDF Content Search application using PHPUnit.
 # Run tests inside Docker container
 docker compose exec php vendor/bin/phpunit
 
-# Run with coverage (Xdebug enabled in dev environment)
+# Run with coverage (PCOV enabled in dev environment)
 docker compose exec php vendor/bin/phpunit --coverage-html coverage/
 
 # Or use the helper script
@@ -39,7 +39,7 @@ open coverage/index.html
 ./docker/dev/scripts/coverage.sh --xml
 ```
 
-**Note:** Xdebug is pre-installed in the dev Docker image and configured for coverage mode (fast, no debugging overhead).
+**Note:** PCOV is pre-installed in the dev Docker image for fast code coverage reports. It's significantly faster than Xdebug and has zero runtime overhead.
 
 ## Test Structure
 

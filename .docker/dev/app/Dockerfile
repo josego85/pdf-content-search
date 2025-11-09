@@ -23,7 +23,7 @@ RUN apk add --no-cache \
     vim \
     unzip
 
-# Install PHP extensions + Xdebug (in single layer for build deps)
+# Install PHP extensions (without Xdebug for faster builds)
 RUN apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS \
     postgresql-dev \
@@ -43,8 +43,8 @@ RUN apk add --no-cache --virtual .build-deps \
         pcntl \
         bcmath \
         gd \
-    && pecl install xdebug-3.4.0 \
-    && docker-php-ext-enable xdebug \
+    && pecl install pcov \
+    && docker-php-ext-enable pcov \
     && apk del .build-deps
 
 # Install Composer
@@ -54,7 +54,7 @@ WORKDIR /var/www/html
 
 # Copy PHP configuration files first (specific files only)
 COPY .docker/dev/php/php.ini /usr/local/etc/php/conf.d/custom.ini
-COPY .docker/dev/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+COPY .docker/dev/php/pcov.ini /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini
 
 # Copy dependency manifests first (for better layer caching)
 COPY composer.json composer.lock ./

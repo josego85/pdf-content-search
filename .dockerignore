@@ -8,7 +8,7 @@ docker-compose*.yml
 .dockerignore
 .docker/dev
 !.docker/dev/php/php.ini
-!.docker/dev/php/xdebug.ini
+!.docker/dev/php/pcov.ini
 .docker/prod
 .docker/apache
 .docker/php.ini
