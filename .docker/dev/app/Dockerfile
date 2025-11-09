@@ -23,7 +23,7 @@ RUN apk add --no-cache \
     vim \
     unzip
 
-# Install PHP extensions (without Xdebug for faster builds)
+# Install PHP extensions + PCOV for code coverage
 RUN apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS \
     postgresql-dev \
@@ -43,8 +43,9 @@ RUN apk add --no-cache --virtual .build-deps \
         pcntl \
         bcmath \
         gd \
-    && pecl install pcov \
+    && pecl install pcov-1.0.11 \
     && docker-php-ext-enable pcov \
+    && php -m | grep -i pcov \
     && apk del .build-deps
 
 # Install Composer
