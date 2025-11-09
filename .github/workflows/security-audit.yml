@@ -47,7 +47,7 @@ jobs:
 
       - name: Upload npm audit report
         if: always()
-        uses: actions/upload-artifact@ea165b0a5b72aea0dcaa07424c9dbcb8bb9e5a63 # v4.5.0
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         with:
           name: npm-audit-report
           path: npm-audit-report.json
@@ -91,7 +91,7 @@ jobs:
 
       - name: Upload composer audit report
         if: always()
-        uses: actions/upload-artifact@ea165b0a5b72aea0dcaa07424c9dbcb8bb9e5a63 # v4.5.0
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         with:
           name: composer-audit-report
           path: composer-audit-report.json
