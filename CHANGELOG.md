@@ -45,6 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enables CI/CD testing during feature development before PR creation
   - Maintains PR-based triggers for main/develop branches
   - Improves feedback loop for developers working on feature branches
+- **PHP Tests Job**: Temporarily disabled in CI workflow
+  - Job configured but not executed (`if: false`)
+  - Easy to re-enable when tests are implemented
+  - Code style and frontend build checks remain active
 
 ### Security
 - **Pinned GitHub Actions to SHA**: All workflow actions now use commit SHA instead of tags for supply chain attack prevention
