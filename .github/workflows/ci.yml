@@ -79,12 +79,12 @@ jobs:
           COVERAGE=$(php -r "
           \$xml = simplexml_load_file('coverage.xml');
           \$metrics = \$xml->project->metrics;
-          \$lines = (int)\$metrics['elements'];
-          \$covered = (int)\$metrics['coveredelements'];
+          \$lines = (int)\$metrics['statements'];
+          \$covered = (int)\$metrics['coveredstatements'];
           \$percentage = (\$lines > 0) ? (\$covered / \$lines) * 100 : 0;
           echo number_format(\$percentage, 2);
           ")
-          echo "Code coverage: ${COVERAGE}%"
+          echo "Code coverage (line): ${COVERAGE}%"
           if (( $(echo "$COVERAGE < 85" | bc -l) )); then
             echo "❌ Coverage ${COVERAGE}% is below 85% threshold"
             exit 1

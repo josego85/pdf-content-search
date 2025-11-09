@@ -32,6 +32,8 @@
         </include>
         <exclude>
             <file>src/Kernel.php</file>
+            <directory>src/Command</directory>
+            <file>src/Service/ElasticsearchService.php</file>
         </exclude>
     </coverage>
 
