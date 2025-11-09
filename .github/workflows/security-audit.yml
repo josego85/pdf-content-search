@@ -21,10 +21,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee109 # v4.1.0
         with:
           node-version: '22'
           cache: 'npm'
@@ -41,7 +41,7 @@ jobs:
 
       - name: Upload npm audit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165b0a5b72aea0dcaa07424c9dbcb8bb9e5a63 # v4.5.0
         with:
           name: npm-audit-report
           path: npm-audit-report.json
@@ -53,10 +53,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@e6f75134d35b9f8607a14e3c6e8c3e5a3e7cf8c7 # v2.31.1
         with:
           php-version: '8.4'
           extensions: ctype, iconv
@@ -68,7 +68,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -85,7 +85,7 @@ jobs:
 
       - name: Upload composer audit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165b0a5b72aea0dcaa07424c9dbcb8bb9e5a63 # v4.5.0
         with:
           name: composer-audit-report
           path: composer-audit-report.json
@@ -98,10 +98,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Dependency Review
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@4081b87be9a7a6fe33bf4aef766c4b6d5c28e7db # v4.5.0
         with:
           fail-on-severity: moderate
           comment-summary-in-pr: always
