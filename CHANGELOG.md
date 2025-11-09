@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Comprehensive CI/CD Pipeline**:
+  - **CI Workflow**: Automated testing, code style checks, and frontend build validation
+    - PHPUnit tests for PHP 8.4
+    - PHP-CS-Fixer code style validation
+    - Frontend asset build verification
+    - Composer dependency caching for faster builds
+    - npm caching for optimized workflow performance
+  - **CodeQL Security Analysis**: Automated static code analysis for JavaScript/TypeScript
+    - Scheduled weekly security scans every Monday at 6:00 AM UTC
+    - Runs on push to main/develop branches and pull requests
+    - Security vulnerability detection for JavaScript codebase
+  - **Security Audit Workflow**: Comprehensive dependency vulnerability scanning
+    - npm audit for JavaScript dependencies (moderate severity threshold)
+    - Composer audit for PHP dependencies
+    - Dependency Review action for pull requests
+    - Daily scheduled security audits at 2:00 AM UTC
+    - Audit reports uploaded as artifacts with 30-day retention
+    - Manual trigger capability via workflow_dispatch
+  - **Dependabot Configuration**: Automated dependency updates
+    - Weekly updates for Composer (PHP) dependencies every Monday
+    - Weekly updates for npm (JavaScript) dependencies every Monday
+    - Weekly updates for GitHub Actions
+    - Docker base image updates
+    - Grouped updates for Symfony, Babel, and Webpack ecosystems
+    - Intelligent major version ignoring for critical packages (Vue.js, Webpack)
+    - Automatic PR creation with proper labels and conventional commit messages
+  - **CI/CD Badges**: Added workflow status badges to README
+    - CI build status
+    - CodeQL security analysis status
+    - Security audit status
+
 ## [1.5.0] - 2025-11-08
 
 ### Added

@@ -1,6 +1,10 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.5.0-blue.svg)](https://github.com/yourusername/pdf-content-search)
+[![CI](https://github.com/josego85/pdf-content-search/workflows/CI/badge.svg)](https://github.com/josego85/pdf-content-search/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/josego85/pdf-content-search/workflows/CodeQL%20Security%20Analysis/badge.svg)](https://github.com/josego85/pdf-content-search/actions/workflows/codeql.yml)
+[![Security Audit](https://github.com/josego85/pdf-content-search/workflows/Security%20Audit/badge.svg)](https://github.com/josego85/pdf-content-search/actions/workflows/security-audit.yml)
+
+[![Version](https://img.shields.io/badge/Version-1.5.0-blue.svg)](https://github.com/josego85/pdf-content-search)
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.14-blue.svg)](https://www.php.net/)
 [![Symfony Version](https://img.shields.io/badge/Symfony-7.3.6-green.svg)](https://symfony.com/)
 [![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.17.10-005571.svg)](https://www.elastic.co/)
