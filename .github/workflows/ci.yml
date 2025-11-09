@@ -49,6 +49,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: 'ctype, iconv, pdo, pdo_pgsql, pdo_sqlite, mbstring, xml, intl, zip'
+          coverage: xdebug
 
       - name: Validate composer files
         run: composer validate --no-check-publish

@@ -19,6 +19,10 @@ inputs:
     description: 'Whether to run composer install'
     required: false
     default: 'true'
+  coverage:
+    description: 'Code coverage driver (none, xdebug, pcov)'
+    required: false
+    default: 'none'
 
 runs:
   using: 'composite'
@@ -28,7 +32,7 @@ runs:
       with:
         php-version: ${{ inputs.php-version }}
         extensions: ${{ inputs.extensions }}
-        coverage: none
+        coverage: ${{ inputs.coverage }}
         tools: ${{ inputs.tools }}
 
     - name: Get Composer cache directory
