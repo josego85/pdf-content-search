@@ -20,6 +20,27 @@ Comprehensive testing suite for PDF Content Search application using PHPUnit.
 ./vendor/bin/phpunit --testdox
 ```
 
+## Quick Start with Docker
+
+```bash
+# Run tests inside Docker container
+docker compose exec php vendor/bin/phpunit
+
+# Run with coverage (Xdebug enabled in dev environment)
+docker compose exec php vendor/bin/phpunit --coverage-html coverage/
+
+# Or use the helper script
+./docker/dev/scripts/coverage.sh
+
+# Open coverage report in browser
+open coverage/index.html
+
+# Generate XML coverage for CI
+./docker/dev/scripts/coverage.sh --xml
+```
+
+**Note:** Xdebug is pre-installed in the dev Docker image and configured for coverage mode (fast, no debugging overhead).
+
 ## Test Structure
 
 ```

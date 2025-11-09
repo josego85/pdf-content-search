@@ -32,6 +32,7 @@ RUN apk add --no-cache --virtual .build-deps \
     icu-dev \
     libxml2-dev \
     oniguruma-dev \
+    linux-headers \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_pgsql \
@@ -43,12 +44,23 @@ RUN apk add --no-cache --virtual .build-deps \
         gd \
     && apk del .build-deps
 
+# Install Xdebug for code coverage (development only)
+# Version 3.4.0 is compatible with PHP 8.4
+RUN apk add --no-cache --virtual .xdebug-deps $PHPIZE_DEPS \
+    && pecl install xdebug-3.4.0 \
+    && docker-php-ext-enable xdebug \
+    && apk del .xdebug-deps
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy application files first
+# Copy PHP configuration files (before application)
+COPY .docker/dev/php/php.ini /usr/local/etc/php/conf.d/custom.ini
+COPY .docker/dev/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# Copy application files
 COPY . .
 
 # Install PHP dependencies (skip scripts first, run them after)
