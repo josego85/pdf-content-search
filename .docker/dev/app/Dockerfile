@@ -56,12 +56,12 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy PHP configuration files (before application)
+# Copy application files first (so .docker/ directory is available)
+COPY . .
+
+# Copy PHP configuration files (now .docker/ is in build context)
 COPY .docker/dev/php/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY .docker/dev/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
-# Copy application files
-COPY . .
 
 # Install PHP dependencies (skip scripts first, run them after)
 RUN composer install --prefer-dist --no-interaction --no-scripts \
