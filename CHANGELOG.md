@@ -51,11 +51,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `actions/checkout@v4.2.2` → SHA `11bd71901bbe5b1630ceea73d27597364c9af683`
   - `shivammathur/setup-php@v2.31.1` → SHA `e6f75134d35b9f8607a14e3c6e8c3e5a3e7cf8c7`
   - `actions/cache@v4.2.0` → SHA `1bd1e32a3bdc45362d1e726936510720a7c30a57`
-  - `actions/setup-node@v4.1.0` → SHA `39370e3970a6d050c480ffad4ff0ed4d3fdee109`
+  - `actions/setup-node@v4.0.3` → SHA `1e60f620b9541d16bece96c5465dc8ee9832be0b` (corrected from invalid SHA)
   - `actions/upload-artifact@v4.5.0` → SHA `ea165b0a5b72aea0dcaa07424c9dbcb8bb9e5a63`
   - `github/codeql-action/*@v3.27.9` → SHA `f09c1c0a94de965c15400f5634aa42fac8fb8f88`
   - `actions/dependency-review-action@v4.5.0` → SHA `4081b87be9a7a6fe33bf4aef766c4b6d5c28e7db`
   - Comments with version tags maintained for reference and easier updates
+
+### Fixed
+- **Invalid GitHub Action SHA**: Corrected `actions/setup-node` SHA reference
+  - Previous SHA `39370e3970a6d050c480ffad4ff0ed4d3fdee109` (v4.1.0) was invalid/non-existent
+  - Updated to verified SHA `1e60f620b9541d16bece96c5465dc8ee9832be0b` (v4.0.3)
+  - Fixed download errors in all workflows (CI, CodeQL, Security Audit)
 
 ## [1.5.0] - 2025-11-08
 
