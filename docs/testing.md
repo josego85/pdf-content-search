@@ -10,7 +10,6 @@ Comprehensive testing suite for PDF Content Search application using PHPUnit.
 
 # Run specific test suites
 ./vendor/bin/phpunit --testsuite=Unit
-./vendor/bin/phpunit --testsuite=Integration
 ./vendor/bin/phpunit --testsuite=Functional
 
 # Run with coverage
@@ -49,9 +48,6 @@ tests/
 │   ├── Search/           # Query parsing and building logic
 │   ├── Service/          # Service layer tests
 │   └── Shared/           # Shared traits and utilities
-├── Integration/          # Tests with real dependencies (Elasticsearch, DB)
-│   ├── Command/          # Console command tests
-│   └── Service/          # Service integration tests
 ├── Functional/           # HTTP endpoint tests
 │   └── Controller/       # Controller action tests
 └── Fixtures/             # Test data factories and helpers
@@ -136,7 +132,7 @@ final class QueryParserTest extends TestCase
 
 - **Environment**: `APP_ENV=test` (`.env.test`)
 - **Database**: SQLite in-memory (future use)
-- **Elasticsearch**: Mock for unit tests, Docker for integration tests
+- **Elasticsearch**: Mocked in all tests
 
 ### Environment Variables
 
@@ -153,34 +149,8 @@ ELASTICSEARCH_INDEX_PDFS=pdf_pages_test
 Tests run automatically on:
 - Every push to any branch
 - Every pull request
-- Daily scheduled runs (main branch)
 
-See `.github/workflows/tests.yml` for CI configuration.
-
-## Integration Tests with Elasticsearch
-
-Integration tests requiring Elasticsearch are marked with `@group elasticsearch`:
-
-```bash
-# Skip Elasticsearch tests
-./vendor/bin/phpunit --exclude-group elasticsearch
-
-# Run only Elasticsearch tests
-./vendor/bin/phpunit --group elasticsearch
-```
-
-**Docker Setup for Integration Tests**:
-
-```bash
-# Start test Elasticsearch instance
-docker-compose -f docker-compose.test.yml up -d elasticsearch-test
-
-# Run integration tests
-./vendor/bin/phpunit --testsuite=Integration
-
-# Stop test services
-docker-compose -f docker-compose.test.yml down
-```
+See `.github/workflows/ci.yml` for CI configuration.
 
 ## Code Coverage
 
@@ -243,11 +213,7 @@ final class ServiceTest extends TestCase
 
 ### Issue: Elasticsearch Connection Errors
 
-**Solution**: Use mocks for unit tests, skip integration tests without Docker
-
-```bash
-./vendor/bin/phpunit --exclude-group elasticsearch
-```
+**Solution**: All tests use mocks, no real Elasticsearch connection needed
 
 ### Issue: Functional Tests Fail (Missing Assets)
 
@@ -259,7 +225,7 @@ npm run build  # or: yarn build
 
 ### Issue: PDF Processing Tests
 
-**Solution**: `pdftotext` not required for unit tests (mocked). Install `poppler-utils` for integration tests.
+**Solution**: `pdftotext` not required for unit tests (mocked).
 
 ## Factories and Fixtures
 
@@ -281,9 +247,8 @@ $response = SearchResultFactory::create()
 ## Performance
 
 - **Unit tests**: < 1 second
-- **Integration tests**: < 10 seconds
 - **Functional tests**: < 5 seconds
-- **Full suite**: < 15 seconds
+- **Full suite**: < 5 seconds
 
 Slow tests indicate architectural issues requiring refactoring.
 

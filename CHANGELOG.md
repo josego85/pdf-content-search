@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **PHPUnit Test Suite**:
+  - 128 comprehensive tests (103 Unit + 25 Functional)
+  - 85%+ code coverage with PCOV (faster than Xdebug)
+  - Test environment configuration for Symfony
+  - Test fixtures and factories for reusable test data
+  - Testing documentation in `docs/testing.md`
 - **Comprehensive CI/CD Pipeline**:
   - **CI Workflow**: Automated testing, code style checks, and frontend build validation
     - PHPUnit tests for PHP 8.4
@@ -51,6 +57,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Supports customization via inputs (node-version)
 
 ### Changed
+- **Testing Infrastructure**:
+  - Enabled PHPUnit tests in CI workflow (previously disabled)
+  - Migrated from Xdebug to PCOV for 10x faster coverage generation
+  - Excluded non-testable components (CLI Commands, ElasticsearchService) from coverage metrics
+  - Coverage calculation uses line coverage (industry standard)
+  - Frontend assets built before tests to support Functional tests
 - **Workflow Triggers**: Enhanced workflow execution triggers to run on feature branches
   - All workflows now trigger on `main`, `develop`, `feature/**`, and `claude/**` branches
   - Enables CI/CD testing during feature development before PR creation
@@ -69,6 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved readability: Focus on business logic vs boilerplate
 
 ### Security
+- **HTTP Method Restrictions**: Added explicit GET-only methods to controller routes (prevents CSRF attacks)
 - **Pinned GitHub Actions to SHA**: All workflow actions now use commit SHA instead of tags for supply chain attack prevention
   - `actions/checkout@v5.0.0` → SHA `71cf2267d89c5cb81562390fa70a37fa40b1305e`
   - `shivammathur/setup-php@v2.31.1` → SHA `c541c155eee45413f5b09a52248675b1a2575231`

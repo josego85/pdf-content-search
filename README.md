@@ -187,7 +187,7 @@ docker compose exec php vendor/bin/php-cs-fixer fix
 
 ## Testing
 
-Comprehensive test suite with 85%+ code coverage. See **[Testing Guide](docs/TESTING.md)** for detailed documentation.
+Comprehensive test suite with 85%+ code coverage. See **[Testing Guide](docs/testing.md)** for detailed documentation.
 
 **Quick Start:**
 
@@ -197,7 +197,6 @@ Comprehensive test suite with 85%+ code coverage. See **[Testing Guide](docs/TES
 
 # Run specific suites
 ./vendor/bin/phpunit --testsuite=Unit
-./vendor/bin/phpunit --testsuite=Integration
 ./vendor/bin/phpunit --testsuite=Functional
 
 # Generate coverage report
@@ -206,10 +205,9 @@ Comprehensive test suite with 85%+ code coverage. See **[Testing Guide](docs/TES
 
 **Test Suites:**
 - **Unit Tests**: Isolated component tests (103 tests)
-- **Integration Tests**: Tests with real dependencies
-- **Functional Tests**: HTTP endpoint tests
+- **Functional Tests**: HTTP endpoint tests (25 tests)
 
-For more information, see [docs/TESTING.md](docs/TESTING.md).
+For more information, see [docs/testing.md](docs/testing.md).
 
 ## Elasticsearch
 1. Check cluster health:
