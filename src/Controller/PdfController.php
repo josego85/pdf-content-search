@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class PdfController extends AbstractController
 {
-    #[Route('/viewer', name: 'pdf_viewer')]
+    #[Route('/viewer', name: 'pdf_viewer', methods: ['GET'])]
     public function viewer(Request $request): Response
     {
         $pdfPath = $request->query->get('path');
