@@ -1,9 +1,5 @@
 # PDF Content Search
 
-[![CI](https://github.com/josego85/pdf-content-search/workflows/CI/badge.svg)](https://github.com/josego85/pdf-content-search/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/josego85/pdf-content-search/workflows/CodeQL%20Security%20Analysis/badge.svg)](https://github.com/josego85/pdf-content-search/actions/workflows/codeql.yml)
-[![Security Audit](https://github.com/josego85/pdf-content-search/workflows/Security%20Audit/badge.svg)](https://github.com/josego85/pdf-content-search/actions/workflows/security-audit.yml)
-
 [![Version](https://img.shields.io/badge/Version-1.5.0-blue.svg)](https://github.com/josego85/pdf-content-search)
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.14-blue.svg)](https://www.php.net/)
 [![Symfony Version](https://img.shields.io/badge/Symfony-7.3.6-green.svg)](https://symfony.com/)
@@ -15,6 +11,9 @@
 [![Node.js](https://img.shields.io/badge/Node.js-22.x-339933.svg)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-27.5.1-2496ED.svg)](https://www.docker.com/)
 [![PHP-CS-Fixer](https://img.shields.io/badge/PHP--CS--Fixer-3.89.2-yellow.svg)](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer)
+[![CI](https://github.com/josego85/pdf-content-search/workflows/CI/badge.svg)](https://github.com/josego85/pdf-content-search/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/josego85/pdf-content-search/workflows/CodeQL%20Security%20Analysis/badge.svg)](https://github.com/josego85/pdf-content-search/actions/workflows/codeql.yml)
+[![Security Audit](https://github.com/josego85/pdf-content-search/workflows/Security%20Audit/badge.svg)](https://github.com/josego85/pdf-content-search/actions/workflows/security-audit.yml)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 A Symfony application to search content within PDF files using Elasticsearch and Vue.js.
