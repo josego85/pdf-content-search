@@ -39,6 +39,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - CodeQL security analysis status
     - Security audit status
 
+### Changed
+- **Workflow Triggers**: Enhanced workflow execution triggers to run on feature branches
+  - All workflows now trigger on `main`, `develop`, `feature/**`, and `claude/**` branches
+  - Enables CI/CD testing during feature development before PR creation
+  - Maintains PR-based triggers for main/develop branches
+  - Improves feedback loop for developers working on feature branches
+
 ### Security
 - **Pinned GitHub Actions to SHA**: All workflow actions now use commit SHA instead of tags for supply chain attack prevention
   - `actions/checkout@v4.2.2` → SHA `11bd71901bbe5b1630ceea73d27597364c9af683`
