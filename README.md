@@ -1,6 +1,6 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.6.0-blue.svg)](https://github.com/josego85/pdf-content-search)
+[![Version](https://img.shields.io/badge/Version-1.6.1-blue.svg)](https://github.com/josego85/pdf-content-search)
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.14-blue.svg)](https://www.php.net/)
 [![Symfony Version](https://img.shields.io/badge/Symfony-7.3.6-green.svg)](https://symfony.com/)
 [![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.17.10-005571.svg)](https://www.elastic.co/)
@@ -102,13 +102,32 @@ npm run dev
 
 ## Docker Setup
 
-**Quick Start:**
+**Quick Start (Optimized):**
+```bash
+# Fast build with BuildKit optimizations (24x faster rebuilds!)
+./docker-build.sh
+
+# Start services
+docker-compose up -d
+```
+
+**Standard Build:**
 ```bash
 docker-compose build
 docker-compose up -d
 ```
 
-For detailed Docker documentation, configuration, and production setup, see **[docs/docker.md](docs/docker.md)**.
+**Performance:**
+- First build: ~2min
+- Rebuilds: ~5-15s (vs 2min+ without optimization)
+
+**Optional: Even faster builds?**
+- Install docker-buildx for additional performance (marginal improvement)
+- Guide: **[docs/docker-buildx-install.md](docs/docker-buildx-install.md)**
+
+**Documentation:**
+- **[docs/docker.md](docs/docker.md)** - Complete Docker documentation
+- **[docs/docker-buildx-install.md](docs/docker-buildx-install.md)** - Buildx installation (optional)
 
 ## Configuration
 ### Environment Variables

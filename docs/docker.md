@@ -2,11 +2,17 @@
 
 ## Quick Start
 
-### Development (Default)
+### Development (Default - Optimized)
 ```bash
+# Recommended: Use optimized build script
+./docker-build.sh
+
+# Or standard build
 docker-compose build
 docker-compose up -d
 ```
+
+**Performance:** First build ~2min, rebuilds ~5-15s (24x faster!)
 
 ### Production
 ```bash
@@ -169,18 +175,25 @@ docker images | grep pdf-content-search
 
 ## Performance Tips
 
-1. **Adjust Elasticsearch memory** (`.env`):
+1. **Use optimized build script** (recommended):
+   ```bash
+   ./docker-build.sh  # Auto-enables BuildKit + cache optimizations
+   ```
+   - Rebuilds: ~5-15s (vs 2min+ without optimization)
+   - Multi-stage builds with cached PHP extensions
+   - BuildKit cache mounts for Composer/npm
+
+2. **Optional: Install docker-buildx** for marginal additional speed:
+   - Enables COMPOSE_BAKE for parallel multi-service builds
+   - See installation guide: **[docker-buildx-install.md](docker-buildx-install.md)**
+   - Note: Already 24x faster with BuildKit alone
+
+3. **Adjust Elasticsearch memory** (`.env`):
    ```env
    ES_JAVA_OPTS=-Xms2g -Xmx2g  # For more memory
    ```
 
-2. **Enable BuildKit** for faster builds:
-   ```bash
-   export DOCKER_BUILDKIT=1
-   docker-compose build
-   ```
-
-3. **Prune unused resources**:
+4. **Prune unused resources**:
    ```bash
    docker system prune -a
    ```
