@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Deleted `importmap.php` file
   - Resolved MIME type errors for JavaScript modules
   - Added placeholder favicon.ico to prevent 404 errors
+- **CI/CD Pipeline**:
+  - Fixed CI workflow to run on fix/** branches
 
 ### Changed
 - **Docker Performance Improvements** (24x faster rebuilds):
