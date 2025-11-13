@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2025-11-13
+
+### Fixed
+- **Docker Build Optimization**:
+  - Fixed pcov 1.0.11 incompatibility with PHP 8.4.14 (upgraded to 1.0.12)
+  - Resolved compilation error: `too many arguments to function 'php_pcre_match_impl'`
+  - Fixed pcov not loading due to missing `extension=pcov.so` directive
+- **Frontend Asset Compilation**:
+  - Fixed JavaScript module loading errors in Chrome console
+  - Removed unused Stimulus framework completely:
+    - Deleted `assets/bootstrap.js`
+    - Deleted `assets/controllers/` directory
+    - Deleted `assets/controllers.json`
+    - Removed `symfony/stimulus-bundle` from composer.json
+    - Removed `symfony/ux-turbo` from composer.json
+    - Removed StimulusBundle and TurboBundle from `config/bundles.php`
+    - Deleted `importmap.php` file
+  - Resolved MIME type errors for JavaScript modules
+  - Added placeholder favicon.ico to prevent 404 errors
+- **CI/CD Pipeline**:
+  - Fixed CI workflow to run on fix/** branches
+
+### Changed
+- **Docker Performance Improvements** (24x faster rebuilds):
+  - Implemented multi-stage build architecture
+  - Separated PHP extension compilation into cached layer
+  - Added BuildKit cache mounts for Composer and npm
+  - Optimized layer ordering for maximum cache hits
+  - First build: ~2min | Rebuilds: ~5-15s (was 2min+)
+  - Smart build script with auto-detection of available features
+  - Optional COMPOSE_BAKE support (auto-detected if buildx available)
+
+### Added
+- **Build Scripts & Documentation**:
+  - `docker-build.sh`: Intelligent build script with feature detection
+  - `docs/docker-buildx-install.md`: Optional buildx installation guide
+  - `.env.docker`: Build performance configuration file
+
+### Technical Details
+- pcov: 1.0.11 → 1.0.12 (PHP 8.4 compatibility)
+- Build strategy: Single-stage → Multi-stage with BuildKit
+- Cache efficiency: 0% → ~95% on code changes
+- COMPOSE_BAKE: Optional, auto-detected when buildx available
+
 ## [1.6.0] - 2025-11-09
 
 ### Added
