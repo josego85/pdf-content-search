@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.2] - 2025-11-19
+
+### Security
+- **Fixed npm Security Vulnerabilities**:
+  - **glob** (10.4.5 → 10.5.0): Resolved high severity command injection vulnerability
+    - CVE: [GHSA-5j98-mcp5-4vw2](https://github.com/advisories/GHSA-5j98-mcp5-4vw2)
+    - Issue: glob CLI could execute matches with `shell:true` via `-c/--cmd` flag
+  - **js-yaml** (4.1.0 → 4.1.1): Resolved moderate severity prototype pollution vulnerability
+    - CVE: [GHSA-mh29-5h37-fv8m](https://github.com/advisories/GHSA-mh29-5h37-fv8m)
+    - Issue: Prototype pollution in merge (`<<`) operator
+
+### Changed
+- **build(deps)**: Updated npm dependencies via `npm audit fix`:
+  - glob: 10.4.5 → 10.5.0
+  - js-yaml: 4.1.0 → 4.1.1
+
+
 ## [1.6.1] - 2025-11-13
 
 ### Fixed
