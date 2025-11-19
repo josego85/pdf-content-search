@@ -20,7 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **build(deps)**: Updated npm dependencies via `npm audit fix`:
   - glob: 10.4.5 → 10.5.0
   - js-yaml: 4.1.0 → 4.1.1
+- **ci(deps)**: Bump codecov/codecov-action from 4 to 5 ([#20](https://github.com/josego85/pdf-content-search/pull/20))
+  - Updated GitHub Actions workflow dependency for code coverage reporting
 
+---
 
 ## [1.6.1] - 2025-11-13
 
@@ -65,6 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Build strategy: Single-stage → Multi-stage with BuildKit
 - Cache efficiency: 0% → ~95% on code changes
 - COMPOSE_BAKE: Optional, auto-detected when buildx available
+
+---
 
 ## [1.6.0] - 2025-11-09
 
