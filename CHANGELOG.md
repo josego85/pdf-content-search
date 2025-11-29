@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2025-11-29
+
+### Changed
+- Updated Symfony from 7.3.x to 7.4.0
+- Updated Doctrine DBAL from 3.10.3 to 4.4.0 (BREAKING)
+- Updated Doctrine Bundle from 2.18.1 to 3.1.0 (BREAKING)
+- Migrated routing configuration from XML to PHP format
+- Reorganized Doctrine ORM configuration for Bundle 3.x compatibility
+
+### Removed
+- Removed deprecated `use_savepoints` option (removed in DBAL 4.x)
+- Removed `enable_native_lazy_objects` option (now enabled by default)
+- Removed XML routing files in favor of PHP routing
+
+### Fixed
+- Eliminated all Doctrine deprecation warnings
+- Fixed compatibility with PHP 8.4 native lazy objects
+
+---
+
 ## [1.6.2] - 2025-11-19
 
 ### Security
