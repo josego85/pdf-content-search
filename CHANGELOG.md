@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.7.0] - 2025-11-29
 
 ### Changed
-- Updated Symfony from 7.3.x to 7.4.0
+- Updated Symfony from 7.3.6 to 7.4.0
 - Updated Doctrine DBAL from 3.10.3 to 4.4.0 (BREAKING)
 - Updated Doctrine Bundle from 2.18.1 to 3.1.0 (BREAKING)
 - Updated PHP CS Fixer from 3.89.2 to 3.91.0
