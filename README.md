@@ -1,8 +1,8 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.6.2-blue.svg)](https://github.com/josego85/pdf-content-search)
+[![Version](https://img.shields.io/badge/Version-1.7.0-blue.svg)](https://github.com/josego85/pdf-content-search)
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.14-blue.svg)](https://www.php.net/)
-[![Symfony Version](https://img.shields.io/badge/Symfony-7.3.6-green.svg)](https://symfony.com/)
+[![Symfony Version](https://img.shields.io/badge/Symfony-7.4.0-green.svg)](https://symfony.com/)
 [![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.17.10-005571.svg)](https://www.elastic.co/)
 [![Kibana](https://img.shields.io/badge/Kibana-8.17.10-005571.svg)](https://www.elastic.co/kibana/)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.5.24-brightgreen.svg)](https://vuejs.org/)
@@ -58,7 +58,7 @@ This application allows users to search for content within PDF files using Elast
 
 ## Technologies
 - PHP 8.4.14
-- Symfony 7.3.6
+- Symfony 7.4.0
 - Elasticsearch 8.17.10
 - Kibana 8.17.10
 - Vue.js 3.5.24

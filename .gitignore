@@ -4,6 +4,7 @@
 /.env.local.php
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
+/config/reference.php
 /public/bundles/
 /var/
 /vendor/
@@ -12,6 +13,8 @@
 ###> phpunit/phpunit ###
 /phpunit.xml
 .phpunit.result.cache
+/coverage.xml
+/coverage/
 ###< phpunit/phpunit ###
 
 ###> symfony/phpunit-bridge ###
