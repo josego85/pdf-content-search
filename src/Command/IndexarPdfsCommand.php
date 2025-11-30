@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Contract\PdfIndexerInterface;
+use App\Service\LanguageDetector;
 use App\Service\PdfProcessor;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -22,7 +23,8 @@ class IndexarPdfsCommand extends Command
 
     public function __construct(
         private readonly PdfIndexerInterface $es,
-        private readonly PdfProcessor $pdfProcessor
+        private readonly PdfProcessor $pdfProcessor,
+        private readonly LanguageDetector $languageDetector
     ) {
         parent::__construct();
     }
@@ -59,13 +61,18 @@ class IndexarPdfsCommand extends Command
 
                 if (!empty($text)) {
                     try {
+                        // Detect language
+                        $detectionResult = $this->languageDetector->detect($text);
+                        $language = $detectionResult['language'];
+
                         $this->es->indexPdfPage(
                             $pdfId . '_page_' . $page,
                             $filename,
                             $page,
                             $text,
                             '/pdfs/' . $filename,
-                            $totalPages
+                            $totalPages,
+                            $language
                         );
                     } catch (\Exception $e) {
                         $output->writeln("<error>❌ Error processing $filename page $page: {$e->getMessage()}</error>");

@@ -142,7 +142,8 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
         int $page,
         string $text,
         string $path,
-        int $totalPages
+        int $totalPages,
+        string $language = 'unknown'
     ): void {
         $this->indexDocument($this->pdfPagesIndex, $id, [
             'title' => $title,
@@ -150,6 +151,7 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
             'text' => $text,
             'path' => $path,
             'total_pages' => $totalPages,
+            'language' => $language,
             'date' => date('Y-m-d H:i:s'),
         ]);
     }

@@ -100,10 +100,26 @@ services:
       timeout: 10s
       retries: 120
 
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   elasticsearch_data:
     driver: local
   database_data:
+    driver: local
+  ollama_data:
     driver: local
 
 networks:
