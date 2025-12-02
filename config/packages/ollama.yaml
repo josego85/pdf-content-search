@@ -1,0 +1,15 @@
+parameters:
+    # Ollama API configuration
+    ollama.host: '%env(OLLAMA_HOST)%'
+    ollama.model: 'llama3.2:1b'
+    ollama.timeout: 120  # seconds (for longer text processing)
+
+    # Model generation options
+    ollama.temperature: 0.3  # Lower = more deterministic translations
+    ollama.max_tokens: 4096  # Maximum output tokens
+
+    # Translation cache configuration
+    translation.cache_ttl: 604800  # 7 days in seconds (1 week)
+
+    # Queue deduplication configuration
+    queue.deduplication_ttl: 300  # 5 minutes in seconds

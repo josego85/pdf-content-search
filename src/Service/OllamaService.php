@@ -12,12 +12,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class OllamaService
 {
-    private const DEFAULT_MODEL = 'llama3.2:1b';
-    private const DEFAULT_TIMEOUT = 60;
-
     public function __construct(
         private readonly HttpClientInterface $httpClient,
-        private readonly string $ollamaHost = 'http://ollama:11434'
+        private readonly LanguageMapper $languageMapper,
+        private readonly string $ollamaHost,
+        private readonly string $ollamaModel,
+        private readonly int $ollamaTimeout,
+        private readonly float $ollamaTemperature,
+        private readonly int $ollamaMaxTokens
     ) {
     }
 
@@ -29,44 +31,26 @@ class OllamaService
     public function translate(string $text, string $targetLanguage): string
     {
         $prompt = sprintf(
-            'Translate the following text to %s. Respond ONLY with the translation, no explanations:\n\n%s',
-            $this->getLanguageName($targetLanguage),
+            "Translate the ENTIRE following text to %s. Translate ALL paragraphs and ALL sentences. Do NOT summarize. Respond ONLY with the complete translation:\n\n%s",
+            $this->languageMapper->getFullName($targetLanguage),
             $text
         );
 
         $response = $this->httpClient->request('POST', $this->ollamaHost . '/api/generate', [
             'json' => [
-                'model' => self::DEFAULT_MODEL,
+                'model' => $this->ollamaModel,
                 'prompt' => $prompt,
                 'stream' => false,
                 'options' => [
-                    'temperature' => 0.3,
+                    'temperature' => $this->ollamaTemperature,
+                    'num_predict' => $this->ollamaMaxTokens,
                 ],
             ],
-            'timeout' => self::DEFAULT_TIMEOUT,
+            'timeout' => $this->ollamaTimeout,
         ]);
 
         $data = $response->toArray();
 
         return trim($data['response'] ?? '');
-    }
-
-    /**
-     * Maps ISO 639-1 language codes to full names for better AI understanding.
-     */
-    private function getLanguageName(string $code): string
-    {
-        return match ($code) {
-            'es' => 'Spanish',
-            'en' => 'English',
-            'fr' => 'French',
-            'pt' => 'Portuguese',
-            'de' => 'German',
-            'it' => 'Italian',
-            'nl' => 'Dutch',
-            'pl' => 'Polish',
-            'ru' => 'Russian',
-            default => $code,
-        };
     }
 }

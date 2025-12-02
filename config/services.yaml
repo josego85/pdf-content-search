@@ -41,3 +41,24 @@ services:
 
     # Bind interface to implementation (Dependency Inversion Principle)
     App\Contract\QueryBuilderInterface: '@App\Search\SearchQueryBuilder'
+
+    # Translation services
+    App\Service\TranslationRequestValidator:
+        arguments:
+            $pdfsDirectory: '%kernel.project_dir%/public/pdfs'
+
+    App\Service\TranslationService:
+        arguments:
+            $translationCacheTtl: '%translation.cache_ttl%'
+
+    App\Service\QueueDuplicationChecker:
+        arguments:
+            $dedupTtl: '%queue.deduplication_ttl%'
+
+    App\Service\OllamaService:
+        arguments:
+            $ollamaHost: '%ollama.host%'
+            $ollamaModel: '%ollama.model%'
+            $ollamaTimeout: '%ollama.timeout%'
+            $ollamaTemperature: '%ollama.temperature%'
+            $ollamaMaxTokens: '%ollama.max_tokens%'

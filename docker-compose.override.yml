@@ -5,6 +5,8 @@
 services:
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
@@ -36,6 +38,10 @@ services:
     build:
       context: .
       dockerfile: .docker/dev/app/Dockerfile
+      args:
+        # Match host user UID/GID to prevent permission issues
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
     volumes:
       - .:/var/www/html
       - ./.docker/dev/php/php.ini:/usr/local/etc/php/php.ini
@@ -50,6 +56,7 @@ services:
       - app_network
     expose:
       - "9000"
+    # Supervisor needs root to manage processes, then drops to www-data
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.10

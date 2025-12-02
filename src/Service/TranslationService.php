@@ -15,14 +15,74 @@ use Psr\Cache\CacheItemPoolInterface;
  */
 class TranslationService
 {
-    private const CACHE_TTL = 604800; // 7 days in seconds
-
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly CacheItemPoolInterface $cache,
         private readonly OllamaService $ollama,
-        private readonly LanguageDetector $languageDetector
+        private readonly LanguageDetector $languageDetector,
+        private readonly int $translationCacheTtl
     ) {
+    }
+
+    /**
+     * Checks if translation exists in cache or database WITHOUT generating new translation.
+     * Returns null if translation needs to be generated.
+     *
+     * @return array{text: string, source: string, source_language: string, cached: bool}|null
+     */
+    public function findExistingTranslation(
+        string $pdfFilename,
+        int $pageNumber,
+        string $originalText,
+        string $targetLanguage
+    ): ?array {
+        // Detect source language
+        $sourceLanguage = $this->languageDetector->detect($originalText)['language'];
+
+        // If already in target language, return original
+        if ($sourceLanguage === $targetLanguage) {
+            return [
+                'text' => $originalText,
+                'source' => 'original',
+                'source_language' => $sourceLanguage,
+                'cached' => false,
+            ];
+        }
+
+        // Try cache first (fastest)
+        $cacheKey = $this->buildCacheKey($pdfFilename, $pageNumber, $targetLanguage);
+        $cachedItem = $this->cache->getItem($cacheKey);
+
+        if ($cachedItem->isHit()) {
+            return [
+                'text' => $cachedItem->get(),
+                'source' => 'cache',
+                'source_language' => $sourceLanguage,
+                'cached' => true,
+            ];
+        }
+
+        // Try database (second fastest)
+        $translation = $this->findTranslationInDatabase(
+            $pdfFilename,
+            $pageNumber,
+            $targetLanguage
+        );
+
+        if ($translation) {
+            // Store in cache for next time
+            $this->storeInCache($cacheKey, $translation->getTranslatedText());
+
+            return [
+                'text' => $translation->getTranslatedText(),
+                'source' => 'database',
+                'source_language' => $sourceLanguage,
+                'cached' => false,
+            ];
+        }
+
+        // No existing translation found
+        return null;
     }
 
     /**
@@ -153,7 +213,7 @@ class TranslationService
     {
         $cachedItem = $this->cache->getItem($cacheKey);
         $cachedItem->set($text);
-        $cachedItem->expiresAfter(self::CACHE_TTL);
+        $cachedItem->expiresAfter($this->translationCacheTtl);
         $this->cache->save($cachedItem);
     }
 
