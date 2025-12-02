@@ -9,6 +9,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * PDF viewer controller.
+ * Single Responsibility: Render PDF viewer interface.
+ */
 final class PdfController extends AbstractController
 {
     #[Route('/viewer', name: 'pdf_viewer', methods: ['GET'])]

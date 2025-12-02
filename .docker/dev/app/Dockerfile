@@ -71,7 +71,8 @@ RUN apk add --no-cache \
     npm \
     bash \
     vim \
-    unzip
+    unzip \
+    supervisor
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -81,6 +82,9 @@ WORKDIR /var/www/html
 # Copy PHP configuration files
 COPY .docker/dev/php/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY .docker/dev/php/pcov.ini /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini
+
+# Copy Supervisor configuration
+COPY .docker/dev/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Copy dependency manifests first (better cache hit rate)
 COPY composer.json composer.lock ./
@@ -100,11 +104,26 @@ RUN --mount=type=cache,target=/root/.npm \
 # Copy application files (only rebuilds when code changes)
 COPY . .
 
+# Accept build arguments for user/group IDs (development)
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+# Create user with matching host UID/GID for development
+# This prevents permission issues when VSCode creates files
+RUN if [ "$USER_ID" != "82" ]; then \
+        # Delete existing www-data user
+        deluser www-data 2>/dev/null || true; \
+        # Create new www-data with host UID/GID
+        addgroup -g ${GROUP_ID} www-data; \
+        adduser -D -u ${USER_ID} -G www-data www-data; \
+    fi
+
 # Set permissions
-RUN mkdir -p var/cache var/log var/sessions public/pdfs \
+RUN mkdir -p var/cache var/log var/sessions public/pdfs /var/log/supervisor \
     && chown -R www-data:www-data var public/pdfs \
     && chmod -R 775 var public/pdfs
 
 EXPOSE 9000
 
-CMD ["php-fpm"]
+# Start Supervisor (manages PHP-FPM + Messenger Worker)
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

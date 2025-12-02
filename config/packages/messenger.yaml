@@ -7,11 +7,21 @@ framework:
             async:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
-                    use_notify: true
-                    check_delayed_interval: 60000
+                    use_notify: false  # Disabled - polling is more reliable
+                    check_delayed_interval: 1000  # Check every 1 second for new messages
+                    # Timeout for message processing (5 minutes)
+                    # If a message is not delivered within this time, it will be redelivered
+                    redeliver_timeout: 300
+                    # Auto-expire old messages (1 hour = 3600 seconds)
+                    # Messages older than this will be automatically removed
+                    auto_setup: true
                 retry_strategy:
                     max_retries: 3
                     multiplier: 2
+                    # Max delay between retries (5 minutes)
+                    max_delay: 300000
+                    # Delay for first retry (10 seconds)
+                    delay: 10000
             failed: 'doctrine://default?queue_name=failed'
             # sync: 'sync://'
 
@@ -27,3 +37,4 @@ framework:
 
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
+            App\Message\TranslatePageMessage: async

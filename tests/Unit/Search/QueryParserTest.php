@@ -400,4 +400,16 @@ final class QueryParserTest extends TestCase
         $this->assertIsArray($result['regular']);
         $this->assertIsBool($result['hasOperators']);
     }
+
+    public function testParseWithEmptyTermsFromQuoteRemoval(): void
+    {
+        // Test that regular words are parsed correctly
+        $query = 'normal word';
+
+        $result = $this->parser->parse($query);
+
+        // Regular words should be parsed correctly
+        $this->assertContains('normal', $result['regular']);
+        $this->assertContains('word', $result['regular']);
+    }
 }
