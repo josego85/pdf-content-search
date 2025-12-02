@@ -5,6 +5,59 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2025-12-02
+
+### Added
+- **AI-Powered PDF Translation System**:
+  - On-demand page-by-page translation using Ollama AI (60-80s per page)
+  - Async job processing with 3 parallel workers via Symfony Messenger
+  - Real-time job tracking (queued → processing → completed/failed)
+  - Translation caching (7-day TTL) and duplicate prevention
+  - Frontend polling with 1s interval for instant status updates
+  - Translation overlay UI with original/translated view toggle
+  - 10 supported languages: Spanish, English, French, German, Portuguese, Italian, Dutch, Russian, Chinese, Japanese
+
+- **Comprehensive Test Suite**:
+  - 217 unit tests covering entities, services, message handlers, and controllers
+  - Test infrastructure: TranslationJob, TranslationOrchestrator, OllamaService, LanguageDetector, etc.
+
+- **Monitoring Tools**:
+  - `bin/monitor-jobs.sh` - Real-time translation job monitoring dashboard
+  - `bin/worker-logs.sh` - Worker activity and error logs
+  - `app:translation:monitor` - Symfony console command for job inspection
+  - Displays: job status, duration, worker PID, errors
+
+### Changed
+- **Architecture Refactoring (SOLID Principles)**:
+  - Extracted TranslationOrchestrator service (234 lines) for workflow coordination
+  - Created TranslationController for dedicated API endpoints (`/api/translations/*`)
+  - Simplified PdfController from 228 to 31 lines (viewer-only responsibility)
+  - Enhanced TranslationRequestValidator with complete validation metadata
+  - Migrated API routes: `/api/pdf/*` → `/api/translations/*`
+
+- **Search UI Improvements**:
+  - Added "Score:" label prefix to search relevance scores (clarifies it's not a percentage)
+  - Fixed page number format to consistent "Page 7/8" display
+  - Fixed language selector dropdown visibility (text color was white-on-white)
+
+- **Documentation**:
+  - Simplified README.md (320 → 76 lines, -76% reduction)
+  - New focused docs: `translation-tracking.md`, `frontend.md`, `messenger-worker.md`, `setup.md`
+  - Migrated to English-only documentation for international collaboration
+
+### Fixed
+- PDF viewer language dropdown now shows options in black text instead of invisible white
+- Search results page indicator spacing issues resolved
+- Translation job worker tracking and error handling improvements
+
+### Technical Details
+- **Backend**: TranslationJob entity, MessageHandler with PID tracking, OllamaService integration
+- **Frontend**: MVC architecture (Controllers, Services, UI), TranslationApiService with polling
+- **Infrastructure**: Supervisor with 3 workers (60s time-limit), PostgreSQL for queue tracking
+- **Code Quality**: Clean architecture, Single Responsibility Principle, 84.89% test coverage
+
+---
+
 ## [1.7.0] - 2025-11-29
 
 ### Changed
