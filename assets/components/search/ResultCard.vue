@@ -18,7 +18,7 @@
           PDF
         </span>
         <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-gray-100 text-gray-700">
-          <span class="hidden sm:inline">Page </span>{{ result._source?.page }}<span class="hidden sm:inline"> / {{ result._source?.total_pages }}</span>
+          Page {{ result._source?.page }}/{{ result._source?.total_pages }}
         </span>
         <span v-if="result._source?.language" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-green-50 text-green-700 font-medium">
           <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,7 +30,7 @@
           <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
           </svg>
-          {{ formatScore(result._score) }}
+          Score: {{ formatScore(result._score) }}
         </span>
       </div>
     </div>
