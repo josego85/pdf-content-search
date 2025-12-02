@@ -4,8 +4,8 @@
  */
 
 export const API_ENDPOINTS = {
-    TRANSLATE: '/api/pdf/translate',
-    STATUS: '/api/pdf/translation-status',
+    TRANSLATE: '/api/translations/translate',
+    STATUS: '/api/translations/status',
 };
 
 export const POLLING_CONFIG = {
