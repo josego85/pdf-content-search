@@ -5,7 +5,7 @@
 # ============================================
 
 # Stage 1: Build PHP extensions (cached indefinitely)
-FROM php:8.4.14-fpm-alpine AS php-extensions
+FROM php:8.4.15-fpm-alpine AS php-extensions
 
 # Install build + runtime deps in single layer
 RUN apk add --no-cache \
@@ -39,18 +39,18 @@ RUN apk add --no-cache \
 # This layer is cached and NEVER recompiles unless PHP version changes
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
-        pdo_pgsql \
-        mbstring \
-        intl \
-        exif \
-        pcntl \
-        bcmath \
-        gd \
+    pdo_pgsql \
+    mbstring \
+    intl \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
     && pecl install -o -f pcov \
     && docker-php-ext-enable pcov
 
 # Stage 2: Final development image
-FROM php:8.4.14-fpm-alpine
+FROM php:8.4.15-fpm-alpine
 
 # Copy compiled extensions from stage 1 (instant!)
 COPY --from=php-extensions /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
@@ -111,11 +111,11 @@ ARG GROUP_ID=1000
 # Create user with matching host UID/GID for development
 # This prevents permission issues when VSCode creates files
 RUN if [ "$USER_ID" != "82" ]; then \
-        # Delete existing www-data user
-        deluser www-data 2>/dev/null || true; \
-        # Create new www-data with host UID/GID
-        addgroup -g ${GROUP_ID} www-data; \
-        adduser -D -u ${USER_ID} -G www-data www-data; \
+    # Delete existing www-data user
+    deluser www-data 2>/dev/null || true; \
+    # Create new www-data with host UID/GID
+    addgroup -g ${GROUP_ID} www-data; \
+    adduser -D -u ${USER_ID} -G www-data www-data; \
     fi
 
 # Set permissions

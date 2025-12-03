@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [1.8.1] - 2025-12-03
+
+### Added
+- **Production Docker Configuration**:
+  - Production Dockerfile with Supervisor (manages PHP-FPM + 3 Messenger workers)
+  - Apache configs for production (`/prod/apache/`)
+  - Supervisor config with optimized worker settings (1h time-limit, 256MB memory)
+  - `.env` auto-configuration during build (APP_ENV=prod, APP_SECRET generation)
+
+- **Management Scripts**:
+  - `docker-dev.sh` - Development environment management (up/down/logs/exec/build/clean)
+  - `docker-prod.sh` - Production environment management with auto-migrations
+  - Complete isolation between dev (port 80) and prod (port 8080) environments
+
+### Changed
+- **Docker Architecture** (Senior Dev Best Practices):
+  - Dev/prod now use separate Docker projects with isolated volumes
+  - Production uses optimized multi-stage build with supervisor
+  - `.dockerignore` updated to include production configs
+  - `docker-compose.yml` - Production base (port 8080, named volumes, restart policies)
+  - `docker-compose.override.yml` - Development overrides (source mounts, exposed ports)
+
+- **Documentation**:
+  - Updated `README.md` with Quick Start including `npm run build` and Ollama setup
+  - Enhanced `docs/setup.md` with Ollama model download step and Elasticsearch index creation
+  - Revised `docs/docker.md` with management scripts and dev/prod separation
+
+### Fixed
+- Production environment now properly runs Messenger workers via Supervisor
+- Ollama model download documented as required setup step
+- Frontend assets build step now prominent in documentation
+
+### Dependencies
+- **build:** Updated PHP from 8.4.14 to 8.4.15
+- **deps-dev:** Bumped development-dependencies group (#39)
+- **deps:** Bumped pdfjs-dist from 5.4.394 to 5.4.449 (#35)
+
+---
+
 ## [1.8.0] - 2025-12-02
 
 ### Added

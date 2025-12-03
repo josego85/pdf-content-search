@@ -1,40 +1,35 @@
 # ============================================
-# Development Override (Auto-loaded)
-# Overrides docker-compose.yml for local dev
+# Docker Compose - DEVELOPMENT OVERRIDES
 # ============================================
+# This file is automatically loaded in development
+# and overrides settings from docker-compose.yml
+# ============================================
+# Only includes differences from production base
+# ============================================
+
 services:
   database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    # Expose database port for local access (IDEs, tools)
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-    volumes:
-      - database_data:/var/lib/postgresql/data:rw
-    networks:
-      - app_network
+    # No restart in development
+    restart: "no"
 
   apache:
+    # Use standard Apache (not alpine) for better dev tooling
     image: httpd:2.4
+    # Expose HTTP port
     ports:
       - "80:80"
+    # Override volumes: mount source code for live reload
     volumes:
       - .:/var/www/html
       - ./.docker/dev/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
       - ./.docker/dev/apache/vhost.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
-    depends_on:
-      - php
-    networks:
-      - app_network
+    restart: "no"
 
   php:
+    # Use development Dockerfile with dev tools
     build:
       context: .
       dockerfile: .docker/dev/app/Dockerfile
@@ -42,24 +37,22 @@ services:
         # Match host user UID/GID to prevent permission issues
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
+    # Override volumes: mount source code for live reload
     volumes:
       - .:/var/www/html
       - ./.docker/dev/php/php.ini:/usr/local/etc/php/php.ini
+    # Override environment: enable debug mode
     environment:
       - APP_ENV=dev
       - APP_DEBUG=1
       - ELASTICSEARCH_HOST=http://elasticsearch:9200
-    depends_on:
-      - database
-      - elasticsearch
-    networks:
-      - app_network
-    expose:
-      - "9000"
-    # Supervisor needs root to manage processes, then drops to www-data
+    restart: "no"
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.10
+    # Expose port for local access
+    ports:
+      - "9200:9200"
+    # Override: use more memory in development
     environment:
       - discovery.type=single-node
       - cluster.name=docker-cluster
@@ -69,66 +62,28 @@ services:
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
       - cluster.routing.allocation.disk.threshold_enabled=false
       - action.destructive_requires_name=false
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
-    networks:
-      - app_network
+    # Faster healthcheck in development
     healthcheck:
       test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health || exit 1"]
       interval: 10s
       timeout: 10s
       retries: 3
+    restart: "no"
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.17.10
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-      - XPACK_SECURITY_ENABLED=false
+    # Expose port for local access
     ports:
       - "5601:5601"
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    networks:
-      - app_network
+    # Faster healthcheck in development
     healthcheck:
       test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q 'Looking good'"]
       interval: 10s
       timeout: 10s
       retries: 120
+    restart: "no"
 
   ollama:
-    image: ollama/ollama:latest
+    # Expose port for local access in development
     ports:
       - "11435:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    networks:
-      - app_network
-    healthcheck:
-      test: ["CMD", "ollama", "list"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-volumes:
-  elasticsearch_data:
-    driver: local
-  database_data:
-    driver: local
-  ollama_data:
-    driver: local
-
-networks:
-  app_network:
-    driver: bridge
+    restart: "no"

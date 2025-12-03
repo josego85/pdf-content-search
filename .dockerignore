@@ -11,6 +11,8 @@ docker-compose*.yml
 !.docker/dev/php/pcov.ini
 !.docker/dev/supervisor/supervisord.conf
 .docker/prod
+!.docker/prod/apache/
+!.docker/prod/supervisor/supervisord.conf
 .docker/apache
 .docker/php.ini
 
@@ -46,8 +48,9 @@ phpunit.xml.dist
 .php-cs-fixer.dist.php
 
 # Environment
-.env
-.env.*
+# .env is needed for production build (will be configured during build)
+.env.local
+.env.*.local
 !.env.test
 
 # NPM

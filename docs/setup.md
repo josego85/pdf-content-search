@@ -59,22 +59,40 @@ npm run build
 ```bash
 # Run migrations
 docker compose exec php php bin/console doctrine:migrations:migrate --no-interaction
-
-# Create Elasticsearch index
-docker compose exec php php bin/console app:create-index
 ```
 
-### 6. Add PDFs and Index
+### 6. Elasticsearch Setup
 
 ```bash
-# Copy your PDFs
+# Create PDF index with correct mappings
+docker compose exec php php bin/console app:create-pdf-index
+```
+
+### 7. Ollama Model Setup
+
+**Required for AI translations**
+
+```bash
+# Download the translation model (llama3.2:1b ~1.3GB)
+docker compose exec ollama ollama pull llama3.2:1b
+
+# Verify model is downloaded
+docker compose exec ollama ollama list
+```
+
+**⏱️ Note:** First download takes ~3 minutes depending on your connection.
+
+### 8. Add PDFs and Index
+
+```bash
+# Copy your PDFs to the public directory
 cp /path/to/your/pdfs/*.pdf public/pdfs/
 
-# Index them
+# Index all PDFs into Elasticsearch
 docker compose exec php php bin/console app:index-pdfs
 ```
 
-### 7. Verify
+### 9. Verify
 
 Open http://localhost and search for content in your PDFs.
 
