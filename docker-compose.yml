@@ -1,15 +1,42 @@
 # ============================================
-# Base Docker Compose - Production
-# Development override in docker-compose.override.yml
+# Docker Compose - PRODUCTION (Base)
 # ============================================
+# Usage:
+#   Development: docker compose up (auto-loads override)
+#   Production:  docker compose -p pdf-search-prod -f docker-compose.yml up
+# ============================================
+
 services:
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+    networks:
+      - app_network
+    restart: unless-stopped
+
   apache:
     image: httpd:2.4-alpine
+    ports:
+      - "${APACHE_PORT:-8080}:80"
     volumes:
-      # Read-only in production, no source mount
-      - app_data:/var/www/html:ro
-      - ./.docker/dev/apache/apache.conf:/usr/local/apache2/conf/httpd.conf:ro
-      - ./.docker/dev/apache/vhost.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf:ro
+      - ./.docker/prod/apache/apache.conf:/usr/local/apache2/conf/httpd.conf:ro
+      - ./.docker/prod/apache/vhost.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf:ro
+      # Share code from PHP container (read-only)
+      - app_public:/var/www/html/public:ro
+    depends_on:
+      - php
+    networks:
+      - app_network
     restart: unless-stopped
 
   php:
@@ -17,28 +44,101 @@ services:
       context: .
       dockerfile: .docker/prod/app/Dockerfile
     volumes:
-      # Use named volume, not source mount
-      - app_data:/var/www/html
-      - ./.docker/dev/php/php.ini:/usr/local/etc/php/php.ini:ro
+      # Export /var/www/html/public for Apache
+      - app_public:/var/www/html/public
+      # Persist writable directories
+      - app_cache:/var/www/html/var/cache
+      - app_log:/var/www/html/var/log
+      - app_sessions:/var/www/html/var/sessions
     environment:
       - APP_ENV=prod
       - APP_DEBUG=0
       - ELASTICSEARCH_HOST=http://elasticsearch:9200
-    restart: unless-stopped
-
-  database:
+    depends_on:
+      - database
+      - elasticsearch
+    networks:
+      - app_network
+    expose:
+      - "9000"
     restart: unless-stopped
 
   elasticsearch:
-    ports: []  # Don't expose in production
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.10
     environment:
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m  # Less memory in prod
+      - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - action.destructive_requires_name=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     restart: unless-stopped
 
   kibana:
-    ports: []  # Don't expose in production
+    image: docker.elastic.co/kibana/kibana:8.17.10
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q 'Looking good'"]
+      interval: 30s
+      timeout: 10s
+      retries: 120
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     restart: unless-stopped
 
 volumes:
-  app_data:
+  app_public:
     driver: local
+  app_cache:
+    driver: local
+  app_log:
+    driver: local
+  app_sessions:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  database_data:
+    driver: local
+  ollama_data:
+    driver: local
+
+networks:
+  app_network:
+    driver: bridge

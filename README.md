@@ -1,6 +1,6 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.8.0-blue.svg)](https://github.com/josego85/pdf-content-search)
+[![Version](https://img.shields.io/badge/Version-1.8.1-blue.svg)](https://github.com/josego85/pdf-content-search)
 [![PHP](https://img.shields.io/badge/PHP-8.4-blue.svg)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-7.4-green.svg)](https://symfony.com/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -22,7 +22,15 @@ Search content within PDF files using Elasticsearch and Vue.js.
 # Clone and start
 git clone https://github.com/josego85/pdf-content-search.git
 cd pdf-content-search
-docker compose up -d
+./docker-dev.sh up
+
+# Build frontend assets
+npm install
+npm run build
+
+# Setup Elasticsearch & Ollama
+docker compose exec php php bin/console app:create-pdf-index
+docker compose exec ollama ollama pull llama3.2:1b
 
 # Add PDFs and index
 cp your-pdfs/*.pdf public/pdfs/
@@ -30,6 +38,8 @@ docker compose exec php php bin/console app:index-pdfs
 
 # Open: http://localhost
 ```
+
+**📖 Full setup guide:** [docs/setup.md](docs/setup.md)
 
 ## Monitor Translations
 
@@ -55,6 +65,22 @@ See [`docs/`](docs/):
 - [frontend.md](docs/frontend.md) - Frontend architecture
 - [docker.md](docs/docker.md) - Docker details
 - [testing.md](docs/testing.md) - Tests
+
+## Development vs Production
+
+```bash
+# Development (port 80)
+./docker-dev.sh up     # Start with migrations
+./docker-dev.sh logs   # View logs
+./docker-dev.sh down   # Stop
+
+# Production (port 8080)
+./docker-prod.sh up    # Start with migrations
+./docker-prod.sh logs  # View logs
+./docker-prod.sh down  # Stop
+```
+
+**📖 Docker guide:** [docs/docker.md](docs/docker.md)
 
 ## Development
 

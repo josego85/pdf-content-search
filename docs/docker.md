@@ -2,23 +2,59 @@
 
 ## Quick Start
 
-### Development (Default - Optimized)
+### Development (Recommended)
 ```bash
-# Recommended: Use optimized build script
-./docker-build.sh
+# Start with automatic migrations
+./docker-dev.sh up
 
-# Or standard build
-docker-compose build
-docker-compose up -d
+# Or manual start
+docker compose up -d
 ```
 
-**Performance:** First build ~2min, rebuilds ~5-15s (24x faster!)
+**Ports:**
+- Web: http://localhost
+- Elasticsearch: http://localhost:9200
+- Kibana: http://localhost:5601
+- PostgreSQL: localhost:5432
+- Ollama: http://localhost:11435
 
 ### Production
 ```bash
-docker-compose -f docker-compose.yml build --no-cache
-docker-compose -f docker-compose.yml up -d
+# Start with automatic migrations
+./docker-prod.sh up
+
+# Access at http://localhost:8080
 ```
+
+**Port:** http://localhost:8080
+
+## Management Scripts
+
+### Development: `docker-dev.sh`
+
+```bash
+./docker-dev.sh up       # Start + migrations
+./docker-dev.sh down     # Stop (keeps data)
+./docker-dev.sh restart  # Restart services
+./docker-dev.sh logs     # View logs
+./docker-dev.sh exec php bash  # Execute command
+./docker-dev.sh build    # Rebuild images
+./docker-dev.sh clean    # Remove volumes (⚠️ deletes data)
+```
+
+### Production: `docker-prod.sh`
+
+```bash
+./docker-prod.sh up       # Start + migrations
+./docker-prod.sh down     # Stop (keeps data)
+./docker-prod.sh restart  # Restart services
+./docker-prod.sh logs     # View logs
+./docker-prod.sh exec php bash  # Execute command
+./docker-prod.sh build    # Rebuild images
+./docker-prod.sh clean    # Remove volumes (⚠️ deletes data)
+```
+
+**Key Difference:** Dev and prod use **separate Docker projects** with isolated volumes and data.
 
 ## Architecture
 
@@ -117,27 +153,26 @@ APP_ENV=dev
 HTTP_PORT=80
 ```
 
-## Common Commands
+## Low-Level Commands
+
+If you need direct Docker Compose access (not using the scripts):
 
 ```bash
-# Development
-docker-compose build                    # Build development image
-docker-compose up -d                    # Start development
-docker-compose down                     # Stop services
-docker-compose restart                  # Restart services
-docker-compose logs -f                  # View all logs
-docker-compose logs -f php              # View PHP logs
-docker-compose exec php bash            # Access PHP container
-docker-compose exec php npm run build   # Compile frontend
+# Development (auto-loads docker-compose.override.yml)
+docker compose build                    # Build images
+docker compose up -d                    # Start services
+docker compose down                     # Stop services
+docker compose logs -f php              # View logs
+docker compose exec php bash            # Access container
 
-# Production
-docker-compose -f docker-compose.yml build --no-cache   # Build production
-docker-compose -f docker-compose.yml up -d              # Start production
-docker-compose -f docker-compose.yml down               # Stop production
+# Production (isolated project)
+docker compose -p pdf-search-prod -f docker-compose.yml build
+docker compose -p pdf-search-prod -f docker-compose.yml up -d
+docker compose -p pdf-search-prod -f docker-compose.yml down
 
 # Utilities
 docker images | grep pdf-content-search    # Show image sizes
-docker-compose ps                          # Show container status
+docker compose ps                          # Show container status
 docker system df                           # Check disk usage
 ```
 
