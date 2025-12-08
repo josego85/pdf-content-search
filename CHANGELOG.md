@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **chore(deps): Upgrade Elasticsearch 8.17 → 9.2.2 and Kibana**
+  - Elasticsearch/Kibana: 8.17.10 → 9.2.2 (Lucene 10.3.2)
+  - PHP client: elasticsearch/elasticsearch 8.19.0 → 9.2.0
+  - 40% faster vector search with BBQ and SIMD optimizations
+  - Prepares infrastructure for RAG semantic search
+  - **Breaking**: Required clean volumes and re-indexing
+
+- **chore(ci)(deps): Bump the github-actions group** (#44)
+  - Update actions/checkout 6.0.0 → 6.0.1
+  - Update github/codeql-action 4.31.5 → 4.31.7
+
+- **chore(deps): Bump vue 3.5.24 → 3.5.25** (#43)
+
+---
 
 ## [1.8.1] - 2025-12-03
 

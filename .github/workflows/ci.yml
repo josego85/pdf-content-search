@@ -28,7 +28,7 @@ jobs:
 
     services:
       elasticsearch:
-        image: elasticsearch:8.17.10
+        image: elasticsearch:9.2.2
         env:
           discovery.type: single-node
           xpack.security.enabled: false

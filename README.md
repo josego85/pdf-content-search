@@ -51,7 +51,7 @@ docker compose exec php php bin/console app:index-pdfs
 ## Stack
 
 - **Backend:** PHP 8.4, Symfony 7.4, PostgreSQL 16
-- **Search:** Elasticsearch 8.17, Kibana 8.17
+- **Search:** Elasticsearch 9.2, Kibana 9.2
 - **Frontend:** Vue.js 3.5, Tailwind CSS 3.4, PDF.js 5.4
 - **AI:** Ollama (translations)
 - **Queue:** Symfony Messenger (3 workers)
