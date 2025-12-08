@@ -102,7 +102,7 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "3.91.2",
+        "friendsofphp/php-cs-fixer": "3.91.3",
         "phpunit/phpunit": "9.6.29",
         "symfony/browser-kit": ">=7.4.0",
         "symfony/css-selector": ">=7.4.0",
