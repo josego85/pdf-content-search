@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.9.0] - 2025-12-09
 
 ### Added
 - **Hybrid Semantic Search with RAG**
@@ -46,6 +46,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Total: 279 passing tests, 745 assertions
 
 - **Documentation updates**
+  - README: Version bump 1.8.1 → 1.9.0
+  - README: Enhanced badges (Elasticsearch, Vue.js, Ollama, Docker, Test Coverage 87%)
+  - README: Updated tagline to emphasize AI-powered hybrid search
   - README: Updated features to highlight AI Hybrid Search
   - README: Added nomic-embed-text model download instructions
   - docs/setup.md: Added embedding model setup (nomic-embed-text ~274MB)

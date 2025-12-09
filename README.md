@@ -1,11 +1,16 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.8.1-blue.svg)](https://github.com/josego85/pdf-content-search)
-[![PHP](https://img.shields.io/badge/PHP-8.4-blue.svg)](https://www.php.net/)
-[![Symfony](https://img.shields.io/badge/Symfony-7.4-green.svg)](https://symfony.com/)
+[![Version](https://img.shields.io/badge/Version-1.9.0-blue.svg)](https://github.com/josego85/pdf-content-search)
+[![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![Symfony](https://img.shields.io/badge/Symfony-7.4-000000?logo=symfony&logoColor=white)](https://symfony.com/)
+[![Elasticsearch](https://img.shields.io/badge/Elasticsearch-9.2-005571?logo=elasticsearch&logoColor=white)](https://www.elastic.co/)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
+[![Ollama](https://img.shields.io/badge/Ollama-AI-000000?logo=ai&logoColor=white)](https://ollama.ai/)
+[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Tests](https://img.shields.io/badge/Coverage-87%25-success?logo=phpunit&logoColor=white)](tests/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-Search content within PDF files using Elasticsearch and Vue.js.
+AI-powered PDF search with hybrid semantic capabilities using Elasticsearch 9.2 vector search and Ollama embeddings.
 
 ## Features
 
