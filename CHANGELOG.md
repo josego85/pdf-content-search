@@ -8,18 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- **chore(deps): Upgrade Elasticsearch 8.17 → 9.2.2 and Kibana**
-  - Elasticsearch/Kibana: 8.17.10 → 9.2.2 (Lucene 10.3.2)
-  - PHP client: elasticsearch/elasticsearch 8.19.0 → 9.2.0
-  - 40% faster vector search with BBQ and SIMD optimizations
-  - Prepares infrastructure for RAG semantic search
+- **Elasticsearch 8.17 → 9.2.2 and Kibana** (Lucene 10.3.2)
+  - elasticsearch/elasticsearch 8.19.0 → 9.2.0
+  - 40% faster vector search (BBQ + SIMD)
+  - Prepares for RAG semantic search implementation
   - **Breaking**: Required clean volumes and re-indexing
 
-- **chore(ci)(deps): Bump the github-actions group** (#44)
-  - Update actions/checkout 6.0.0 → 6.0.1
-  - Update github/codeql-action 4.31.5 → 4.31.7
-
-- **chore(deps): Bump vue 3.5.24 → 3.5.25** (#43)
+### Dependencies
+- Bump friendsofphp/php-cs-fixer 3.91.2 → 3.91.3 (#42)
+- Bump the github-actions group (#44)
+  - actions/checkout 6.0.0 → 6.0.1
+  - github/codeql-action 4.31.5 → 4.31.7
+- Bump vue 3.5.24 → 3.5.25 (#43)
 
 ---
 

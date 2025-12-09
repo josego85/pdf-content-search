@@ -137,7 +137,7 @@ export default {
       const startTime = performance.now();
 
       try {
-        const response = await fetch(`/api/search?q=${encodeURIComponent(this.searchQuery)}`);
+        const response = await fetch(`/api/search?q=${encodeURIComponent(this.searchQuery)}&strategy=hybrid_ai`);
         const data = await response.json();
 
         if (!response.ok) {
