@@ -41,9 +41,9 @@ final class SearchController extends AbstractController
                 ], Response::HTTP_BAD_REQUEST);
             }
 
-            // Get strategy from request (defaults to HYBRID_AI for best results)
+            // Auto-detect search strategy based on query pattern
             $strategyParam = $request->query->get('strategy', 'hybrid_ai');
-            $strategy = SearchStrategy::tryFrom($strategyParam) ?? SearchStrategy::HYBRID_AI;
+            $strategy = $this->detectSearchStrategy($query, $strategyParam);
 
             // Build query using builder pattern
             $searchParams = $this->queryBuilder->build($query, $strategy);
@@ -93,5 +93,23 @@ final class SearchController extends AbstractController
                 'details' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Auto-detect the best search strategy based on query pattern.
+     * Smart defaults following UX best practices (invisible intelligence).
+     */
+    private function detectSearchStrategy(string $query, string $requestedStrategy): SearchStrategy
+    {
+        // If user requested a specific strategy via API, respect it
+        $explicitStrategy = SearchStrategy::tryFrom($requestedStrategy);
+
+        // Auto-detection: queries with quotes should use exact match
+        if (preg_match('/^["\'].*["\']$/', trim($query))) {
+            return SearchStrategy::EXACT;
+        }
+
+        // Use requested strategy or default to HYBRID_AI
+        return $explicitStrategy ?? SearchStrategy::HYBRID_AI;
     }
 }

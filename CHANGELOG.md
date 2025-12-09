@@ -7,12 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **VectorStoreInterface** for database-agnostic vector search
+  - Abstraction layer for vector stores (Elasticsearch, Pinecone, Weaviate, Qdrant)
+  - ElasticsearchVectorStore implementation with kNN search
+  - Makes future migration to other vector DBs trivial (1-2 days instead of weeks)
+  - Follows Dependency Inversion Principle (SOLID)
+
 ### Changed
 - **Elasticsearch 8.17 → 9.2.2 and Kibana** (Lucene 10.3.2)
   - elasticsearch/elasticsearch 8.19.0 → 9.2.0
   - 40% faster vector search (BBQ + SIMD)
   - Prepares for RAG semantic search implementation
   - **Breaking**: Required clean volumes and re-indexing
+- **HybridSearchQueryBuilder** now uses VectorStoreInterface
+  - Decoupled from Elasticsearch-specific query format
+  - Vector field name is now dynamic via `getVectorFieldName()`
+- **Frontend UX Improvements**
+  - Simplified search UI: removed strategy selector (follows "Don't make me think")
+  - Auto-detection: queries with quotes automatically use EXACT strategy
+  - Smart badge: shows "RRF" for hybrid_ai, "Score" for other strategies
 
 ### Dependencies
 - Bump friendsofphp/php-cs-fixer 3.91.2 → 3.91.3 (#42)

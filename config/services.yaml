@@ -32,6 +32,22 @@ services:
     App\Contract\SearchEngineInterface: '@App\Service\ElasticsearchService'
     App\Contract\PdfIndexerInterface: '@App\Service\ElasticsearchService'
 
+    # Vector store service - abstraction for vector databases
+    # Makes it easy to switch from Elasticsearch to Pinecone, Weaviate, Qdrant, etc.
+    App\Service\ElasticsearchVectorStore:
+        arguments:
+            $client: '@.service_locator.elasticsearch_client'
+            $indexName: '%elasticsearch.index_pdfs%'
+            $dimensions: 768
+
+    # Bind interface to implementation (Dependency Inversion)
+    App\Contract\VectorStoreInterface: '@App\Service\ElasticsearchVectorStore'
+
+    # Service locator for Elasticsearch client (shared with ElasticsearchService)
+    .service_locator.elasticsearch_client:
+        class: Closure
+        factory: ['@App\Service\ElasticsearchService', 'getClient']
+
     # Search services - SOLID architecture
     App\Search\QueryParser: ~
 

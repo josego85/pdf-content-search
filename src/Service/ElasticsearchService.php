@@ -171,4 +171,13 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
             'Search query failed'
         );
     }
+
+    /**
+     * Get Elasticsearch client for advanced use cases.
+     * Used by ElasticsearchVectorStore to share the same client instance.
+     */
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
 }

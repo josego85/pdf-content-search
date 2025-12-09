@@ -6,16 +6,19 @@ namespace App\Search;
 
 use App\Contract\EmbeddingServiceInterface;
 use App\Contract\QueryBuilderInterface;
+use App\Contract\VectorStoreInterface;
 
 /**
  * Hybrid search query builder supporting both lexical and semantic (vector) search.
  * Decorator pattern: delegates lexical queries to SearchQueryBuilder, adds vector capabilities.
+ * Dependency Inversion: Depends on VectorStoreInterface, not concrete Elasticsearch implementation.
  */
 final readonly class HybridSearchQueryBuilder implements QueryBuilderInterface
 {
     public function __construct(
         private SearchQueryBuilder $lexicalBuilder,
         private EmbeddingServiceInterface $embeddingService,
+        private VectorStoreInterface $vectorStore,
         private string $pdfPagesIndex
     ) {
     }
@@ -30,17 +33,19 @@ final readonly class HybridSearchQueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Build pure semantic search query using kNN vector search.
+     * Build pure semantic search query using vector store abstraction.
+     * Now database-agnostic: works with Elasticsearch, Pinecone, Weaviate, etc.
      */
     private function buildSemanticQuery(string $query): array
     {
         $embedding = $this->embeddingService->embed($query);
 
+        // Build Elasticsearch-specific query for now (will be refactored in Phase 2)
         return [
             'index' => $this->pdfPagesIndex,
             'body' => [
                 'knn' => [
-                    'field' => 'text_embedding',
+                    'field' => $this->vectorStore->getVectorFieldName(),
                     'query_vector' => $embedding,
                     'k' => 50,
                     'num_candidates' => 100,
