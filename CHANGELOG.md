@@ -32,6 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Smart badges: "RRF" for hybrid_ai, "Score" for other strategies
   - Removed unused props/methods (strategy, updateStrategy)
 
+- **Comprehensive test coverage (86.99%)**
+  - OllamaEmbeddingServiceTest: 13 tests (100% coverage)
+  - ReciprocalRankFusionServiceTest: 15 tests (91.89% coverage)
+  - SearchStrategyTest: Updated for 5 strategies (HYBRID, EXACT, PREFIX, SEMANTIC, HYBRID_AI)
+  - 279 passing tests, 745 assertions
+
 ### Changed
 - **Elasticsearch 8.17 → 9.2.2 and Kibana** (Lucene 10.3.2)
   - elasticsearch/elasticsearch 8.19.0 → 9.2.0
