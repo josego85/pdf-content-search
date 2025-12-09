@@ -31,12 +31,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Auto-detection: queries with quotes use EXACT strategy
   - Smart badges: "RRF" for hybrid_ai, "Score" for other strategies
   - Removed unused props/methods (strategy, updateStrategy)
+  - Updated Initial.vue features: "AI Hybrid Search", "Exact Match Mode", "In-PDF Highlighting"
 
 - **Comprehensive test coverage (86.99%)**
-  - OllamaEmbeddingServiceTest: 13 tests (100% coverage)
-  - ReciprocalRankFusionServiceTest: 15 tests (91.89% coverage)
-  - SearchStrategyTest: Updated for 5 strategies (HYBRID, EXACT, PREFIX, SEMANTIC, HYBRID_AI)
-  - 279 passing tests, 745 assertions
+  - **OllamaEmbeddingServiceTest**: 13 tests covering embedding generation (100% coverage)
+    * Dimension validation (768 dims for nomic-embed-text)
+    * Retry logic with exponential backoff (3 attempts)
+    * Batch processing and edge cases
+  - **ReciprocalRankFusionServiceTest**: 15 tests covering RRF algorithm (91.89% coverage)
+    * RRF score calculation (k=60 formula)
+    * Highlight and score merging across result sets
+    * Custom weights and deduplication
+  - **SearchStrategyTest**: Updated for 5 strategies (HYBRID, EXACT, PREFIX, SEMANTIC, HYBRID_AI)
+  - Total: 279 passing tests, 745 assertions
+
+- **Documentation updates**
+  - README: Updated features to highlight AI Hybrid Search
+  - README: Added nomic-embed-text model download instructions
+  - docs/setup.md: Added embedding model setup (nomic-embed-text ~274MB)
+  - docs/setup.md: Added --skip-embeddings option documentation
+  - docs/setup.md: Updated Ollama configuration with embedding model params
 
 ### Changed
 - **Elasticsearch 8.17 → 9.2.2 and Kibana** (Lucene 10.3.2)
