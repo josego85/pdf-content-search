@@ -5,21 +5,69 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.9.0] - 2025-12-09
+
+### Added
+- **Hybrid Semantic Search with RAG**
+  - EmbeddingServiceInterface + OllamaEmbeddingService (nomic-embed-text, 768 dims)
+  - RankFusionServiceInterface + ReciprocalRankFusionService (RRF k=60)
+  - HybridSearchQueryBuilder with decorator pattern (lexical + semantic)
+  - SEMANTIC and HYBRID_AI search strategies
+  - dense_vector field in Elasticsearch (HNSW, cosine similarity, m=16, ef=100)
+  - Parallel query execution with RRF merging in SearchController
+  - --skip-embeddings option in IndexarPdfsCommand
+  - **Performance**: 28ms hybrid search, 1035 pages indexed with embeddings in ~30min
+  - **Breaking**: Requires Ollama nomic-embed-text and index recreation
+
+- **VectorStoreInterface** for database-agnostic vector search
+  - Abstraction layer for vector stores (Elasticsearch, Pinecone, Weaviate, Qdrant)
+  - ElasticsearchVectorStore implementation with kNN search
+  - HybridSearchQueryBuilder uses VectorStoreInterface (decoupled from Elasticsearch)
+  - Dynamic vector field name via `getVectorFieldName()`
+
+- **Frontend UX improvements**
+  - Simplified Hero badge: "AI-Powered Search"
+  - Removed strategy selector from Controls (cleaner UI)
+  - Auto-detection: queries with quotes use EXACT strategy
+  - Smart badges: "RRF" for hybrid_ai, "Score" for other strategies
+  - Removed unused props/methods (strategy, updateStrategy)
+  - Updated Initial.vue features: "AI Hybrid Search", "Exact Match Mode", "In-PDF Highlighting"
+
+- **Comprehensive test coverage (86.99%)**
+  - **OllamaEmbeddingServiceTest**: 13 tests covering embedding generation (100% coverage)
+    * Dimension validation (768 dims for nomic-embed-text)
+    * Retry logic with exponential backoff (3 attempts)
+    * Batch processing and edge cases
+  - **ReciprocalRankFusionServiceTest**: 15 tests covering RRF algorithm (91.89% coverage)
+    * RRF score calculation (k=60 formula)
+    * Highlight and score merging across result sets
+    * Custom weights and deduplication
+  - **SearchStrategyTest**: Updated for 5 strategies (HYBRID, EXACT, PREFIX, SEMANTIC, HYBRID_AI)
+  - Total: 279 passing tests, 745 assertions
+
+- **Documentation updates**
+  - README: Version bump 1.8.1 → 1.9.0
+  - README: Enhanced badges (Elasticsearch, Vue.js, Ollama, Docker, Test Coverage 87%)
+  - README: Updated tagline to emphasize AI-powered hybrid search
+  - README: Updated features to highlight AI Hybrid Search
+  - README: Added nomic-embed-text model download instructions
+  - docs/setup.md: Added embedding model setup (nomic-embed-text ~274MB)
+  - docs/setup.md: Added --skip-embeddings option documentation
+  - docs/setup.md: Updated Ollama configuration with embedding model params
 
 ### Changed
-- **chore(deps): Upgrade Elasticsearch 8.17 → 9.2.2 and Kibana**
-  - Elasticsearch/Kibana: 8.17.10 → 9.2.2 (Lucene 10.3.2)
-  - PHP client: elasticsearch/elasticsearch 8.19.0 → 9.2.0
-  - 40% faster vector search with BBQ and SIMD optimizations
-  - Prepares infrastructure for RAG semantic search
+- **Elasticsearch 8.17 → 9.2.2 and Kibana** (Lucene 10.3.2)
+  - elasticsearch/elasticsearch 8.19.0 → 9.2.0
+  - 40% faster vector search (BBQ + SIMD)
+  - Prepares for RAG semantic search implementation
   - **Breaking**: Required clean volumes and re-indexing
 
-- **chore(ci)(deps): Bump the github-actions group** (#44)
-  - Update actions/checkout 6.0.0 → 6.0.1
-  - Update github/codeql-action 4.31.5 → 4.31.7
-
-- **chore(deps): Bump vue 3.5.24 → 3.5.25** (#43)
+### Dependencies
+- Bump friendsofphp/php-cs-fixer 3.91.2 → 3.91.3 (#42)
+- Bump the github-actions group (#44)
+  - actions/checkout 6.0.0 → 6.0.1
+  - github/codeql-action 4.31.5 → 4.31.7
+- Bump vue 3.5.24 → 3.5.25 (#43)
 
 ---
 

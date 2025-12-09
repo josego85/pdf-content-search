@@ -32,6 +32,22 @@ services:
     App\Contract\SearchEngineInterface: '@App\Service\ElasticsearchService'
     App\Contract\PdfIndexerInterface: '@App\Service\ElasticsearchService'
 
+    # Vector store service - abstraction for vector databases
+    # Makes it easy to switch from Elasticsearch to Pinecone, Weaviate, Qdrant, etc.
+    App\Service\ElasticsearchVectorStore:
+        arguments:
+            $client: '@.service_locator.elasticsearch_client'
+            $indexName: '%elasticsearch.index_pdfs%'
+            $dimensions: 768
+
+    # Bind interface to implementation (Dependency Inversion)
+    App\Contract\VectorStoreInterface: '@App\Service\ElasticsearchVectorStore'
+
+    # Service locator for Elasticsearch client (shared with ElasticsearchService)
+    .service_locator.elasticsearch_client:
+        class: Closure
+        factory: ['@App\Service\ElasticsearchService', 'getClient']
+
     # Search services - SOLID architecture
     App\Search\QueryParser: ~
 
@@ -39,8 +55,14 @@ services:
         arguments:
             $pdfPagesIndex: '%elasticsearch.index_pdfs%'
 
+    App\Search\HybridSearchQueryBuilder:
+        arguments:
+            $lexicalBuilder: '@App\Search\SearchQueryBuilder'
+            $pdfPagesIndex: '%elasticsearch.index_pdfs%'
+
     # Bind interface to implementation (Dependency Inversion Principle)
-    App\Contract\QueryBuilderInterface: '@App\Search\SearchQueryBuilder'
+    # Using HybridSearchQueryBuilder to support both lexical and semantic search
+    App\Contract\QueryBuilderInterface: '@App\Search\HybridSearchQueryBuilder'
 
     # Translation services
     App\Service\TranslationRequestValidator:
@@ -62,3 +84,17 @@ services:
             $ollamaTimeout: '%ollama.timeout%'
             $ollamaTemperature: '%ollama.temperature%'
             $ollamaMaxTokens: '%ollama.max_tokens%'
+
+    # Embedding service for semantic search
+    App\Service\OllamaEmbeddingService:
+        arguments:
+            $ollamaHost: '%ollama.host%'
+            $embeddingModel: '%ollama.embedding_model%'
+            $dimensions: 768
+
+    # Bind interface to implementation for embeddings
+    App\Contract\EmbeddingServiceInterface: '@App\Service\OllamaEmbeddingService'
+
+    # Rank fusion service for hybrid search
+    App\Service\ReciprocalRankFusionService: ~
+    App\Contract\RankFusionServiceInterface: '@App\Service\ReciprocalRankFusionService'

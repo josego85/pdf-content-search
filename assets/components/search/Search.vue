@@ -81,7 +81,8 @@ export default {
       error: null,
       debounceTimeout: null,
       searchDuration: null,
-      viewMode: 'grid'
+      viewMode: 'grid',
+      searchStrategy: 'hybrid_ai'
     }
   },
   computed: {
@@ -137,7 +138,7 @@ export default {
       const startTime = performance.now();
 
       try {
-        const response = await fetch(`/api/search?q=${encodeURIComponent(this.searchQuery)}`);
+        const response = await fetch(`/api/search?q=${encodeURIComponent(this.searchQuery)}&strategy=${this.searchStrategy}`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -146,7 +147,8 @@ export default {
 
         if (data.status === 'success' && data.data?.hits) {
           this.results = data.data.hits;
-          this.searchDuration = Math.round(performance.now() - startTime);
+          this.searchDuration = data.data.duration_ms || Math.round(performance.now() - startTime);
+          this.searchStrategy = data.data.strategy || this.searchStrategy;
         } else {
           this.results = [];
           throw new Error('Invalid response format');

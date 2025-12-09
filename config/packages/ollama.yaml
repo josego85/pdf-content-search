@@ -4,6 +4,9 @@ parameters:
     ollama.model: 'llama3.2:1b'
     ollama.timeout: 120  # seconds (for longer text processing)
 
+    # Embedding model configuration for semantic search
+    ollama.embedding_model: 'nomic-embed-text'  # 768 dimensions, ~50-100ms per embedding
+
     # Model generation options
     ollama.temperature: 0.3  # Lower = more deterministic translations
     ollama.max_tokens: 4096  # Maximum output tokens

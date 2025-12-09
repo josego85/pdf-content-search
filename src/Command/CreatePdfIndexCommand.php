@@ -63,6 +63,17 @@ class CreatePdfIndexCommand extends Command
                         'type' => 'date',
                         'format' => 'yyyy-MM-dd HH:mm:ss||strict_date_optional_time',
                     ],
+                    'text_embedding' => [
+                        'type' => 'dense_vector',
+                        'dims' => 768,
+                        'index' => true,
+                        'similarity' => 'cosine',
+                        'index_options' => [
+                            'type' => 'hnsw',
+                            'm' => 16,
+                            'ef_construction' => 100,
+                        ],
+                    ],
                 ],
             ],
         ];

@@ -68,19 +68,25 @@ docker compose exec php php bin/console doctrine:migrations:migrate --no-interac
 docker compose exec php php bin/console app:create-pdf-index
 ```
 
-### 7. Ollama Model Setup
+### 7. Ollama Models Setup
 
-**Required for AI translations**
+**Required for AI features: translations and semantic search**
 
 ```bash
-# Download the translation model (llama3.2:1b ~1.3GB)
+# Download translation model (llama3.2:1b ~1.3GB)
 docker compose exec ollama ollama pull llama3.2:1b
 
-# Verify model is downloaded
+# Download embedding model for semantic search (nomic-embed-text ~274MB)
+docker compose exec ollama ollama pull nomic-embed-text
+
+# Verify models are downloaded
 docker compose exec ollama ollama list
 ```
 
-**⏱️ Note:** First download takes ~3 minutes depending on your connection.
+**⏱️ Note:**
+- Translation model download: ~3 minutes
+- Embedding model download: ~30 seconds
+- Both models are required for full AI functionality (translations + hybrid search)
 
 ### 8. Add PDFs and Index
 
@@ -88,9 +94,14 @@ docker compose exec ollama ollama list
 # Copy your PDFs to the public directory
 cp /path/to/your/pdfs/*.pdf public/pdfs/
 
-# Index all PDFs into Elasticsearch
+# Index all PDFs into Elasticsearch (includes generating embeddings for semantic search)
 docker compose exec php php bin/console app:index-pdfs
+
+# Optional: Skip embeddings if you only want lexical search
+docker compose exec php php bin/console app:index-pdfs --skip-embeddings
 ```
+
+**⏱️ Note:** Indexing with embeddings takes ~3-5 seconds per page (includes text extraction + embedding generation).
 
 ### 9. Verify
 
@@ -129,13 +140,23 @@ retry_strategy:
 
 3 workers run automatically via supervisor (see `docker-compose.override.yml`).
 
-### Ollama (AI Translation)
+### Ollama (AI Translation & Semantic Search)
 
 Configure in `.env.local`:
 ```bash
+# Ollama connection
 OLLAMA_HOST=http://ollama:11434
-OLLAMA_MODEL=llama3.2:3b
+
+# Translation model
+OLLAMA_MODEL=llama3.2:1b
+
+# Embedding model for semantic search (768 dimensions)
+OLLAMA_EMBEDDING_MODEL=nomic-embed-text
 ```
+
+**Models:**
+- **llama3.2:1b** - Fast translation model (~1.3GB)
+- **nomic-embed-text** - Text embeddings for semantic search (~274MB, 768 dims)
 
 ## Ports
 

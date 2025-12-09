@@ -1,20 +1,26 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.8.1-blue.svg)](https://github.com/josego85/pdf-content-search)
-[![PHP](https://img.shields.io/badge/PHP-8.4-blue.svg)](https://www.php.net/)
-[![Symfony](https://img.shields.io/badge/Symfony-7.4-green.svg)](https://symfony.com/)
+[![Version](https://img.shields.io/badge/Version-1.9.0-blue.svg)](https://github.com/josego85/pdf-content-search)
+[![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![Symfony](https://img.shields.io/badge/Symfony-7.4-000000?logo=symfony&logoColor=white)](https://symfony.com/)
+[![Elasticsearch](https://img.shields.io/badge/Elasticsearch-9.2-005571?logo=elasticsearch&logoColor=white)](https://www.elastic.co/)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
+[![Ollama](https://img.shields.io/badge/Ollama-AI-000000?logo=ai&logoColor=white)](https://ollama.ai/)
+[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Tests](https://img.shields.io/badge/Coverage-87%25-success?logo=phpunit&logoColor=white)](tests/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-Search content within PDF files using Elasticsearch and Vue.js.
+AI-powered PDF search with hybrid semantic capabilities using Elasticsearch 9.2 vector search and Ollama embeddings.
 
 ## Features
 
-- 📄 Page-level PDF search with Elasticsearch
-- 🔍 Real-time search with intelligent highlighting
-- 🌍 AI-powered PDF translation (Ollama)
+- 🧠 **AI Hybrid Search** - Combines keyword matching with semantic understanding (RRF algorithm)
+- 📄 Page-level PDF search with Elasticsearch 9.2 vector search
+- 🔍 Multiple search modes: Hybrid AI, Exact match, Prefix match
+- 🌍 AI-powered PDF translation (Ollama llama3.2)
 - 🔄 Async job processing with Symfony Messenger
 - 📊 Search analytics via Kibana
-- 📱 Responsive Vue.js frontend
+- 📱 Responsive Vue.js frontend with in-PDF highlighting
 
 ## Quick Start
 
@@ -28,11 +34,14 @@ cd pdf-content-search
 npm install
 npm run build
 
-# Setup Elasticsearch & Ollama
+# Setup Elasticsearch index
 docker compose exec php php bin/console app:create-pdf-index
-docker compose exec ollama ollama pull llama3.2:1b
 
-# Add PDFs and index
+# Download Ollama models (required for AI features)
+docker compose exec ollama ollama pull llama3.2:1b        # Translation model (~1.3GB)
+docker compose exec ollama ollama pull nomic-embed-text   # Embedding model (~274MB)
+
+# Add PDFs and index (with embeddings for semantic search)
 cp your-pdfs/*.pdf public/pdfs/
 docker compose exec php php bin/console app:index-pdfs
 
@@ -51,9 +60,9 @@ docker compose exec php php bin/console app:index-pdfs
 ## Stack
 
 - **Backend:** PHP 8.4, Symfony 7.4, PostgreSQL 16
-- **Search:** Elasticsearch 9.2, Kibana 9.2
+- **Search:** Elasticsearch 9.2 (vector search, HNSW), Kibana 9.2
 - **Frontend:** Vue.js 3.5, Tailwind CSS 3.4, PDF.js 5.4
-- **AI:** Ollama (translations)
+- **AI:** Ollama (llama3.2 translations, nomic-embed-text embeddings)
 - **Queue:** Symfony Messenger (3 workers)
 
 ## Documentation

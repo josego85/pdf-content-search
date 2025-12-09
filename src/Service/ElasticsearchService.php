@@ -143,9 +143,10 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
         string $text,
         string $path,
         int $totalPages,
-        string $language = 'unknown'
+        string $language = 'unknown',
+        ?array $embedding = null
     ): void {
-        $this->indexDocument($this->pdfPagesIndex, $id, [
+        $document = [
             'title' => $title,
             'page' => $page,
             'text' => $text,
@@ -153,7 +154,14 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
             'total_pages' => $totalPages,
             'language' => $language,
             'date' => date('Y-m-d H:i:s'),
-        ]);
+        ];
+
+        // Add embedding if provided (for semantic search)
+        if ($embedding !== null) {
+            $document['text_embedding'] = $embedding;
+        }
+
+        $this->indexDocument($this->pdfPagesIndex, $id, $document);
     }
 
     public function search(array $query): array
@@ -162,5 +170,14 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
             fn () => $this->client->search($query)->asArray(),
             'Search query failed'
         );
+    }
+
+    /**
+     * Get Elasticsearch client for advanced use cases.
+     * Used by ElasticsearchVectorStore to share the same client instance.
+     */
+    public function getClient(): Client
+    {
+        return $this->client;
     }
 }
