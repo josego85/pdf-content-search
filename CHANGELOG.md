@@ -8,11 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Hybrid Semantic Search with RAG**
+  - EmbeddingServiceInterface + OllamaEmbeddingService (nomic-embed-text, 768 dims)
+  - RankFusionServiceInterface + ReciprocalRankFusionService (RRF k=60)
+  - HybridSearchQueryBuilder with decorator pattern (lexical + semantic)
+  - SEMANTIC and HYBRID_AI search strategies
+  - dense_vector field in Elasticsearch (HNSW, cosine similarity, m=16, ef=100)
+  - Parallel query execution with RRF merging in SearchController
+  - --skip-embeddings option in IndexarPdfsCommand
+  - **Performance**: 28ms hybrid search, 1035 pages indexed with embeddings in ~30min
+  - **Breaking**: Requires Ollama nomic-embed-text and index recreation
+
 - **VectorStoreInterface** for database-agnostic vector search
   - Abstraction layer for vector stores (Elasticsearch, Pinecone, Weaviate, Qdrant)
   - ElasticsearchVectorStore implementation with kNN search
-  - Makes future migration to other vector DBs trivial (1-2 days instead of weeks)
-  - Follows Dependency Inversion Principle (SOLID)
+  - HybridSearchQueryBuilder uses VectorStoreInterface (decoupled from Elasticsearch)
+  - Dynamic vector field name via `getVectorFieldName()`
+
+- **Frontend UX improvements**
+  - Simplified Hero badge: "AI-Powered Search"
+  - Removed strategy selector from Controls (cleaner UI)
+  - Auto-detection: queries with quotes use EXACT strategy
+  - Smart badges: "RRF" for hybrid_ai, "Score" for other strategies
+  - Removed unused props/methods (strategy, updateStrategy)
 
 ### Changed
 - **Elasticsearch 8.17 → 9.2.2 and Kibana** (Lucene 10.3.2)
@@ -20,13 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 40% faster vector search (BBQ + SIMD)
   - Prepares for RAG semantic search implementation
   - **Breaking**: Required clean volumes and re-indexing
-- **HybridSearchQueryBuilder** now uses VectorStoreInterface
-  - Decoupled from Elasticsearch-specific query format
-  - Vector field name is now dynamic via `getVectorFieldName()`
-- **Frontend UX Improvements**
-  - Simplified search UI: removed strategy selector (follows "Don't make me think")
-  - Auto-detection: queries with quotes automatically use EXACT strategy
-  - Smart badge: shows "RRF" for hybrid_ai, "Score" for other strategies
 
 ### Dependencies
 - Bump friendsofphp/php-cs-fixer 3.91.2 → 3.91.3 (#42)
