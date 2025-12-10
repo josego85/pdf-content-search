@@ -8,6 +8,7 @@ use App\Contract\QueryBuilderInterface;
 use App\Contract\RankFusionServiceInterface;
 use App\Contract\SearchEngineInterface;
 use App\Search\SearchStrategy;
+use App\Service\AnalyticsCollector;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,8 @@ final class SearchController extends AbstractController
     public function __construct(
         private readonly SearchEngineInterface $searchEngine,
         private readonly QueryBuilderInterface $queryBuilder,
-        private readonly RankFusionServiceInterface $rankFusion
+        private readonly RankFusionServiceInterface $rankFusion,
+        private readonly AnalyticsCollector $analyticsCollector
     ) {
     }
 
@@ -64,6 +66,15 @@ final class SearchController extends AbstractController
 
                 $duration = (int) ((microtime(true) - $startTime) * 1000);
 
+                // Log analytics asynchronously
+                $this->analyticsCollector->logSearch(
+                    $request,
+                    $query,
+                    'hybrid_ai',
+                    count($mergedHits),
+                    $duration
+                );
+
                 return new JsonResponse([
                     'status' => 'success',
                     'data' => [
@@ -76,13 +87,26 @@ final class SearchController extends AbstractController
             }
 
             // Standard search (lexical, semantic, exact, prefix)
+            $startTime = microtime(true);
             $results = $this->searchEngine->search($searchParams);
+            $duration = (int) ((microtime(true) - $startTime) * 1000);
+
+            $resultsCount = $results['hits']['total']['value'] ?? 0;
+
+            // Log analytics asynchronously
+            $this->analyticsCollector->logSearch(
+                $request,
+                $query,
+                $strategy->value,
+                $resultsCount,
+                $duration
+            );
 
             return new JsonResponse([
                 'status' => 'success',
                 'data' => [
                     'hits' => $results['hits']['hits'] ?? [],
-                    'total' => $results['hits']['total']['value'] ?? 0,
+                    'total' => $resultsCount,
                     'strategy' => $strategy->value,
                 ],
             ]);

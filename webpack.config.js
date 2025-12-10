@@ -22,6 +22,7 @@ Encore
      */
     .addEntry('app', './assets/app.js')
     .addEntry('pdfViewer', './assets/pdfViewer.js')
+    .addEntry('analytics', './assets/analytics.js')
 
     .enableVueLoader(() => { }, {
         version: 3,

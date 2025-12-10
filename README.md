@@ -19,7 +19,7 @@ AI-powered PDF search with hybrid semantic capabilities using Elasticsearch 9.2 
 - 🔍 Multiple search modes: Hybrid AI, Exact match, Prefix match
 - 🌍 AI-powered PDF translation (Ollama llama3.2)
 - 🔄 Async job processing with Symfony Messenger
-- 📊 Search analytics via Kibana
+- 📊 **Analytics Dashboard** - Real-time search metrics with Vue.js + ApexCharts
 - 📱 Responsive Vue.js frontend with in-PDF highlighting
 
 ## Quick Start
@@ -50,6 +50,30 @@ docker compose exec php php bin/console app:index-pdfs
 
 **📖 Full setup guide:** [docs/setup.md](docs/setup.md)
 
+## Analytics Dashboard
+
+Track search behavior and performance metrics:
+
+```bash
+# Access dashboard
+http://localhost/analytics
+
+# View API endpoints
+GET /api/analytics/overview?days=7
+GET /api/analytics/top-queries?days=7&limit=20
+GET /api/analytics/trends?days=7
+GET /api/analytics/click-positions?days=7
+GET /api/analytics/zero-results?days=7&limit=20
+```
+
+**Metrics tracked:**
+- Search volume and trends
+- Response time performance
+- Top search queries
+- Search strategy distribution (Hybrid AI, Exact, Prefix)
+- Zero-result queries (content gaps)
+- Success rate
+
 ## Monitor Translations
 
 ```bash
@@ -60,10 +84,11 @@ docker compose exec php php bin/console app:index-pdfs
 ## Stack
 
 - **Backend:** PHP 8.4, Symfony 7.4, PostgreSQL 16
-- **Search:** Elasticsearch 9.2 (vector search, HNSW), Kibana 9.2
-- **Frontend:** Vue.js 3.5, Tailwind CSS 3.4, PDF.js 5.4
+- **Search:** Elasticsearch 9.2 (vector search, HNSW)
+- **Frontend:** Vue.js 3.5, Tailwind CSS 3.4, PDF.js 5.4, ApexCharts
 - **AI:** Ollama (llama3.2 translations, nomic-embed-text embeddings)
 - **Queue:** Symfony Messenger (3 workers)
+- **Analytics:** PostgreSQL 16 (metrics storage), Vue.js dashboard
 
 ## Documentation
 

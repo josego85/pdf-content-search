@@ -14,9 +14,9 @@ docker compose up -d
 **Ports:**
 - Web: http://localhost
 - Elasticsearch: http://localhost:9200
-- Kibana: http://localhost:5601
 - PostgreSQL: localhost:5432
 - Ollama: http://localhost:11435
+- Analytics: http://localhost/analytics
 
 ### Production
 ```bash
@@ -83,8 +83,8 @@ docker-compose up -d    # Auto-loads override
 ### Services Available
 - **App**: http://localhost
 - **Elasticsearch**: http://localhost:9200
-- **Kibana**: http://localhost:5601
 - **PostgreSQL**: localhost:5432
+- **Analytics Dashboard**: http://localhost/analytics
 
 ### Common Tasks
 
@@ -193,8 +193,8 @@ docker-compose ps
 ### View specific service logs
 ```bash
 docker-compose logs -f elasticsearch
-docker-compose logs -f kibana
 docker-compose logs -f database
+docker-compose logs -f php
 ```
 
 ### Clean orphan containers

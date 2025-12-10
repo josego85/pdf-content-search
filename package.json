@@ -10,8 +10,10 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "apexcharts": "5.3.6",
     "pdfjs-dist": "5.4.449",
-    "vue": "3.5.25"
+    "vue": "3.5.25",
+    "vue3-apexcharts": "1.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",

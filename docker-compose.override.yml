@@ -70,18 +70,6 @@ services:
       retries: 3
     restart: "no"
 
-  kibana:
-    # Expose port for local access
-    ports:
-      - "5601:5601"
-    # Faster healthcheck in development
-    healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q 'Looking good'"]
-      interval: 10s
-      timeout: 10s
-      retries: 120
-    restart: "no"
-
   ollama:
     # Expose port for local access in development
     ports:

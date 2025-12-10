@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2025-12-10
+
+### Added
+- **Analytics Dashboard**: Custom Vue.js 3 + ApexCharts dashboard
+  - KPI cards (searches, response time, success rate, sessions)
+  - Trends, strategy distribution, top queries charts
+  - 5 REST API endpoints: overview, trends, top-queries, click-positions, zero-results
+- **Analytics Backend**: SearchAnalytics entity with GDPR-compliant IP anonymization
+  - Async logging via Symfony Messenger
+  - PostgreSQL aggregation queries (90-day retention)
+  - AnalyticsController with date range filtering
+
+### Changed
+- **Removed Kibana**: Replaced with custom dashboard at `/analytics`
+  - Removed from docker-compose.yml and docker-compose.override.yml
+  - Updated all documentation (README, setup, docker)
+- **SearchController**: Integrated async analytics collection
+
+### Dependencies
+- apexcharts 5.3.6, vue3-apexcharts 1.10.0
+
+---
+
 ## [1.9.0] - 2025-12-09
 
 ### Added
