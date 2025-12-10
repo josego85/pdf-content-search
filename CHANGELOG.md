@@ -8,20 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.10.0] - 2025-12-10
 
 ### Added
-- **Analytics Dashboard**: Custom Vue.js 3 + ApexCharts dashboard
-  - KPI cards (searches, response time, success rate, sessions)
-  - Trends, strategy distribution, top queries charts
-  - 5 REST API endpoints: overview, trends, top-queries, click-positions, zero-results
-- **Analytics Backend**: SearchAnalytics entity with GDPR-compliant IP anonymization
-  - Async logging via Symfony Messenger
-  - PostgreSQL aggregation queries (90-day retention)
-  - AnalyticsController with date range filtering
+- **Analytics Dashboard**: Custom Vue.js 3 + ApexCharts replacing Kibana
+  - KPI cards, trends, strategy distribution, top queries charts
+  - 5 REST API endpoints with date range filtering
+  - GDPR-compliant IP anonymization, async logging via Messenger
+- **Google-like Search UX**: Suggestions dropdown with keyboard navigation (↑↓)
+  - 300ms debounce, 10 results max
+  - Analytics logging only on committed searches (ENTER/click)
+  - Prevents partial query logging while typing
+  - SearchController: conditional logging via `log=1/0` parameter
+  - Search.vue: refactored into `fetchSuggestions()` + `performFullSearch()`
+  - Suggestion selection keeps original query (not replaced by document title)
+  - Strategy auto-detection: `java`/`php` use HYBRID_AI, not EXACT
+  - New `Suggestions.vue` component
+- **Click Tracking**: User engagement metrics (position, PDF, page, time-to-click)
+- **Wildcard Search**: `*` (0+ chars) and `?` (1 char) support
+  - Auto-detection for PREFIX strategy
+  - Examples: `java*`, `te?t`, `mach*learn*`
+- **TrendsChart.vue**: Improved visualization (vibrant colors, markers, styling)
 
 ### Changed
-- **Removed Kibana**: Replaced with custom dashboard at `/analytics`
-  - Removed from docker-compose.yml and docker-compose.override.yml
-  - Updated all documentation (README, setup, docker)
-- **SearchController**: Integrated async analytics collection
+- Removed Kibana from docker-compose
 
 ### Dependencies
 - apexcharts 5.3.6, vue3-apexcharts 1.10.0

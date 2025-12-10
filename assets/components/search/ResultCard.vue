@@ -58,7 +58,7 @@
         :href="viewerLink"
         target="_blank"
         rel="noopener"
-        @click.stop
+        @click.stop="handleClick"
         class="inline-flex items-center px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-medium rounded-lg
                transition-all duration-200 shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30
                group-hover:scale-105 touch-manipulation flex-shrink-0"
@@ -82,6 +82,14 @@ export default {
   props: {
     result: {
       type: Object,
+      required: true
+    },
+    position: {
+      type: Number,
+      required: true
+    },
+    query: {
+      type: String,
       required: true
     }
   },
@@ -126,6 +134,25 @@ export default {
     },
     getLanguageLabel(code) {
       return getLanguageLabel(code);
+    },
+    async handleClick() {
+      // Track click analytics
+      try {
+        await fetch('/api/analytics/track-click', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            query: this.query,
+            position: this.position,
+            pdf_path: this.result._source?.path,
+            page: this.result._source?.page
+          })
+        });
+      } catch (error) {
+        console.error('Failed to track click:', error);
+      }
     }
   }
 }

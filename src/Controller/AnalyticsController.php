@@ -167,4 +167,48 @@ final class AnalyticsController extends AbstractController
             'data' => $queries,
         ]);
     }
+
+    #[Route('/track-click', name: 'track_click', methods: ['POST'])]
+    public function trackClick(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $sessionId = $request->getSession()->getId();
+        $query = $data['query'] ?? '';
+        $position = (int) ($data['position'] ?? 0);
+        $pdfPath = $data['pdf_path'] ?? null;
+        $page = isset($data['page']) ? (int) $data['page'] : null;
+
+        // Find the most recent search for this session and query
+        $analytics = $this->analyticsRepository->findOneBy(
+            [
+                'sessionId' => $sessionId,
+                'query' => $query,
+                'clicked' => false,
+            ],
+            ['createdAt' => 'DESC']
+        );
+
+        if ($analytics) {
+            $analytics->setClicked(true);
+            $analytics->setClickedPosition($position);
+            $analytics->setClickedPdf($pdfPath);
+            $analytics->setClickedPage($page);
+
+            $timeToClick = (int) (microtime(true) * 1000 - $analytics->getCreatedAt()->getTimestamp() * 1000);
+            $analytics->setTimeToClickMs($timeToClick);
+
+            $this->analyticsRepository->save($analytics);
+
+            return new JsonResponse([
+                'status' => 'success',
+                'message' => 'Click tracked',
+            ]);
+        }
+
+        return new JsonResponse([
+            'status' => 'error',
+            'message' => 'Search not found',
+        ], 404);
+    }
 }

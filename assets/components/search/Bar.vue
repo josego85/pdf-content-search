@@ -11,7 +11,12 @@
         type="text"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
-        @keydown.esc="$emit('clear')"
+        @keydown.esc="handleEscape"
+        @keydown.enter="handleEnter"
+        @keydown.down.prevent="$emit('navigate', 'down')"
+        @keydown.up.prevent="$emit('navigate', 'up')"
+        @focus="$emit('focus')"
+        @blur="$emit('blur')"
         placeholder="Search documents..."
         class="block w-full pl-10 sm:pl-12 md:pl-14 pr-12 sm:pr-16 md:pr-20 py-3 sm:py-4 md:py-5 bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl text-base sm:text-lg placeholder-gray-400
                focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10
@@ -33,23 +38,59 @@
           ESC
         </kbd>
       </div>
+
+      <!-- Suggestions Dropdown -->
+      <Suggestions
+        v-if="showSuggestions"
+        :suggestions="suggestions"
+        :selected-index="selectedIndex"
+        @select="$emit('select-suggestion', $event)"
+        @update:selected-index="$emit('update:selectedIndex', $event)"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import Suggestions from './Suggestions.vue';
+
 export default {
   name: 'Bar',
+  components: {
+    Suggestions
+  },
   props: {
     modelValue: {
       type: String,
       required: true
+    },
+    suggestions: {
+      type: Array,
+      default: () => []
+    },
+    showSuggestions: {
+      type: Boolean,
+      default: false
+    },
+    selectedIndex: {
+      type: Number,
+      default: -1
     }
   },
-  emits: ['update:modelValue', 'clear'],
+  emits: ['update:modelValue', 'clear', 'search', 'select-suggestion', 'navigate', 'focus', 'blur', 'update:selectedIndex'],
   methods: {
     focus() {
       this.$refs.searchInput.focus();
+    },
+    handleEscape() {
+      if (this.showSuggestions) {
+        this.$emit('clear');
+      } else {
+        this.$emit('clear');
+      }
+    },
+    handleEnter() {
+      this.$emit('search');
     }
   }
 }

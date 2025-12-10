@@ -17,6 +17,7 @@ final class AnalyticsCollector
 
     /**
      * Log search analytics asynchronously.
+     * Frontend controls what gets logged via log=1/0 parameter.
      */
     public function logSearch(
         Request $request,
@@ -25,6 +26,15 @@ final class AnalyticsCollector
         int $resultsCount,
         int $responseTimeMs
     ): void {
+        // Only validate that query is not empty
+        $cleanQuery = trim($query, " \t\n\r\0\x0B\"'");
+
+        // Don't log empty queries or only quotes
+        if (empty($cleanQuery) || $query === '""' || $query === "''") {
+            return;
+        }
+
+        // Log everything else - frontend decides what's worth logging
         $data = [
             'session_id' => $request->getSession()->getId(),
             'query' => $query,

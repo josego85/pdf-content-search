@@ -130,4 +130,13 @@ class SearchAnalyticsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Save search analytics entity.
+     */
+    public function save(SearchAnalytics $entity): void
+    {
+        $this->getEntityManager()->persist($entity);
+        $this->getEntityManager()->flush();
+    }
 }

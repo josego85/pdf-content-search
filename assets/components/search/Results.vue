@@ -4,6 +4,8 @@
       v-for="(result, index) in results"
       :key="result?._id || index"
       :result="result"
+      :position="index + 1"
+      :query="query"
       @open="$emit('open', result)"
     />
   </div>
@@ -26,6 +28,10 @@ export default {
       type: String,
       default: 'grid',
       validator: (value) => ['grid', 'list'].includes(value)
+    },
+    query: {
+      type: String,
+      required: true
     }
   },
   emits: ['open']

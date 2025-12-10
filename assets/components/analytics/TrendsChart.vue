@@ -40,8 +40,19 @@ const chartOptions = computed(() => {
       toolbar: { show: false },
       zoom: { enabled: false }
     },
-    colors: ['#3B82F6', '#10B981', '#F59E0B'],
-    stroke: { curve: 'smooth', width: 3 },
+    colors: ['#6366F1', '#10B981', '#F59E0B'],
+    stroke: {
+      curve: 'smooth',
+      width: 4,
+      dashArray: [0, 0, 0]
+    },
+    markers: {
+      size: 5,
+      strokeWidth: 2,
+      hover: {
+        size: 7
+      }
+    },
     xaxis: {
       categories: props.data.map(item => {
         const date = new Date(item.date);
@@ -49,15 +60,30 @@ const chartOptions = computed(() => {
       })
     },
     yaxis: {
-      title: { text: 'Searches' }
+      title: { text: 'Searches' },
+      labels: {
+        formatter: (value) => Math.floor(value)
+      }
     },
     legend: {
       position: 'top',
-      horizontalAlign: 'right'
+      horizontalAlign: 'right',
+      markers: {
+        width: 12,
+        height: 12,
+        radius: 2
+      }
     },
     tooltip: {
       shared: true,
-      intersect: false
+      intersect: false,
+      y: {
+        formatter: (value) => `${value} searches`
+      }
+    },
+    grid: {
+      borderColor: '#e5e7eb',
+      strokeDashArray: 4
     }
   };
 });
