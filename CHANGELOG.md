@@ -26,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Auto-detection for PREFIX strategy
   - Examples: `java*`, `te?t`, `mach*learn*`
 - **TrendsChart.vue**: Improved visualization (vibrant colors, markers, styling)
+- **Test Coverage**: Comprehensive test suite for v1.10.0 features (325 tests, 65.63% coverage)
+  - SearchControllerTest: 7 new tests for wildcard/exact detection and conditional logging
+  - AnalyticsControllerTest: 14 tests for analytics endpoints and click tracking
+  - AnalyticsCollectorTest: 13 unit tests for query validation logic
+  - SearchQueryBuilderTest: 10 tests for wildcard support (`*`, `?`, mixed wildcards)
+  - 100% coverage for SearchQueryBuilder, HybridSearchQueryBuilder, and core services
 
 ### Changed
 - Removed Kibana from docker-compose
