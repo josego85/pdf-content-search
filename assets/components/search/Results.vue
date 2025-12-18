@@ -12,28 +12,28 @@
 </template>
 
 <script>
-import ResultCard from './ResultCard.vue';
+import ResultCard from "./ResultCard.vue"
 
 export default {
-  name: 'Results',
-  components: {
-    ResultCard
-  },
-  props: {
-    results: {
-      type: Array,
-      required: true
-    },
-    viewMode: {
-      type: String,
-      default: 'grid',
-      validator: (value) => ['grid', 'list'].includes(value)
-    },
-    query: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['open']
+	name: "Results",
+	components: {
+		ResultCard,
+	},
+	props: {
+		results: {
+			type: Array,
+			required: true,
+		},
+		viewMode: {
+			type: String,
+			default: "grid",
+			validator: (value) => ["grid", "list"].includes(value),
+		},
+		query: {
+			type: String,
+			required: true,
+		},
+	},
+	emits: ["open"],
 }
 </script>

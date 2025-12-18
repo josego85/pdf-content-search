@@ -26,15 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Auto-detection for PREFIX strategy
   - Examples: `java*`, `te?t`, `mach*learn*`
 - **TrendsChart.vue**: Improved visualization (vibrant colors, markers, styling)
-- **Test Coverage**: Comprehensive test suite achieving **87.42% coverage** (361 tests, 959 assertions)
-  - SearchControllerTest: 7 functional tests for wildcard/exact detection and conditional logging
-  - AnalyticsControllerTest: 14 functional tests for analytics endpoints and click tracking
-  - AnalyticsCollectorTest: 13 unit tests for query validation logic
-  - SearchQueryBuilderTest: 10 unit tests for wildcard support (`*`, `?`, mixed wildcards)
-  - SearchAnalyticsTest: 18 unit tests for entity getters/setters and fluent interface
-  - LogSearchAnalyticsHandlerTest: 10 unit tests for message handling and IP anonymization
-  - SearchAnalyticsRepositoryIntegrationTest: 8 integration tests with SQLite
-  - 100% coverage: SearchQueryBuilder, SearchAnalytics, LogSearchAnalyticsHandler, SearchAnalyticsRepository
+- **Test Coverage**: **87.42% coverage** (361 tests, 959 assertions)
+  - Unit, Integration, and Functional test suites
+  - 100% coverage on critical components (SearchQueryBuilder, SearchAnalytics, message handlers)
+- **Biome Integration**: Modern linter/formatter (10-100x faster than ESLint/Prettier)
+  - Professional configuration with security, performance, and complexity rules
+  - Cognitive complexity max 15, unused imports/variables as errors
+  - Smart overrides for Vue files, config files, and Tailwind CSS
+- **Enhanced CI/CD**: Parallel frontend-lint job for faster feedback (fail-fast strategy)
+- **Enhanced Pre-commit Hooks**: Added PHPUnit tests + Biome lint to existing PHP-CS-Fixer validation
+  - Docker-integrated hooks for environment consistency
+  - Automatic container health check before validation
 
 ### Changed
 - Removed Kibana from docker-compose

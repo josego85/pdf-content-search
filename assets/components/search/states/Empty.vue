@@ -29,13 +29,13 @@
 
 <script>
 export default {
-  name: 'Empty',
-  props: {
-    searchQuery: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['clear']
+	name: "Empty",
+	props: {
+		searchQuery: {
+			type: String,
+			required: true,
+		},
+	},
+	emits: ["clear"],
 }
 </script>

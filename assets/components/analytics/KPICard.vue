@@ -15,25 +15,27 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue"
 
 const props = defineProps({
-  title: { type: String, required: true },
-  value: { type: [Number, String], required: true },
-  trend: { type: Number, default: null },
-  icon: { type: String, default: '' },
-  suffix: { type: String, default: '' }
-});
+	title: { type: String, required: true },
+	value: { type: [Number, String], required: true },
+	trend: { type: Number, default: null },
+	icon: { type: String, default: "" },
+	suffix: { type: String, default: "" },
+})
 
-const formattedValue = computed(() => {
-  if (typeof props.value === 'number') {
-    return props.value.toLocaleString() + props.suffix;
-  }
-  return props.value;
-});
+const _formattedValue = computed(() => {
+	if (typeof props.value === "number") {
+		return props.value.toLocaleString() + props.suffix
+	}
+	return props.value
+})
 
-const trendClass = computed(() => {
-  if (props.trend === null) return '';
-  return props.trend > 0 ? 'text-green-600' : 'text-red-600';
-});
+const _trendClass = computed(() => {
+	if (props.trend === null) {
+		return ""
+	}
+	return props.trend > 0 ? "text-green-600" : "text-red-600"
+})
 </script>

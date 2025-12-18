@@ -15,76 +15,83 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue"
 
 const props = defineProps({
-  data: { type: Array, default: () => [] }
-});
+	data: { type: Array, default: () => [] },
+})
 
-const series = computed(() => {
-  if (!props.data.length) return [];
+const _series = computed(() => {
+	if (!props.data.length) {
+		return []
+	}
 
-  const strategies = ['hybrid_ai', 'exact', 'prefix'];
-  return strategies.map(strategy => ({
-    name: strategy.replace('_', ' ').toUpperCase(),
-    data: props.data.map(item => item.by_strategy[strategy] || 0)
-  }));
-});
+	const strategies = ["hybrid_ai", "exact", "prefix"]
+	return strategies.map((strategy) => ({
+		name: strategy.replace("_", " ").toUpperCase(),
+		data: props.data.map((item) => item.by_strategy[strategy] || 0),
+	}))
+})
 
-const chartOptions = computed(() => {
-  if (!props.data.length) return null;
+const _chartOptions = computed(() => {
+	if (!props.data.length) {
+		return null
+	}
 
-  return {
-    chart: {
-      type: 'line',
-      toolbar: { show: false },
-      zoom: { enabled: false }
-    },
-    colors: ['#6366F1', '#10B981', '#F59E0B'],
-    stroke: {
-      curve: 'smooth',
-      width: 4,
-      dashArray: [0, 0, 0]
-    },
-    markers: {
-      size: 5,
-      strokeWidth: 2,
-      hover: {
-        size: 7
-      }
-    },
-    xaxis: {
-      categories: props.data.map(item => {
-        const date = new Date(item.date);
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      })
-    },
-    yaxis: {
-      title: { text: 'Searches' },
-      labels: {
-        formatter: (value) => Math.floor(value)
-      }
-    },
-    legend: {
-      position: 'top',
-      horizontalAlign: 'right',
-      markers: {
-        width: 12,
-        height: 12,
-        radius: 2
-      }
-    },
-    tooltip: {
-      shared: true,
-      intersect: false,
-      y: {
-        formatter: (value) => `${value} searches`
-      }
-    },
-    grid: {
-      borderColor: '#e5e7eb',
-      strokeDashArray: 4
-    }
-  };
-});
+	return {
+		chart: {
+			type: "line",
+			toolbar: { show: false },
+			zoom: { enabled: false },
+		},
+		colors: ["#6366F1", "#10B981", "#F59E0B"],
+		stroke: {
+			curve: "smooth",
+			width: 4,
+			dashArray: [0, 0, 0],
+		},
+		markers: {
+			size: 5,
+			strokeWidth: 2,
+			hover: {
+				size: 7,
+			},
+		},
+		xaxis: {
+			categories: props.data.map((item) => {
+				const date = new Date(item.date)
+				return date.toLocaleDateString("en-US", {
+					month: "short",
+					day: "numeric",
+				})
+			}),
+		},
+		yaxis: {
+			title: { text: "Searches" },
+			labels: {
+				formatter: (value) => Math.floor(value),
+			},
+		},
+		legend: {
+			position: "top",
+			horizontalAlign: "right",
+			markers: {
+				width: 12,
+				height: 12,
+				radius: 2,
+			},
+		},
+		tooltip: {
+			shared: true,
+			intersect: false,
+			y: {
+				formatter: (value) => `${value} searches`,
+			},
+		},
+		grid: {
+			borderColor: "#e5e7eb",
+			strokeDashArray: 4,
+		},
+	}
+})
 </script>

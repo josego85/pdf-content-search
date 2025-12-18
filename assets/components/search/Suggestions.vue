@@ -26,25 +26,25 @@
 </template>
 
 <script>
-import { getLanguageLabel } from '../../constants/languages.js';
+import { getLanguageLabel } from "../../constants/languages.js"
 
 export default {
-  name: 'Suggestions',
-  props: {
-    suggestions: {
-      type: Array,
-      required: true
-    },
-    selectedIndex: {
-      type: Number,
-      default: -1
-    }
-  },
-  emits: ['select', 'update:selectedIndex'],
-  methods: {
-    getLanguageLabel(code) {
-      return getLanguageLabel(code);
-    }
-  }
+	name: "Suggestions",
+	props: {
+		suggestions: {
+			type: Array,
+			required: true,
+		},
+		selectedIndex: {
+			type: Number,
+			default: -1,
+		},
+	},
+	emits: ["select", "update:selectedIndex"],
+	methods: {
+		getLanguageLabel(code) {
+			return getLanguageLabel(code)
+		},
+	},
 }
 </script>

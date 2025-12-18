@@ -1,12 +1,43 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# Check if Docker containers are running
+if ! docker compose ps | grep -q "Up"; then
+  echo "⚠️  Docker containers are not running. Start them with: docker compose up -d"
+  exit 1
+fi
+
 echo "🔍 Running PHP-CS-Fixer check..."
-composer cs-check
+docker compose exec -T php composer cs-check
 
 if [ $? -ne 0 ]; then
   echo "❌ Code style violations detected. Please fix them before committing."
   exit 1
 fi
 
-echo "✅ Code is clean. Proceeding with commit."
+echo "✅ PHP code style is clean."
+echo ""
+
+echo "🧪 Running PHP tests..."
+docker compose exec -T php bash -c "XDEBUG_MODE=coverage php bin/phpunit"
+
+if [ $? -ne 0 ]; then
+  echo "❌ Tests failed. Please fix them before committing."
+  exit 1
+fi
+
+echo "✅ PHP tests passed."
+echo ""
+
+echo "🎨 Running JavaScript/Vue linter..."
+docker compose exec -T php npm run lint
+
+if [ $? -ne 0 ]; then
+  echo "❌ Linting errors detected. Please fix them before committing."
+  exit 1
+fi
+
+echo "✅ JavaScript/Vue code is clean."
+echo ""
+
+echo "✨ All checks passed. Proceeding with commit."

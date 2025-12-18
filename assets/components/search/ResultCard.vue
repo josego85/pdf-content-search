@@ -75,86 +75,86 @@
 </template>
 
 <script>
-import { getLanguageLabel } from '../../constants/languages.js';
+import { getLanguageLabel } from "../../constants/languages.js"
 
 export default {
-  name: 'ResultCard',
-  props: {
-    result: {
-      type: Object,
-      required: true
-    },
-    position: {
-      type: Number,
-      required: true
-    },
-    query: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['open'],
-  computed: {
-    viewerLink() {
-      const path = encodeURIComponent(this.result._source?.path.replace('/pdfs/', ''));
-      const page = this.result._source?.page;
-      const highlights = this.result.highlight?.text || [];
-      const highlightTerms = highlights
-        .map(text => {
-          const regex = /<mark>(.*?)<\/mark>/g;
-          const matches = [];
-          let match;
+	name: "ResultCard",
+	props: {
+		result: {
+			type: Object,
+			required: true,
+		},
+		position: {
+			type: Number,
+			required: true,
+		},
+		query: {
+			type: String,
+			required: true,
+		},
+	},
+	emits: ["open"],
+	computed: {
+		viewerLink() {
+			const path = encodeURIComponent(this.result._source?.path.replace("/pdfs/", ""))
+			const page = this.result._source?.page
+			const highlights = this.result.highlight?.text || []
+			const highlightTerms = highlights.flatMap((text) => {
+				const regex = /<mark>(.*?)<\/mark>/g
+				const matches = []
+				let match
 
-          while ((match = regex.exec(text)) !== null) {
-            matches.push(match[1]);
-          }
-          return matches;
-        })
-        .flat();
+				while ((match = regex.exec(text)) !== null) {
+					matches.push(match[1])
+				}
+				return matches
+			})
 
-      const highlightParam = encodeURIComponent(JSON.stringify(highlightTerms));
-      return `/viewer?path=${path}&page=${page}&highlight=${highlightParam}`;
-    }
-  },
-  methods: {
-    formatScore(score) {
-      return Math.round(score * 100) / 100;
-    },
-    formatDate(dateString) {
-      if (!dateString) return '';
-      try {
-        return new Date(dateString).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        });
-      } catch (e) {
-        return dateString;
-      }
-    },
-    getLanguageLabel(code) {
-      return getLanguageLabel(code);
-    },
-    async handleClick() {
-      // Track click analytics
-      try {
-        await fetch('/api/analytics/track-click', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            query: this.query,
-            position: this.position,
-            pdf_path: this.result._source?.path,
-            page: this.result._source?.page
-          })
-        });
-      } catch (error) {
-        console.error('Failed to track click:', error);
-      }
-    }
-  }
+			const highlightParam = encodeURIComponent(JSON.stringify(highlightTerms))
+			return `/viewer?path=${path}&page=${page}&highlight=${highlightParam}`
+		},
+	},
+	methods: {
+		formatScore(score) {
+			return Math.round(score * 100) / 100
+		},
+		formatDate(dateString) {
+			if (!dateString) {
+				return ""
+			}
+			try {
+				return new Date(dateString).toLocaleDateString("en-US", {
+					year: "numeric",
+					month: "short",
+					day: "numeric",
+				})
+			} catch (_e) {
+				return dateString
+			}
+		},
+		getLanguageLabel(code) {
+			return getLanguageLabel(code)
+		},
+		async handleClick() {
+			// Track click analytics
+			try {
+				await fetch("/api/analytics/track-click", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						query: this.query,
+						position: this.position,
+						pdf_path: this.result._source?.path,
+						page: this.result._source?.page,
+					}),
+				})
+			} catch (error) {
+				console.error("Failed to track click:", error)
+			}
+		},
+	},
 }
 </script>
 

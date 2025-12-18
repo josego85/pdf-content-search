@@ -52,46 +52,55 @@
 </template>
 
 <script>
-import Suggestions from './Suggestions.vue';
+import Suggestions from "./Suggestions.vue"
 
 export default {
-  name: 'Bar',
-  components: {
-    Suggestions
-  },
-  props: {
-    modelValue: {
-      type: String,
-      required: true
-    },
-    suggestions: {
-      type: Array,
-      default: () => []
-    },
-    showSuggestions: {
-      type: Boolean,
-      default: false
-    },
-    selectedIndex: {
-      type: Number,
-      default: -1
-    }
-  },
-  emits: ['update:modelValue', 'clear', 'search', 'select-suggestion', 'navigate', 'focus', 'blur', 'update:selectedIndex'],
-  methods: {
-    focus() {
-      this.$refs.searchInput.focus();
-    },
-    handleEscape() {
-      if (this.showSuggestions) {
-        this.$emit('clear');
-      } else {
-        this.$emit('clear');
-      }
-    },
-    handleEnter() {
-      this.$emit('search');
-    }
-  }
+	name: "Bar",
+	components: {
+		Suggestions,
+	},
+	props: {
+		modelValue: {
+			type: String,
+			required: true,
+		},
+		suggestions: {
+			type: Array,
+			default: () => [],
+		},
+		showSuggestions: {
+			type: Boolean,
+			default: false,
+		},
+		selectedIndex: {
+			type: Number,
+			default: -1,
+		},
+	},
+	emits: [
+		"update:modelValue",
+		"clear",
+		"search",
+		"select-suggestion",
+		"navigate",
+		"focus",
+		"blur",
+		"update:selectedIndex",
+	],
+	methods: {
+		focus() {
+			this.$refs.searchInput.focus()
+		},
+		handleEscape() {
+			if (this.showSuggestions) {
+				this.$emit("clear")
+			} else {
+				this.$emit("clear")
+			}
+		},
+		handleEnter() {
+			this.$emit("search")
+		},
+	},
 }
 </script>

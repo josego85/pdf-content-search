@@ -31,12 +31,16 @@
 
 <script setup>
 defineProps({
-  data: { type: Array, default: () => [] }
-});
+	data: { type: Array, default: () => [] },
+})
 
-const getClickRateClass = (rate) => {
-  if (rate >= 50) return 'bg-green-100 text-green-800';
-  if (rate >= 25) return 'bg-yellow-100 text-yellow-800';
-  return 'bg-red-100 text-red-800';
-};
+const _getClickRateClass = (rate) => {
+	if (rate >= 50) {
+		return "bg-green-100 text-green-800"
+	}
+	if (rate >= 25) {
+		return "bg-yellow-100 text-yellow-800"
+	}
+	return "bg-red-100 text-red-800"
+}
 </script>

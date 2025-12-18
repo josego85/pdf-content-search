@@ -70,69 +70,65 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import KPICard from '../components/analytics/KPICard.vue';
-import TrendsChart from '../components/analytics/TrendsChart.vue';
-import TopQueriesChart from '../components/analytics/TopQueriesChart.vue';
-import StrategyDistribution from '../components/analytics/StrategyDistribution.vue';
+import { computed, onMounted, ref } from "vue"
 
-const isLoading = ref(false);
-const selectedPeriod = ref('7');
+const isLoading = ref(false)
+const selectedPeriod = ref("7")
 
 const overview = ref({
-  total_searches: 0,
-  avg_response_time_ms: 0,
-  success_rate: 0,
-  click_through_rate: 0,
-  unique_sessions: 0
-});
+	total_searches: 0,
+	avg_response_time_ms: 0,
+	success_rate: 0,
+	click_through_rate: 0,
+	unique_sessions: 0,
+})
 
-const trends = ref([]);
-const topQueries = ref([]);
+const trends = ref([])
+const topQueries = ref([])
 
-const strategyDistribution = computed(() => {
-  // Calculate from trends data
-  const totals = { hybrid_ai: 0, exact: 0, prefix: 0 };
+const _strategyDistribution = computed(() => {
+	// Calculate from trends data
+	const totals = { hybrid_ai: 0, exact: 0, prefix: 0 }
 
-  trends.value.forEach(item => {
-    Object.keys(item.by_strategy).forEach(strategy => {
-      totals[strategy] = (totals[strategy] || 0) + item.by_strategy[strategy];
-    });
-  });
+	trends.value.forEach((item) => {
+		Object.keys(item.by_strategy).forEach((strategy) => {
+			totals[strategy] = (totals[strategy] || 0) + item.by_strategy[strategy]
+		})
+	})
 
-  return totals;
-});
+	return totals
+})
 
 const loadData = async () => {
-  isLoading.value = true;
+	isLoading.value = true
 
-  try {
-    const days = selectedPeriod.value;
+	try {
+		const days = selectedPeriod.value
 
-    // Load all data in parallel
-    const [overviewRes, trendsRes, queriesRes] = await Promise.all([
-      fetch(`/api/analytics/overview?days=${days}`),
-      fetch(`/api/analytics/trends?days=${days}`),
-      fetch(`/api/analytics/top-queries?days=${days}`)
-    ]);
+		// Load all data in parallel
+		const [overviewRes, trendsRes, queriesRes] = await Promise.all([
+			fetch(`/api/analytics/overview?days=${days}`),
+			fetch(`/api/analytics/trends?days=${days}`),
+			fetch(`/api/analytics/top-queries?days=${days}`),
+		])
 
-    const [overviewData, trendsData, queriesData] = await Promise.all([
-      overviewRes.json(),
-      trendsRes.json(),
-      queriesRes.json()
-    ]);
+		const [overviewData, trendsData, queriesData] = await Promise.all([
+			overviewRes.json(),
+			trendsRes.json(),
+			queriesRes.json(),
+		])
 
-    overview.value = overviewData.data;
-    trends.value = trendsData.data;
-    topQueries.value = queriesData.data;
-  } catch (error) {
-    console.error('Failed to load analytics:', error);
-  } finally {
-    isLoading.value = false;
-  }
-};
+		overview.value = overviewData.data
+		trends.value = trendsData.data
+		topQueries.value = queriesData.data
+	} catch (error) {
+		console.error("Failed to load analytics:", error)
+	} finally {
+		isLoading.value = false
+	}
+}
 
 onMounted(() => {
-  loadData();
-});
+	loadData()
+})
 </script>

@@ -23,14 +23,14 @@
 
 <script>
 export default {
-  name: 'Error',
-  props: {
-    message: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['close']
+	name: "Error",
+	props: {
+		message: {
+			type: String,
+			required: true,
+		},
+	},
+	emits: ["close"],
 }
 </script>
 

@@ -15,53 +15,49 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue"
 
 const props = defineProps({
-  data: { type: Object, default: () => ({}) }
-});
+	data: { type: Object, default: () => ({}) },
+})
 
 const series = computed(() => {
-  return [
-    props.data.hybrid_ai || 0,
-    props.data.exact || 0,
-    props.data.prefix || 0
-  ];
-});
+	return [props.data.hybrid_ai || 0, props.data.exact || 0, props.data.prefix || 0]
+})
 
-const hasSeries = computed(() => {
-  return series.value.some(val => val > 0);
-});
+const _hasSeries = computed(() => {
+	return series.value.some((val) => val > 0)
+})
 
-const chartOptions = computed(() => {
-  return {
-    chart: { type: 'donut' },
-    labels: ['Hybrid AI', 'Exact', 'Prefix'],
-    colors: ['#3B82F6', '#10B981', '#F59E0B'],
-    legend: {
-      position: 'bottom'
-    },
-    dataLabels: {
-      enabled: true,
-      formatter: (val) => `${val.toFixed(1)}%`
-    },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '65%',
-          labels: {
-            show: true,
-            total: {
-              show: true,
-              label: 'Total Searches',
-              formatter: (w) => {
-                return w.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString();
-              }
-            }
-          }
-        }
-      }
-    }
-  };
-});
+const _chartOptions = computed(() => {
+	return {
+		chart: { type: "donut" },
+		labels: ["Hybrid AI", "Exact", "Prefix"],
+		colors: ["#3B82F6", "#10B981", "#F59E0B"],
+		legend: {
+			position: "bottom",
+		},
+		dataLabels: {
+			enabled: true,
+			formatter: (val) => `${val.toFixed(1)}%`,
+		},
+		plotOptions: {
+			pie: {
+				donut: {
+					size: "65%",
+					labels: {
+						show: true,
+						total: {
+							show: true,
+							label: "Total Searches",
+							formatter: (w) => {
+								return w.globals.seriesTotals.reduce((a, b) => a + b, 0).toLocaleString()
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+})
 </script>

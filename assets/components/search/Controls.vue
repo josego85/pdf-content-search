@@ -41,22 +41,22 @@
 
 <script>
 export default {
-  name: 'Controls',
-  props: {
-    resultCount: {
-      type: Number,
-      required: true
-    },
-    duration: {
-      type: Number,
-      default: null
-    },
-    viewMode: {
-      type: String,
-      default: 'grid',
-      validator: (value) => ['grid', 'list'].includes(value)
-    }
-  },
-  emits: ['update:viewMode']
+	name: "Controls",
+	props: {
+		resultCount: {
+			type: Number,
+			required: true,
+		},
+		duration: {
+			type: Number,
+			default: null,
+		},
+		viewMode: {
+			type: String,
+			default: "grid",
+			validator: (value) => ["grid", "list"].includes(value),
+		},
+	},
+	emits: ["update:viewMode"],
 }
 </script>
