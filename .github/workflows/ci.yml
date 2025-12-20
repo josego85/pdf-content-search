@@ -109,6 +109,20 @@ jobs:
       - name: Run PHP-CS-Fixer
         run: composer cs-check
 
+  frontend-lint:
+    name: Frontend Linting (Biome)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v5.0.0
+
+      - name: Setup Node.js project
+        uses: ./.github/actions/setup-node-project
+
+      - name: Run Biome linter
+        run: npm run lint
+
   frontend-build:
     name: Frontend Build & Check
     runs-on: ubuntu-latest

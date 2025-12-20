@@ -92,24 +92,6 @@ services:
       retries: 3
     restart: unless-stopped
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:9.2.2
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-      - XPACK_SECURITY_ENABLED=false
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    networks:
-      - app_network
-    healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q 'Looking good'"]
-      interval: 30s
-      timeout: 10s
-      retries: 120
-    restart: unless-stopped
-
   ollama:
     image: ollama/ollama:latest
     volumes:

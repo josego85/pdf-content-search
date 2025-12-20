@@ -1,6 +1,6 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.9.0-blue.svg)](https://github.com/josego85/pdf-content-search)
+[![Version](https://img.shields.io/badge/Version-1.10.0-blue.svg)](https://github.com/josego85/pdf-content-search)
 [![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-7.4-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![Elasticsearch](https://img.shields.io/badge/Elasticsearch-9.2-005571?logo=elasticsearch&logoColor=white)](https://www.elastic.co/)
@@ -19,7 +19,7 @@ AI-powered PDF search with hybrid semantic capabilities using Elasticsearch 9.2 
 - 🔍 Multiple search modes: Hybrid AI, Exact match, Prefix match
 - 🌍 AI-powered PDF translation (Ollama llama3.2)
 - 🔄 Async job processing with Symfony Messenger
-- 📊 Search analytics via Kibana
+- 📊 **Analytics Dashboard** - Real-time search metrics with Vue.js + ApexCharts
 - 📱 Responsive Vue.js frontend with in-PDF highlighting
 
 ## Quick Start
@@ -50,6 +50,22 @@ docker compose exec php php bin/console app:index-pdfs
 
 **📖 Full setup guide:** [docs/setup.md](docs/setup.md)
 
+## Analytics Dashboard
+
+Track search behavior, performance metrics, and user engagement in real-time.
+
+```
+http://localhost/analytics
+```
+
+**Features:**
+- 📊 KPIs (searches, response time, success rate, sessions)
+- 📈 Interactive charts (trends, strategy distribution, top queries)
+- 🔍 Time filters (7/14/30/90 days)
+- 🎯 REST API endpoints for custom integrations
+
+**📖 Full analytics guide:** [docs/analytics.md](docs/analytics.md)
+
 ## Monitor Translations
 
 ```bash
@@ -60,15 +76,19 @@ docker compose exec php php bin/console app:index-pdfs
 ## Stack
 
 - **Backend:** PHP 8.4, Symfony 7.4, PostgreSQL 16
-- **Search:** Elasticsearch 9.2 (vector search, HNSW), Kibana 9.2
-- **Frontend:** Vue.js 3.5, Tailwind CSS 3.4, PDF.js 5.4
+- **Search:** Elasticsearch 9.2 (vector search, HNSW)
+- **Frontend:** Vue.js 3.5, Tailwind CSS 3.4, PDF.js 5.4, ApexCharts
 - **AI:** Ollama (llama3.2 translations, nomic-embed-text embeddings)
 - **Queue:** Symfony Messenger (3 workers)
+- **Analytics:** PostgreSQL 16 (metrics storage), Vue.js dashboard
 
 ## Documentation
 
 See [`docs/`](docs/):
 - [setup.md](docs/setup.md) - Installation and configuration
+- [analytics.md](docs/analytics.md) - Analytics dashboard guide
+- [api.md](docs/api.md) - REST API reference
+- [troubleshooting.md](docs/troubleshooting.md) - Common issues and solutions
 - [translation-tracking.md](docs/translation-tracking.md) - Job tracking system
 - [messenger-worker.md](docs/messenger-worker.md) - Async workers
 - [frontend.md](docs/frontend.md) - Frontend architecture

@@ -118,13 +118,31 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Prefix: Match word beginnings for autocomplete.
+     * Prefix: Match word beginnings with wildcard support.
+     * Supports both * (multiple chars) and ? (single char) wildcards.
      */
     private function buildPrefixQuery(string $query): array
     {
+        $trimmedQuery = trim($query);
+
+        // If query contains ? wildcard, use Elasticsearch wildcard query
+        if (str_contains($trimmedQuery, '?')) {
+            return [
+                'query_string' => [
+                    'query' => $trimmedQuery,
+                    'fields' => ['title^2', 'text'],
+                    'analyze_wildcard' => true,
+                ],
+            ];
+        }
+
+        // For simple * at end (most common case), use optimized phrase_prefix
+        // Strip trailing * from query (user-friendly syntax: java* → finds java, javascript, javabean)
+        $cleanQuery = rtrim($trimmedQuery, '*');
+
         return [
             'multi_match' => [
-                'query' => $query,
+                'query' => $cleanQuery,
                 'fields' => ['title^2', 'text'],
                 'type' => 'phrase_prefix',
                 'max_expansions' => 50,

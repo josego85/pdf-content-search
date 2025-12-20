@@ -1,14 +1,62 @@
-## TODO
+# TODO
 
-- Refactor the entire project  
-- Use Nginx  
-- Security  
-- Optimize Elasticsearch  
-- Optimize Indexing
-- PHP Stan  
-- Composer audit in CI/CD  
-- Pagination on the frontend for searches  
-- Prettier for JavaScript
-- Search with operator --> GET /api/search?q="jose gonzalez" +paraguay
-- Eslint o biome
-- Testing en Javascript
+## 🔴 High Priority
+
+### Security & Production Readiness
+- [ ] **API Authentication** - Add token-based auth for analytics endpoints
+- [ ] **Rate Limiting** - Implement rate limiter for API abuse prevention
+- [ ] **HTTPS Enforcement** - Require HTTPS in production for all API endpoints
+- [ ] **GDPR Data Retention** - Auto-delete analytics data older than 90 days
+  - Command: `app:cleanup-analytics` (cron: daily at 2am)
+  - File: `src/Command/CleanupAnalyticsCommand.php`
+
+### Infrastructure
+- [ ] **Use Nginx** - Replace Apache with Nginx for better performance
+- [ ] **Composer Security Audit** - Add `composer audit` to CI/CD pipeline
+- [ ] **PHP Stan** - Add static analysis to CI/CD
+
+## 🟡 Medium Priority
+
+### Analytics Enhancements
+- [ ] **Daily Analytics Aggregation** - Pre-aggregate metrics for performance
+  - Command: `app:aggregate-analytics` (cron: daily at 1am)
+  - Table: `daily_analytics`
+  - File: `src/Command/AggregateAnalyticsCommand.php`
+- [ ] **Click Position Heatmap** - Add bar chart component (backend ready)
+  - File: `assets/components/analytics/ClickPositionHeatmap.vue`
+- [ ] **Export Analytics Data** - CSV/JSON export for dashboard data
+- [ ] **Filter by Search Strategy** - API endpoint to filter analytics by strategy
+
+### Search Features
+- [ ] **Frontend Pagination** - Paginate search results on frontend
+- [ ] **Search Operators** - Support boolean operators: `"exact phrase" +required -excluded`
+  - Example: `GET /api/search?q="jose gonzalez" +paraguay`
+
+### Performance Optimization
+- [ ] **Optimize Elasticsearch** - Tune cluster settings, indices, and queries
+- [ ] **Optimize Indexing** - Improve PDF indexing performance (batch processing)
+
+### Testing
+- [ ] **JavaScript/Vue Testing** - Add unit tests for frontend components
+  - Framework: Vitest or Jest
+  - Coverage target: >80%
+
+## 🟢 Low Priority / Future Enhancements
+
+### Analytics Advanced Features
+- [ ] Real-time dashboard with WebSocket updates
+- [ ] Scheduled email reports
+- [ ] Slack integration for alerts
+- [ ] ML-powered query suggestions
+- [ ] A/B testing framework
+
+### Codebase Quality
+- [ ] Refactor entire project for better architecture
+- [ ] Add more comprehensive integration tests
+
+---
+
+**Legend:**
+- 🔴 High Priority - Security, production readiness, legal compliance
+- 🟡 Medium Priority - User-facing features, performance improvements
+- 🟢 Low Priority - Nice-to-have features, long-term improvements

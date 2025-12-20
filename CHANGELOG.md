@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2025-12-20
+
+### Added
+- **Analytics Dashboard**: Vue.js 3 + ApexCharts + PostgreSQL 16
+  - Real-time KPI cards (searches, response time, success rate, sessions)
+  - Interactive charts (trends, strategy distribution, top queries with click rates)
+  - Time filters (7/14/30/90 days), GDPR-compliant IP anonymization
+  - Async logging via Symfony Messenger, click tracking for engagement metrics
+- **REST API**: 5 analytics endpoints + search endpoint
+  - `/api/analytics/overview`, `/api/analytics/top-queries`, `/api/analytics/trends`
+  - `/api/analytics/click-positions`, `/api/analytics/zero-results`, `/api/analytics/track-click`
+  - Date range filtering, limit parameter (no max validation)
+  - Conditional search logging via `log=1/0` parameter
+- **Google-like Search UX**: Suggestions dropdown, keyboard navigation (↑↓), 300ms debounce
+  - Analytics logs only committed searches (ENTER/click), prevents partial query logging
+  - Strategy auto-detection: wildcards → PREFIX, quotes → EXACT, default → HYBRID_AI
+- **Wildcard Search**: `*` (0+ chars), `?` (1 char) - Examples: `java*`, `te?t`
+- **Test Coverage**: 87.42% (361 tests, 959 assertions) - Unit, Integration, Functional
+- **Biome Integration**: Modern linter/formatter (10-100x faster than ESLint/Prettier)
+  - CI/CD parallel frontend-lint job, Docker-integrated pre-commit hooks
+- **Documentation**: Comprehensive guides following Single Responsibility Principle
+  - `docs/analytics.md` - Dashboard usage, KPIs, charts, use cases
+  - `docs/api.md` - REST API reference with implementation status warnings
+  - `docs/troubleshooting.md` - Analytics, search, Docker, performance issues
+  - Clear "NOT IMPLEMENTED" warnings for auth, rate limiting, pagination offset
+
+### Changed
+- **Documentation Reorganization**: Applied Single Responsibility Principle
+  - Deleted 1700-line implementation plan (replaced with focused docs)
+  - Updated `TODO.md` with prioritized task list (High/Medium/Low)
+  - README simplified: overview + links to detailed docs
+- Removed Kibana from docker-compose
+
+### Dependencies
+- apexcharts 5.3.6, vue3-apexcharts 1.10.0
+
+---
+
 ## [1.9.0] - 2025-12-09
 
 ### Added

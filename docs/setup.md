@@ -166,9 +166,9 @@ Default ports (configure in `.env.local` if needed):
 |---------|------|-----|
 | Web | 80 | http://localhost |
 | Elasticsearch | 9200 | http://localhost:9200 |
-| Kibana | 5601 | http://localhost:5601 |
 | PostgreSQL | 5432 | localhost:5432 |
 | Ollama | 11435 | http://localhost:11435 |
+| Analytics | 80 | http://localhost/analytics |
 
 ## Troubleshooting
 

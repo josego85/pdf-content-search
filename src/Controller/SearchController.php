@@ -8,6 +8,7 @@ use App\Contract\QueryBuilderInterface;
 use App\Contract\RankFusionServiceInterface;
 use App\Contract\SearchEngineInterface;
 use App\Search\SearchStrategy;
+use App\Service\AnalyticsCollector;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,8 @@ final class SearchController extends AbstractController
     public function __construct(
         private readonly SearchEngineInterface $searchEngine,
         private readonly QueryBuilderInterface $queryBuilder,
-        private readonly RankFusionServiceInterface $rankFusion
+        private readonly RankFusionServiceInterface $rankFusion,
+        private readonly AnalyticsCollector $analyticsCollector
     ) {
     }
 
@@ -45,6 +47,9 @@ final class SearchController extends AbstractController
             $strategyParam = $request->query->get('strategy', 'hybrid_ai');
             $strategy = $this->detectSearchStrategy($query, $strategyParam);
 
+            // Check if we should log analytics (only when user presses ENTER)
+            $shouldLog = $request->query->get('log', '0') === '1';
+
             // Build query using builder pattern
             $searchParams = $this->queryBuilder->build($query, $strategy);
 
@@ -64,6 +69,17 @@ final class SearchController extends AbstractController
 
                 $duration = (int) ((microtime(true) - $startTime) * 1000);
 
+                // Log analytics only if this is a committed search (user pressed ENTER)
+                if ($shouldLog) {
+                    $this->analyticsCollector->logSearch(
+                        $request,
+                        $query,
+                        'hybrid_ai',
+                        count($mergedHits),
+                        $duration
+                    );
+                }
+
                 return new JsonResponse([
                     'status' => 'success',
                     'data' => [
@@ -76,13 +92,28 @@ final class SearchController extends AbstractController
             }
 
             // Standard search (lexical, semantic, exact, prefix)
+            $startTime = microtime(true);
             $results = $this->searchEngine->search($searchParams);
+            $duration = (int) ((microtime(true) - $startTime) * 1000);
+
+            $resultsCount = $results['hits']['total']['value'] ?? 0;
+
+            // Log analytics only if this is a committed search (user pressed ENTER)
+            if ($shouldLog) {
+                $this->analyticsCollector->logSearch(
+                    $request,
+                    $query,
+                    $strategy->value,
+                    $resultsCount,
+                    $duration
+                );
+            }
 
             return new JsonResponse([
                 'status' => 'success',
                 'data' => [
                     'hits' => $results['hits']['hits'] ?? [],
-                    'total' => $results['hits']['total']['value'] ?? 0,
+                    'total' => $resultsCount,
                     'strategy' => $strategy->value,
                 ],
             ]);
@@ -107,6 +138,12 @@ final class SearchController extends AbstractController
         // Auto-detection: queries with quotes should use exact match
         if (preg_match('/^["\'].*["\']$/', trim($query))) {
             return SearchStrategy::EXACT;
+        }
+
+        // Auto-detection: queries with wildcards (* or ?) should use prefix match
+        // Examples: java*, prog?, te?t*, mach*learn*
+        if (preg_match('/[*?]/', trim($query))) {
+            return SearchStrategy::PREFIX;
         }
 
         // Use requested strategy or default to HYBRID_AI

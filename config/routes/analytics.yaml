@@ -1,0 +1,6 @@
+# Analytics Dashboard Routes
+analytics_dashboard:
+    path: /analytics
+    controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+    defaults:
+        template: 'analytics/index.html.twig'
