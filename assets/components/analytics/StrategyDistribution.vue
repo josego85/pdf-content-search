@@ -25,11 +25,13 @@ const series = computed(() => {
 	return [props.data.hybrid_ai || 0, props.data.exact || 0, props.data.prefix || 0]
 })
 
-const _hasSeries = computed(() => {
+// biome-ignore lint/correctness/noUnusedVariables: Used in Vue template
+const hasSeries = computed(() => {
 	return series.value.some((val) => val > 0)
 })
 
-const _chartOptions = computed(() => {
+// biome-ignore lint/correctness/noUnusedVariables: Used in Vue template
+const chartOptions = computed(() => {
 	return {
 		chart: { type: "donut" },
 		labels: ["Hybrid AI", "Exact", "Prefix"],

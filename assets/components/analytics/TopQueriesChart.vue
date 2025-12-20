@@ -34,7 +34,8 @@ defineProps({
 	data: { type: Array, default: () => [] },
 })
 
-const _getClickRateClass = (rate) => {
+// biome-ignore lint/correctness/noUnusedVariables: Used in Vue template
+const getClickRateClass = (rate) => {
 	if (rate >= 50) {
 		return "bg-green-100 text-green-800"
 	}

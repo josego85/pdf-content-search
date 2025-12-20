@@ -21,7 +21,8 @@ const props = defineProps({
 	data: { type: Array, default: () => [] },
 })
 
-const _series = computed(() => {
+// biome-ignore lint/correctness/noUnusedVariables: Used in Vue template
+const series = computed(() => {
 	if (!props.data.length) {
 		return []
 	}
@@ -33,7 +34,8 @@ const _series = computed(() => {
 	}))
 })
 
-const _chartOptions = computed(() => {
+// biome-ignore lint/correctness/noUnusedVariables: Used in Vue template
+const chartOptions = computed(() => {
 	if (!props.data.length) {
 		return null
 	}

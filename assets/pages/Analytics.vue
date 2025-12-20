@@ -71,6 +71,14 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue"
+// biome-ignore lint/correctness/noUnusedImports: Components used in template
+import KPICard from "../components/analytics/KPICard.vue"
+// biome-ignore lint/correctness/noUnusedImports: Components used in template
+import StrategyDistribution from "../components/analytics/StrategyDistribution.vue"
+// biome-ignore lint/correctness/noUnusedImports: Components used in template
+import TopQueriesChart from "../components/analytics/TopQueriesChart.vue"
+// biome-ignore lint/correctness/noUnusedImports: Components used in template
+import TrendsChart from "../components/analytics/TrendsChart.vue"
 
 const isLoading = ref(false)
 const selectedPeriod = ref("7")
@@ -86,7 +94,8 @@ const overview = ref({
 const trends = ref([])
 const topQueries = ref([])
 
-const _strategyDistribution = computed(() => {
+// biome-ignore lint/correctness/noUnusedVariables: Used in Vue template
+const strategyDistribution = computed(() => {
 	// Calculate from trends data
 	const totals = { hybrid_ai: 0, exact: 0, prefix: 0 }
 

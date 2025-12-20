@@ -25,14 +25,16 @@ const props = defineProps({
 	suffix: { type: String, default: "" },
 })
 
-const _formattedValue = computed(() => {
+// biome-ignore lint/correctness/noUnusedVariables: Used in Vue template
+const formattedValue = computed(() => {
 	if (typeof props.value === "number") {
 		return props.value.toLocaleString() + props.suffix
 	}
 	return props.value
 })
 
-const _trendClass = computed(() => {
+// biome-ignore lint/correctness/noUnusedVariables: Used in Vue template
+const trendClass = computed(() => {
 	if (props.trend === null) {
 		return ""
 	}
