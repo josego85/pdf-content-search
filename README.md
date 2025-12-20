@@ -1,6 +1,6 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.9.0-blue.svg)](https://github.com/josego85/pdf-content-search)
+[![Version](https://img.shields.io/badge/Version-1.10.0-blue.svg)](https://github.com/josego85/pdf-content-search)
 [![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-7.4-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![Elasticsearch](https://img.shields.io/badge/Elasticsearch-9.2-005571?logo=elasticsearch&logoColor=white)](https://www.elastic.co/)
@@ -52,27 +52,19 @@ docker compose exec php php bin/console app:index-pdfs
 
 ## Analytics Dashboard
 
-Track search behavior and performance metrics:
+Track search behavior, performance metrics, and user engagement in real-time.
 
-```bash
-# Access dashboard
+```
 http://localhost/analytics
-
-# View API endpoints
-GET /api/analytics/overview?days=7
-GET /api/analytics/top-queries?days=7&limit=20
-GET /api/analytics/trends?days=7
-GET /api/analytics/click-positions?days=7
-GET /api/analytics/zero-results?days=7&limit=20
 ```
 
-**Metrics tracked:**
-- Search volume and trends
-- Response time performance
-- Top search queries
-- Search strategy distribution (Hybrid AI, Exact, Prefix)
-- Zero-result queries (content gaps)
-- Success rate
+**Features:**
+- 📊 KPIs (searches, response time, success rate, sessions)
+- 📈 Interactive charts (trends, strategy distribution, top queries)
+- 🔍 Time filters (7/14/30/90 days)
+- 🎯 REST API endpoints for custom integrations
+
+**📖 Full analytics guide:** [docs/analytics.md](docs/analytics.md)
 
 ## Monitor Translations
 
@@ -94,6 +86,9 @@ GET /api/analytics/zero-results?days=7&limit=20
 
 See [`docs/`](docs/):
 - [setup.md](docs/setup.md) - Installation and configuration
+- [analytics.md](docs/analytics.md) - Analytics dashboard guide
+- [api.md](docs/api.md) - REST API reference
+- [troubleshooting.md](docs/troubleshooting.md) - Common issues and solutions
 - [translation-tracking.md](docs/translation-tracking.md) - Job tracking system
 - [messenger-worker.md](docs/messenger-worker.md) - Async workers
 - [frontend.md](docs/frontend.md) - Frontend architecture
