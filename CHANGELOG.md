@@ -39,7 +39,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed Kibana from docker-compose
 
 ### Dependencies
-- apexcharts 5.3.6, vue3-apexcharts 1.10.0
+
+**Backend:**
+- Doctrine ORM: 3.5.3 → 3.5.8 (#53)
+- PHP-CS-Fixer: 3.91.3 → 3.92.0 (#49)
+
+**Frontend:**
+- Vue.js: 3.5.25 → 3.5.26
+- @vue/compiler-sfc: 3.5.24 → 3.5.26
+- apexcharts: 5.3.6 (new)
+- vue3-apexcharts: 1.10.0 (new)
+- autoprefixer: 10.4.21 → 10.4.23
+- sass-loader: 16.0.5 → 16.0.6
+
+**CI/CD:**
+- actions/upload-artifact: 5.0.0 → 6.0.0 (#52)
+- github/codeql-action: 4.31.7 → 4.31.8 (#50)
 
 ---
 
