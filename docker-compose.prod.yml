@@ -1,0 +1,75 @@
+# ============================================
+# Docker Compose - PRODUCTION OVERRIDES
+# ============================================
+# This file contains production-specific settings
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up
+# ============================================
+
+services:
+  # ==========================================
+  # Database - Production Settings
+  # ==========================================
+  database:
+    # ✅ Resource limits for production
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ==========================================
+  # Apache - Production Settings
+  # ==========================================
+  apache:
+    # ✅ Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # ==========================================
+  # PHP - Production Settings
+  # ==========================================
+  php:
+    # ✅ Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # ==========================================
+  # Elasticsearch - Production Settings
+  # ==========================================
+  elasticsearch:
+    # ✅ Resource limits (ES needs more memory)
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+
+  # ==========================================
+  # Ollama - Production Settings
+  # ==========================================
+  ollama:
+    # ✅ Resource limits (AI needs more resources)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G

@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Makefile**: Single entry point for all operations (dev/prod)
+  - `make dev` - Auto-setup development (migrations, ES index, Ollama models)
+  - `make prod` - Production with environment validation
+  - Unified commands with ENV parameter (eliminates duplication)
+- **Ollama Auto-Download**: Models downloaded automatically via healthcheck
+  - qwen2.5:7b (translation) + nomic-embed-text (embeddings)
+  - Zero manual steps required
+- **Symfony .env Pattern**: Migrated from custom to industry standard
+  - `.env` (base, committed) + `.env.local` (dev overrides)
+  - `.env.prod` (config) + `.env.prod.local` (secrets, auto-generated)
+  - Clear separation: configuration vs secrets
+- **bin/init-prod-secrets.sh**: Auto-generates production secrets (APP_SECRET, passwords)
+
+### Changed
+- **Docker Compose Architecture**: Explicit layered composition
+  - BASE (docker-compose.yml) + DEV (docker-compose.dev.yml) or PROD (docker-compose.prod.yml)
+  - Separate project names prevent dev/prod volume conflicts
+  - Can run both environments simultaneously
+- **Environment Files**: Cleaned up obsolete files
+  - Removed `.env.dev`, `.env.docker`, `.env.production`
+  - Standardized on Symfony pattern
+- **Security Improvements**:
+  - Elasticsearch authentication enabled by default (production)
+  - Required environment variables with `?` syntax (fail-safe)
+  - Secrets in `.env.prod.local` (never committed)
+- **Translation Model**: qwen2.5:7b (default, was llama3.2:1b)
+- **Languages**: Reduced to ES/EN/DE (removed 10 unused languages)
+
+### Removed
+- **Shell Scripts**: docker-dev.sh, docker-prod.sh, docker-build.sh (replaced by Makefile)
+- **docker-compose.override.yml**: Replaced with explicit docker-compose.dev.yml
+- **Obsolete .env Files**: .env.dev, .env.docker, .env.production
+
 ## [1.10.0] - 2025-12-20
 
 ### Added

@@ -31,21 +31,22 @@ final readonly class OllamaEmbeddingService implements EmbeddingServiceInterface
 
         while ($attempt < self::MAX_RETRIES) {
             try {
-                $response = $this->httpClient->request('POST', "{$this->ollamaHost}/api/embeddings", [
+                $response = $this->httpClient->request('POST', "{$this->ollamaHost}/api/embed", [
                     'json' => [
                         'model' => $this->embeddingModel,
-                        'prompt' => $text,
+                        'input' => $text,
                     ],
                     'timeout' => 30,
                 ]);
 
                 $data = $response->toArray();
 
-                if (!isset($data['embedding']) || !is_array($data['embedding'])) {
-                    throw new \RuntimeException('Invalid response from Ollama: missing or invalid embedding field');
+                if (!isset($data['embeddings']) || !is_array($data['embeddings']) || empty($data['embeddings'])) {
+                    throw new \RuntimeException('Invalid response from Ollama: missing or invalid embeddings field');
                 }
 
-                $embedding = $data['embedding'];
+                // API returns array of embeddings, we only sent one input, so take the first
+                $embedding = $data['embeddings'][0];
 
                 // Validate embedding dimensions
                 if (count($embedding) !== $this->dimensions) {

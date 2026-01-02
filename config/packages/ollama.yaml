@@ -1,7 +1,7 @@
 parameters:
     # Ollama API configuration
     ollama.host: '%env(OLLAMA_HOST)%'
-    ollama.model: 'llama3.2:1b'
+    ollama.model: 'qwen2.5:7b'
     ollama.timeout: 120  # seconds (for longer text processing)
 
     # Embedding model configuration for semantic search
