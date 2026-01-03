@@ -39,8 +39,9 @@ help: ## Show this help message
 	@echo "$(BLUE)PDF Content Search - Available Commands$(NC)"
 	@echo ""
 	@echo "$(GREEN)Quick Start:$(NC)"
-	@echo "  $(YELLOW)make dev$(NC)              Start development environment (auto-setup)"
-	@echo "  $(YELLOW)make prod$(NC)             Start production environment"
+	@echo "  $(YELLOW)make dev$(NC)              Start development environment (with build)"
+	@echo "  $(YELLOW)make prod$(NC)             Start production environment (with build)"
+	@echo "  $(YELLOW)make up$(NC)               Start without rebuild (faster, ENV=dev|prod)"
 	@echo "  $(YELLOW)make down$(NC)             Stop current environment"
 	@echo "  $(YELLOW)make logs$(NC)             View logs"
 	@echo "  $(YELLOW)make shell$(NC)            Open shell in container"
@@ -48,6 +49,8 @@ help: ## Show this help message
 	@echo "$(GREEN)Environment-specific:$(NC)"
 	@echo "  $(YELLOW)make dev$(NC)              Start development at http://localhost"
 	@echo "  $(YELLOW)make prod$(NC)             Start production at http://localhost:8080"
+	@echo "  $(YELLOW)make up$(NC)               Start development without rebuild"
+	@echo "  $(YELLOW)make up ENV=prod$(NC)      Start production without rebuild"
 	@echo "  $(YELLOW)make down ENV=dev$(NC)     Stop development"
 	@echo "  $(YELLOW)make down ENV=prod$(NC)    Stop production"
 	@echo "  $(YELLOW)make logs ENV=prod$(NC)    View production logs"
@@ -78,20 +81,25 @@ dev: ## Start development environment
 		exit 1; \
 	fi
 	@$(COMPOSE_DEV) up -d --build
-	@echo "$(BLUE)⏳ Waiting for services to be healthy...$(NC)"
-	@sleep 5
+	@$(MAKE) --no-print-directory _wait-for-services ENV=dev
 	@$(MAKE) --no-print-directory _init ENV=dev
 	@echo "$(GREEN)✅ Development ready at http://localhost$(NC)"
+
+up: ## Start environment without rebuilding (ENV=dev|prod, default: dev)
+	@echo "$(BLUE)▶️  Starting $(shell echo $(ENV) | tr '[:lower:]' '[:upper:]') environment (no rebuild)...$(NC)"
+	@if [ "$(ENV)" = "prod" ]; then \
+		$(COMPOSE_PROD) up -d; \
+	else \
+		$(COMPOSE_DEV) up -d; \
+	fi
+	@echo "$(GREEN)✅ Services started$(NC)"
 
 prod: _check-prod-env ## Start production environment
 	@echo "$(BLUE)🚀 Starting PRODUCTION environment...$(NC)"
 	@$(COMPOSE_PROD) up -d --build
-	@echo "$(BLUE)⏳ Waiting for services to be healthy...$(NC)"
-	@sleep 5
+	@$(MAKE) --no-print-directory _wait-for-services ENV=prod
 	@$(MAKE) --no-print-directory _init ENV=prod
 	@echo "$(GREEN)✅ Production ready at http://localhost:8080$(NC)"
-
-up: dev ## Alias for 'make dev'
 
 down: ## Stop environment (ENV=dev|prod, default: dev)
 	@echo "$(YELLOW)🛑 Stopping $(ENV_NAME) environment...$(NC)"
@@ -146,11 +154,34 @@ test: ## Run tests in development environment
 # Internal Helpers (don't call directly)
 # ============================================
 
+_wait-for-services: ## Internal: Wait for services to be ready
+	@echo "$(BLUE)⏳ Waiting for services to be healthy...$(NC)"
+	@echo "  → Waiting for database..."
+	@for i in 1 2 3 4 5 6 7 8 9 10 11 12; do \
+		if $(COMPOSE) exec -T database pg_isready -U $(shell grep POSTGRES_USER .env | cut -d= -f2) -d $(shell grep POSTGRES_DB .env | cut -d= -f2) >/dev/null 2>&1; then \
+			echo "  $(GREEN)✓ Database ready$(NC)"; \
+			break; \
+		fi; \
+		if [ $$i -eq 12 ]; then \
+			echo "  $(RED)✗ Database timeout$(NC)"; \
+			exit 1; \
+		fi; \
+		sleep 2; \
+	done
+	@echo "  → Waiting for PHP-FPM..."
+	@sleep 3
+	@echo "  $(GREEN)✓ All services ready$(NC)"
+
 _init: ## Internal: Initialize environment
 	@echo "$(BLUE)📦 Installing PHP dependencies...$(NC)"
 	@$(COMPOSE) exec -T php composer install --no-interaction 2>/dev/null || true
 	@echo "$(BLUE)🔧 Running database migrations...$(NC)"
 	@$(COMPOSE) exec -T php php bin/console doctrine:migrations:migrate --no-interaction 2>/dev/null || true
+	@echo "$(BLUE)📨 Setting up Messenger transports...$(NC)"
+	@if ! $(COMPOSE) exec -T php php bin/console messenger:setup-transports 2>&1 | grep -q "successfully"; then \
+		echo "$(RED)✗ Failed to setup Messenger transports$(NC)"; \
+		$(COMPOSE) exec -T php php bin/console messenger:setup-transports; \
+	fi
 	@echo "$(BLUE)📊 Creating Elasticsearch index...$(NC)"
 	@$(COMPOSE) exec -T php php bin/console app:create-pdf-index 2>/dev/null || echo "$(YELLOW)Index already exists$(NC)"
 	@echo "$(BLUE)🤖 Checking Ollama models...$(NC)"

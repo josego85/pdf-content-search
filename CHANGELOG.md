@@ -11,10 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Makefile**: Single entry point for all operations (dev/prod)
   - `make dev` - Auto-setup development (migrations, ES index, Ollama models)
   - `make prod` - Production with environment validation
+  - `make up` - Start without rebuild (faster for quick restarts)
   - Unified commands with ENV parameter (eliminates duplication)
+  - Smart service health checks with database readiness verification
 - **Ollama Auto-Download**: Models downloaded automatically via healthcheck
   - qwen2.5:7b (translation) + nomic-embed-text (embeddings)
   - Zero manual steps required
+- **Messenger Setup**: Auto-creates messenger_messages table on init
+  - Enables background translation processing
+  - 3 workers managed by Supervisor
+  - Reliable initialization with error detection and retry
 - **Symfony .env Pattern**: Migrated from custom to industry standard
   - `.env` (base, committed) + `.env.local` (dev overrides)
   - `.env.prod` (config) + `.env.prod.local` (secrets, auto-generated)
@@ -35,6 +41,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Secrets in `.env.prod.local` (never committed)
 - **Translation Model**: qwen2.5:7b (default, was llama3.2:1b)
 - **Languages**: Reduced to ES/EN/DE (removed 10 unused languages)
+- **Messenger Workers**: Optimized for long-running AI translations
+  - Time limit: 60s → 3600s (1 hour) - prevents worker restarts during translation
+  - Memory limit: 128M → 256M (dev), 512M (prod)
+  - Fixes translation failures with qwen2.5:7b (2-3 min per translation)
+- **Ollama Timeout**: Increased from 120s to 300s (5 minutes)
+  - Accommodates qwen2.5:7b CPU processing time
+  - Prevents premature timeout errors during translation
 
 ### Removed
 - **Shell Scripts**: docker-dev.sh, docker-prod.sh, docker-build.sh (replaced by Makefile)
