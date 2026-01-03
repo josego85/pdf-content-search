@@ -11,7 +11,6 @@
   - File: `src/Command/CleanupAnalyticsCommand.php`
 
 ### Infrastructure
-- [ ] **Use Nginx** - Replace Apache with Nginx for better performance
 - [ ] **Composer Security Audit** - Add `composer audit` to CI/CD pipeline
 - [ ] **PHP Stan** - Add static analysis to CI/CD
 
