@@ -48,6 +48,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Ollama Timeout**: Increased from 120s to 300s (5 minutes)
   - Accommodates qwen2.5:7b CPU processing time
   - Prevents premature timeout errors during translation
+- **Frontend Bundle Optimization**: Aggressive code splitting reduces initial load by ~94%
+  - Webpack advanced chunk splitting with vendor-specific cache groups
+  - PDF.js (408KB), ApexCharts (572KB), Vue (68KB) lazy-loaded separately
+  - Initial load: 661KB → 35KB (pdfViewer), 733KB → 18KB (analytics)
+  - Improved first contentful paint and time-to-interactive
+- **Frontend Dependencies**: Updated to latest stable versions
+  - Babel: 7.26 → 7.28, Webpack: 5.99 → 5.104, Sass: 1.86 → 1.97
+  - Core-js: 3.38 → 3.47
+  - Webpack Encore: 5.1 → 5.3
 
 ### Removed
 - **Shell Scripts**: docker-dev.sh, docker-prod.sh, docker-build.sh (replaced by Makefile)
