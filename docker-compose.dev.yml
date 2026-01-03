@@ -1,27 +1,20 @@
 # ============================================
-# Docker Compose - DEVELOPMENT OVERRIDES
+# Docker Compose - DEVELOPMENT Configuration
 # ============================================
-# This file is automatically loaded in development
-# and overrides settings from docker-compose.yml
-# ============================================
-# Only includes differences from production base
+# Explicit development overrides (replaces override.yml)
+# Usage: make dev  OR  docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 # ============================================
 
 services:
   database:
-    # Expose database port for local access (IDEs, tools)
     ports:
       - "5432:5432"
-    # No restart in development
     restart: "no"
 
   apache:
-    # Use standard Apache (not alpine) for better dev tooling
     image: httpd:2.4
-    # Expose HTTP port
     ports:
       - "80:80"
-    # Override volumes: mount source code for live reload
     volumes:
       - .:/var/www/html
       - ./.docker/dev/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
@@ -29,49 +22,54 @@ services:
     restart: "no"
 
   php:
-    # Use development Dockerfile with dev tools
     build:
       context: .
       dockerfile: .docker/dev/app/Dockerfile
       args:
-        # Match host user UID/GID to prevent permission issues
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
-    # Override volumes: mount source code for live reload
     volumes:
       - .:/var/www/html
       - ./.docker/dev/php/php.ini:/usr/local/etc/php/php.ini
-    # Override environment: enable debug mode
     environment:
       - APP_ENV=dev
       - APP_DEBUG=1
+      - XDEBUG_MODE=${XDEBUG_MODE:-off}
+      # Override: disable ES auth in development
       - ELASTICSEARCH_HOST=http://elasticsearch:9200
     restart: "no"
 
   elasticsearch:
-    # Expose port for local access
     ports:
       - "9200:9200"
-    # Override: use more memory in development
     environment:
       - discovery.type=single-node
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
+      # Disable auth for easier development
       - xpack.security.enabled=false
       - xpack.security.enrollment.enabled=false
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
       - cluster.routing.allocation.disk.threshold_enabled=false
       - action.destructive_requires_name=false
-    # Faster healthcheck in development
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health || exit 1"]
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q 'yellow\\|green'"]
       interval: 10s
-      timeout: 10s
+      timeout: 5s
       retries: 3
+      start_period: 30s
     restart: "no"
 
   ollama:
-    # Expose port for local access in development
     ports:
       - "11435:11434"
+    volumes:
+      - ./bin/download-models.sh:/usr/local/bin/download-models.sh:ro
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/local/bin/download-models.sh"]
+      interval: 30s
+      timeout: 120s
+      retries: 3
+      start_period: 60s
     restart: "no"

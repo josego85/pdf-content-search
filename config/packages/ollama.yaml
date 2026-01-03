@@ -1,8 +1,8 @@
 parameters:
     # Ollama API configuration
     ollama.host: '%env(OLLAMA_HOST)%'
-    ollama.model: 'llama3.2:1b'
-    ollama.timeout: 120  # seconds (for longer text processing)
+    ollama.model: 'qwen2.5:7b'
+    ollama.timeout: 300  # seconds (qwen2.5:7b needs 3-5min for translations on CPU)
 
     # Embedding model configuration for semantic search
     ollama.embedding_model: 'nomic-embed-text'  # 768 dimensions, ~50-100ms per embedding

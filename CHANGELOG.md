@@ -5,6 +5,88 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-01-03
+
+### Added
+- **Makefile**: Single entry point for all operations (dev/prod)
+  - `make dev` - Auto-setup development (migrations, ES index, Ollama models)
+  - `make prod` - Production with environment validation
+  - `make up` - Start without rebuild (faster for quick restarts)
+  - Unified commands with ENV parameter (eliminates duplication)
+  - Smart service health checks with database readiness verification
+- **Ollama Auto-Download**: Models downloaded automatically via healthcheck
+  - qwen2.5:7b (translation) + nomic-embed-text (embeddings)
+  - Zero manual steps required
+- **Messenger Setup**: Auto-creates messenger_messages table on init
+  - Enables background translation processing
+  - 3 workers managed by Supervisor
+  - Reliable initialization with error detection and retry
+- **Symfony .env Pattern**: Migrated from custom to industry standard
+  - `.env` (base, committed) + `.env.local` (dev overrides)
+  - `.env.prod` (config) + `.env.prod.local` (secrets, auto-generated)
+  - Clear separation: configuration vs secrets
+- **bin/init-prod-secrets.sh**: Auto-generates production secrets (APP_SECRET, passwords)
+
+### Changed
+- **Docker Compose Architecture**: Explicit layered composition
+  - BASE (docker-compose.yml) + DEV (docker-compose.dev.yml) or PROD (docker-compose.prod.yml)
+  - Separate project names prevent dev/prod volume conflicts
+  - Can run both environments simultaneously
+- **Environment Files**: Cleaned up obsolete files
+  - Removed `.env.dev`, `.env.docker`, `.env.production`
+  - Standardized on Symfony pattern
+- **Security Improvements**:
+  - Elasticsearch authentication enabled by default (production)
+  - Required environment variables with `?` syntax (fail-safe)
+  - Secrets in `.env.prod.local` (never committed)
+- **Translation Model**: qwen2.5:7b (default, was llama3.2:1b)
+- **Languages**: Reduced to ES/EN/DE (removed 10 unused languages)
+- **Messenger Workers**: Optimized for long-running AI translations
+  - Time limit: 60s → 3600s (1 hour) - prevents worker restarts during translation
+  - Memory limit: 128M → 256M (dev), 512M (prod)
+  - Fixes translation failures with qwen2.5:7b (2-3 min per translation)
+- **Ollama Timeout**: Increased from 120s to 300s (5 minutes)
+  - Accommodates qwen2.5:7b CPU processing time
+  - Prevents premature timeout errors during translation
+- **Frontend Bundle Optimization**: Aggressive code splitting reduces initial load by ~94%
+  - Webpack advanced chunk splitting with vendor-specific cache groups
+  - PDF.js (408KB), ApexCharts (572KB), Vue (68KB) lazy-loaded separately
+  - Initial load: 661KB → 35KB (pdfViewer), 733KB → 18KB (analytics)
+  - Improved first contentful paint and time-to-interactive
+- **Frontend Dependencies**: Updated to latest stable versions
+  - Babel: 7.26 → 7.28, Webpack: 5.99 → 5.104, Sass: 1.86 → 1.97
+  - Core-js: 3.38 → 3.47
+  - Webpack Encore: 5.1 → 5.3
+- **Apache Performance Optimization**: Brotli compression + HTTP/2 + aggressive caching
+  - Brotli compression (30-50% better than gzip) - Quality 11 (prod), 6 (dev)
+  - HTTP/2 protocol with multiplexing and server push
+  - Cache headers: 1 year immutable for versioned assets, 1 week for dev
+  - Security headers: X-Frame-Options, X-Content-Type-Options, Referrer-Policy
+  - Static files served directly (no PHP processing overhead)
+- **Documentation Reorganization**: Applied SOLID/DRY principles to eliminate duplication
+  - Created comprehensive guides: getting-started.md, configuration.md, production.md
+  - Merged duplicated content: translation-tracking.md + messenger-worker.md → features/translation.md
+  - Organized by purpose: Getting Started, Features, Reference
+  - Renamed development.md → testing.md (accurate naming)
+  - Updated README with streamlined structure, added full docker-compose commands
+  - Zero information loss, improved discoverability
+
+### Fixed
+- **Test Suite**: Updated OllamaEmbeddingService tests for current API
+  - Corrected endpoint: `/api/embeddings` → `/api/embed`
+  - Fixed request parameters: `prompt` → `input`
+  - Updated response structure: `embedding` → `embeddings` (array)
+- **PHPUnit Deprecations**: Replaced `at()` matcher with `willReturnCallback()`
+
+### Removed
+- **Shell Scripts**: docker-dev.sh, docker-prod.sh, docker-build.sh (replaced by Makefile)
+- **docker-compose.override.yml**: Replaced with explicit docker-compose.dev.yml
+- **Obsolete .env Files**: .env.dev, .env.docker, .env.production
+- **Obsolete Documentation**: docker.md, setup.md (merged to getting-started.md)
+  - messenger-worker.md, translation-tracking.md (merged to features/translation.md)
+
+---
+
 ## [1.10.0] - 2025-12-20
 
 ### Added

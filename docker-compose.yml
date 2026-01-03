@@ -1,18 +1,36 @@
 # ============================================
-# Docker Compose - PRODUCTION (Base)
+# Docker Compose - BASE Configuration
 # ============================================
-# Usage:
-#   Development: docker compose up (auto-loads override)
-#   Production:  docker compose -p pdf-search-prod -f docker-compose.yml up
+# Contains COMMON settings for all environments
+# Defaults configured for PRODUCTION (secure by default)
+#
+# Architecture (Layered Composition):
+#
+#   Development:
+#     docker-compose.yml (base) + docker-compose.dev.yml (overrides)
+#     Command: make dev
+#
+#   Production:
+#     docker-compose.yml (base) + docker-compose.prod.yml (overrides)
+#     Command: make prod
+#
+# How it works:
+#   1. This file defines all services with production defaults
+#   2. docker-compose.dev.yml OVERRIDES settings for development
+#      (expose ports, disable auth, bind mounts, etc.)
+#   3. docker-compose.prod.yml ADDS production hardening
+#      (resource limits, stricter settings)
+#
 # ============================================
 
 services:
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
+      # ✅ SECURITY FIX: Require strong passwords (no fallbacks)
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB must be set}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER must be set}
     healthcheck:
       test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
       timeout: 5s
@@ -43,7 +61,8 @@ services:
     build:
       context: .
       dockerfile: .docker/prod/app/Dockerfile
-    volumes:
+    # Named volumes for production (overridden in development)
+    volumes: &php_volumes_prod
       # Export /var/www/html/public for Apache
       - app_public:/var/www/html/public
       # Persist writable directories
@@ -51,9 +70,29 @@ services:
       - app_log:/var/www/html/var/log
       - app_sessions:/var/www/html/var/sessions
     environment:
-      - APP_ENV=prod
-      - APP_DEBUG=0
-      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+      # Symfony framework
+      - APP_ENV=${APP_ENV:-prod}
+      - APP_DEBUG=${APP_DEBUG:-0}
+      - APP_SECRET=${APP_SECRET}
+      # Database connection (injected from .env.production in prod, .env in dev)
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=database
+      - POSTGRES_PORT=5432
+      # DATABASE_URL built from env vars (overrides .env file)
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}?serverVersion=16&charset=utf8
+      # ✅ SECURITY FIX: Use authenticated ES connection
+      - ELASTICSEARCH_HOST=http://elastic:${ELASTIC_PASSWORD}@elasticsearch:9200
+      - ELASTICSEARCH_INDEX_PDFS=${ELASTICSEARCH_INDEX_PDFS:-pdf_pages}
+      # Messenger queue
+      - MESSENGER_TRANSPORT_DSN=${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=0}
+      # Mailer
+      - MAILER_DSN=${MAILER_DSN:-null://null}
+      # Ollama integration
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://ollama:11434}
+      # Routing
+      - DEFAULT_URI=${DEFAULT_URI:-http://localhost}
     depends_on:
       - database
       - elasticsearch
@@ -69,8 +108,11 @@ services:
       - discovery.type=single-node
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
-      - xpack.security.enabled=false
-      - xpack.security.enrollment.enabled=false
+      # ✅ SECURITY FIX: Enable authentication
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:?ELASTIC_PASSWORD must be set}
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
       - cluster.routing.allocation.disk.threshold_enabled=false
       - action.destructive_requires_name=false
@@ -86,10 +128,11 @@ services:
     networks:
       - app_network
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health || exit 1"]
+      test: ["CMD-SHELL", "curl -u elastic:${ELASTIC_PASSWORD} -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\\|yellow\"' || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 60s
     restart: unless-stopped
 
   ollama:

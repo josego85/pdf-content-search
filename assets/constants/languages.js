@@ -6,17 +6,7 @@
 export const LANGUAGES = {
 	ES: { code: "es", name: "Español", englishName: "Spanish" },
 	EN: { code: "en", name: "Inglés", englishName: "English" },
-	FR: { code: "fr", name: "Francés", englishName: "French" },
-	PT: { code: "pt", name: "Portugués", englishName: "Portuguese" },
 	DE: { code: "de", name: "Alemán", englishName: "German" },
-	IT: { code: "it", name: "Italiano", englishName: "Italian" },
-	NL: { code: "nl", name: "Holandés", englishName: "Dutch" },
-	PL: { code: "pl", name: "Polaco", englishName: "Polish" },
-	RU: { code: "ru", name: "Ruso", englishName: "Russian" },
-	ZH: { code: "zh", name: "Chino", englishName: "Chinese" },
-	JA: { code: "ja", name: "Japonés", englishName: "Japanese" },
-	KO: { code: "ko", name: "Coreano", englishName: "Korean" },
-	AR: { code: "ar", name: "Árabe", englishName: "Arabic" },
 }
 
 /**

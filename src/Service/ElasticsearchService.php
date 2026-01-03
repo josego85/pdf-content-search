@@ -22,10 +22,21 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
         string $host,
         private readonly string $pdfPagesIndex
     ) {
-        $this->client = ClientBuilder::create()
+        $parsedUrl = parse_url($host);
+        $cleanHost = ($parsedUrl['scheme'] ?? 'http') . '://' .
+                     ($parsedUrl['host'] ?? 'localhost') .
+                     (isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '');
+
+        $clientBuilder = ClientBuilder::create()
             ->setSSLVerification(false)
-            ->setHosts([$host])
-            ->build();
+            ->setHosts([$cleanHost]);
+
+        // Set authentication if credentials are present in URL
+        if (isset($parsedUrl['user']) && isset($parsedUrl['pass'])) {
+            $clientBuilder->setBasicAuthentication($parsedUrl['user'], $parsedUrl['pass']);
+        }
+
+        $this->client = $clientBuilder->build();
     }
 
     public function createIndex(array $settings = []): void

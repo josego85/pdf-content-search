@@ -43,17 +43,17 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $response
             ->expects($this->once())
             ->method('toArray')
-            ->willReturn(['embedding' => $expectedEmbedding]);
+            ->willReturn(['embeddings' => [$expectedEmbedding]]);
 
         $this->httpClient
             ->expects($this->once())
             ->method('request')
             ->with(
                 'POST',
-                self::OLLAMA_HOST . '/api/embeddings',
+                self::OLLAMA_HOST . '/api/embed',
                 $this->callback(static function ($options) use ($text) {
                     return $options['json']['model'] === self::EMBEDDING_MODEL
-                        && $options['json']['prompt'] === $text
+                        && $options['json']['input'] === $text
                         && $options['timeout'] === 30;
                 })
             )
@@ -72,7 +72,7 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response
             ->method('toArray')
-            ->willReturn(['embedding' => $wrongDimensionEmbedding]);
+            ->willReturn(['embeddings' => [$wrongDimensionEmbedding]]);
 
         $this->httpClient
             ->method('request')
@@ -91,14 +91,14 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response
             ->method('toArray')
-            ->willReturn(['error' => 'Model not found']); // Missing 'embedding' field
+            ->willReturn(['error' => 'Model not found']); // Missing 'embeddings' field
 
         $this->httpClient
             ->method('request')
             ->willReturn($response);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Invalid response from Ollama: missing or invalid embedding field');
+        $this->expectExceptionMessage('Invalid response from Ollama: missing or invalid embeddings field');
 
         $this->service->embed($text);
     }
@@ -116,7 +116,7 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $successResponse = $this->createMock(ResponseInterface::class);
         $successResponse
             ->method('toArray')
-            ->willReturn(['embedding' => $expectedEmbedding]);
+            ->willReturn(['embeddings' => [$expectedEmbedding]]);
 
         $this->httpClient
             ->expects($this->exactly(2))
@@ -160,7 +160,7 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response
             ->method('toArray')
-            ->willReturn(['embedding' => $embedding]);
+            ->willReturn(['embeddings' => [$embedding]]);
 
         $this->httpClient
             ->expects($this->exactly(3))
@@ -187,14 +187,14 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response
             ->method('toArray')
-            ->willReturn(['embedding' => 'not_an_array']); // Invalid type
+            ->willReturn(['embeddings' => 'not_an_array']); // Invalid type
 
         $this->httpClient
             ->method('request')
             ->willReturn($response);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Invalid response from Ollama: missing or invalid embedding field');
+        $this->expectExceptionMessage('Invalid response from Ollama: missing or invalid embeddings field');
 
         $this->service->embed($text);
     }
@@ -214,7 +214,7 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response
             ->method('toArray')
-            ->willReturn(['embedding' => $embedding]);
+            ->willReturn(['embeddings' => [$embedding]]);
 
         $this->httpClient
             ->expects($this->once())
@@ -235,18 +235,18 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response
             ->method('toArray')
-            ->willReturn(['embedding' => $embedding]);
+            ->willReturn(['embeddings' => [$embedding]]);
 
         $this->httpClient
             ->expects($this->once())
             ->method('request')
             ->with(
                 'POST',
-                self::OLLAMA_HOST . '/api/embeddings',
+                self::OLLAMA_HOST . '/api/embed',
                 [
                     'json' => [
                         'model' => self::EMBEDDING_MODEL,
-                        'prompt' => $text,
+                        'input' => $text,
                     ],
                     'timeout' => 30,
                 ]
