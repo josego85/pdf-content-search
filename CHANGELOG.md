@@ -57,6 +57,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Babel: 7.26 → 7.28, Webpack: 5.99 → 5.104, Sass: 1.86 → 1.97
   - Core-js: 3.38 → 3.47
   - Webpack Encore: 5.1 → 5.3
+- **Apache Performance Optimization**: Brotli compression + HTTP/2 + aggressive caching
+  - Brotli compression (30-50% better than gzip) - Quality 11 (prod), 6 (dev)
+  - HTTP/2 protocol with multiplexing and server push
+  - Cache headers: 1 year immutable for versioned assets, 1 week for dev
+  - Security headers: X-Frame-Options, X-Content-Type-Options, Referrer-Policy
+  - Static files served directly (no PHP processing overhead)
 
 ### Removed
 - **Shell Scripts**: docker-dev.sh, docker-prod.sh, docker-build.sh (replaced by Makefile)
