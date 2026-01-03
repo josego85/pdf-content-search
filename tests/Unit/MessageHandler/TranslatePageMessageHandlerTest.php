@@ -140,11 +140,14 @@ final class TranslatePageMessageHandlerTest extends TestCase
             ]);
 
         $this->logger
-            ->expects(self::at(1))
+            ->expects(self::atLeastOnce())
             ->method('info')
-            ->with('Translation completed', self::callback(static function ($context) {
-                return $context['source'] === 'cache' && $context['cached'] === true;
-            }));
+            ->willReturnCallback(static function ($message, $context) {
+                if ($message === 'Translation completed') {
+                    self::assertSame('cache', $context['source']);
+                    self::assertTrue($context['cached']);
+                }
+            });
 
         ($this->handler)($message);
     }

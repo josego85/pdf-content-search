@@ -71,6 +71,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated README with streamlined structure, added full docker-compose commands
   - Zero information loss, improved discoverability
 
+### Fixed
+- **Test Suite**: Updated OllamaEmbeddingService tests for current API
+  - Corrected endpoint: `/api/embeddings` → `/api/embed`
+  - Fixed request parameters: `prompt` → `input`
+  - Updated response structure: `embedding` → `embeddings` (array)
+- **PHPUnit Deprecations**: Replaced `at()` matcher with `willReturnCallback()`
+
 ### Removed
 - **Shell Scripts**: docker-dev.sh, docker-prod.sh, docker-build.sh (replaced by Makefile)
 - **docker-compose.override.yml**: Replaced with explicit docker-compose.dev.yml
