@@ -69,6 +69,103 @@ Common issues and solutions for PDF Content Search.
 
 ---
 
+## PDF Indexing Issues
+
+### No PDF Files Found
+
+**Problem**: Running `app:index-pdfs` reports "No PDF files found" even though PDFs exist in `public/pdfs/`.
+
+**Root Causes:**
+
+1. **Using PRODUCTION mode instead of DEVELOPMENT** (Most common)
+2. File permissions issue (Less common)
+
+**Diagnostic Steps:**
+
+1. **Check if files exist INSIDE the container:**
+   ```bash
+   docker compose exec php ls -la public/pdfs/
+   ```
+
+2. **Analyze the output:**
+   - **If directory is EMPTY** → You're using production mode (volumes not mounted)
+   - **If files exist but show permission denied** → Permissions issue
+
+---
+
+### Solution A: Production vs Development Mode (Most Common)
+
+**Problem**: PDFs exist on host but are invisible inside the container.
+
+**Cause**: In **production mode**, the code is COPIED into the container at build time. Any files you add to `public/pdfs/` on your host machine won't be visible inside the running container.
+
+**Solution:**
+
+1. **Stop current containers:**
+   ```bash
+   docker compose down
+   ```
+
+2. **Start using DEVELOPMENT mode:**
+   ```bash
+   # Option 1: Use the dev script (recommended)
+   ./docker-dev.sh up
+
+   # Option 2: Manual start (auto-loads docker-compose.override.yml)
+   docker compose up -d
+   ```
+
+3. **Verify PDFs are now visible:**
+   ```bash
+   docker compose exec php ls -la public/pdfs/
+   ```
+
+   You should see your PDF files listed.
+
+4. **Index the PDFs:**
+   ```bash
+   docker compose exec php php bin/console app:index-pdfs
+   ```
+
+**Why this works:**
+- Development mode (`docker-compose.override.yml`) mounts the entire project directory as a volume: `. :/var/www/html`
+- Changes on your host machine are immediately visible inside the container
+- Production mode uses named volumes and doesn't mount source code
+
+---
+
+### Solution B: Fix Permissions (If files exist but can't be read)
+
+**Problem**: Files exist inside the container but have wrong permissions.
+
+**Solutions:**
+
+1. **Fix permissions on the PDFs directory:**
+   ```bash
+   chmod -R 755 public/pdfs/
+   ```
+
+2. **Verify files are readable:**
+   ```bash
+   docker compose exec php ls -la public/pdfs/
+   ```
+
+   Files should show permissions like `-rwxr-xr-x` (755).
+
+3. **Use the fix-permissions script:**
+   ```bash
+   ./bin/fix-permissions.sh
+   ```
+
+4. **Re-index after fixing permissions:**
+   ```bash
+   docker compose exec php php bin/console app:index-pdfs
+   ```
+
+**Prevention**: Always run `chmod -R 755 public/pdfs/` after copying new PDF files to the directory.
+
+---
+
 ## Search Issues
 
 ### No Search Results
@@ -90,6 +187,8 @@ Common issues and solutions for PDF Content Search.
 
 3. **Re-index PDFs:**
    ```bash
+   # Make sure permissions are correct first
+   chmod -R 755 public/pdfs/
    docker compose exec php php bin/console app:index-pdfs
    ```
 
@@ -172,24 +271,68 @@ Common issues and solutions for PDF Content Search.
 
 **Solutions:**
 
-1. **Verify llama3.2 model is installed:**
+1. **Verify qwen2.5 model is installed:**
    ```bash
-   docker compose exec ollama ollama list | grep llama3.2
+   docker compose exec ollama ollama list | grep qwen2.5
    ```
 
 2. **Download the model:**
    ```bash
-   docker compose exec ollama ollama pull llama3.2:1b
+   docker compose exec ollama ollama pull qwen2.5:7b
    ```
 
 3. **Test Ollama directly:**
    ```bash
    curl http://localhost:11434/api/generate -d '{
-     "model": "llama3.2:1b",
+     "model": "qwen2.5:7b",
      "prompt": "Hello",
      "stream": false
    }'
    ```
+
+---
+
+---
+
+## Production vs Development Mode Issues
+
+### Running Wrong Docker Mode
+
+**Problem**: You're accidentally using production Docker setup for local development.
+
+**Symptoms:**
+- Files you add to `public/pdfs/` aren't visible inside containers
+- Code changes don't take effect without rebuild
+- Need to rebuild image after every change
+
+**Diagnostic:**
+```bash
+docker compose config | grep -A2 "volumes:"
+```
+
+**If you see named volumes** (`app_public:/var/www/html/public`) instead of bind mounts (`. :/var/www/html`), you're in production mode.
+
+**Solution:**
+
+```bash
+# Stop production containers
+docker compose down
+
+# Start in development mode (auto-loads docker-compose.override.yml)
+./docker-dev.sh up
+
+# Or manually:
+docker compose up -d
+
+# Verify you're now in development mode
+docker compose config | grep -A2 "volumes:"
+# Should show: - .:/var/www/html
+```
+
+**Prevent this issue:**
+- Always use `./docker-dev.sh up` for local development
+- Never use `docker compose -f docker-compose.yml up` for development
+- See [docker.md](docker.md#volume-strategy-development-vs-production) for detailed explanation
 
 ---
 

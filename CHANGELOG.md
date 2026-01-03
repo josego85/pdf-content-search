@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.11.0] - 2026-01-03
 
 ### Added
 - **Makefile**: Single entry point for all operations (dev/prod)
@@ -63,11 +63,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Cache headers: 1 year immutable for versioned assets, 1 week for dev
   - Security headers: X-Frame-Options, X-Content-Type-Options, Referrer-Policy
   - Static files served directly (no PHP processing overhead)
+- **Documentation Reorganization**: Applied SOLID/DRY principles to eliminate duplication
+  - Created comprehensive guides: getting-started.md, configuration.md, production.md
+  - Merged duplicated content: translation-tracking.md + messenger-worker.md → features/translation.md
+  - Organized by purpose: Getting Started, Features, Reference
+  - Renamed development.md → testing.md (accurate naming)
+  - Updated README with streamlined structure, added full docker-compose commands
+  - Zero information loss, improved discoverability
 
 ### Removed
 - **Shell Scripts**: docker-dev.sh, docker-prod.sh, docker-build.sh (replaced by Makefile)
 - **docker-compose.override.yml**: Replaced with explicit docker-compose.dev.yml
 - **Obsolete .env Files**: .env.dev, .env.docker, .env.production
+- **Obsolete Documentation**: docker.md, setup.md (merged to getting-started.md)
+  - messenger-worker.md, translation-tracking.md (merged to features/translation.md)
+
+---
 
 ## [1.10.0] - 2025-12-20
 
