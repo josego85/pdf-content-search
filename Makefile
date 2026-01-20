@@ -157,13 +157,13 @@ test: ## Run tests in development environment
 _wait-for-services: ## Internal: Wait for services to be ready
 	@echo "$(BLUE)⏳ Waiting for services to be healthy...$(NC)"
 	@echo "  → Waiting for database..."
-	@for i in 1 2 3 4 5 6 7 8 9 10 11 12; do \
-		if $(COMPOSE) exec -T database pg_isready -U $(shell grep POSTGRES_USER .env | cut -d= -f2) -d $(shell grep POSTGRES_DB .env | cut -d= -f2) >/dev/null 2>&1; then \
+	@for i in $$(seq 1 30); do \
+		if [ "$$(docker inspect --format='{{.State.Health.Status}}' $$($(COMPOSE) ps -q database) 2>/dev/null)" = "healthy" ]; then \
 			echo "  $(GREEN)✓ Database ready$(NC)"; \
 			break; \
 		fi; \
-		if [ $$i -eq 12 ]; then \
-			echo "  $(RED)✗ Database timeout$(NC)"; \
+		if [ $$i -eq 30 ]; then \
+			echo "  $(RED)✗ Database timeout after 60s$(NC)"; \
 			exit 1; \
 		fi; \
 		sleep 2; \

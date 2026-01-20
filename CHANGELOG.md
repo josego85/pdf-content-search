@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+[Unreleased]
+
+### Changed
+- **Scripts**: Moved `coverage.sh` from `docker/` to `.docker/` (consistent naming convention)
+
+### Fixed
+- **Makefile**: Database health check now uses Docker's native healthcheck instead of manual `pg_isready`
+  - Fixes timeout issues after `docker system prune`
+  - Increased timeout from 24s to 60s for cold starts
+
+### Dependencies
+- github/codeql-action: 4.31.8 → 4.31.10 (#59, #67)
+- vue: 3.5.26 → 3.5.27
+- @babel/core: 7.28.5 → 7.28.6
+- @babel/preset-env: 7.28.5 → 7.28.6
+- @biomejs/biome: 2.3.10 → 2.3.11
+- @vue/compiler-sfc: 3.5.26 → 3.5.27
+- sass: 1.97.1 → 1.97.2
+
+---
+
 ## [1.11.0] - 2026-01-03
 
 ### Added

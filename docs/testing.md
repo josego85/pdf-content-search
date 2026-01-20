@@ -29,13 +29,13 @@ docker compose exec php vendor/bin/phpunit
 docker compose exec php vendor/bin/phpunit --coverage-html coverage/
 
 # Or use the helper script
-./docker/dev/scripts/coverage.sh
+./.docker/dev/scripts/coverage.sh
 
 # Open coverage report in browser
 open coverage/index.html
 
 # Generate XML coverage for CI
-./docker/dev/scripts/coverage.sh --xml
+./.docker/dev/scripts/coverage.sh --xml
 ```
 
 **Note:** PCOV is pre-installed in the dev Docker image for fast code coverage reports. It's significantly faster than Xdebug and has zero runtime overhead.
