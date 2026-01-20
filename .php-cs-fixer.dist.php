@@ -11,7 +11,8 @@ $finder = Finder::create()
         'vendor',
         'var',
         'node_modules',
-    ]);
+    ])
+    ->notPath('config/reference.php');
 
 return (new Config())
     ->setRiskyAllowed(true)

@@ -6,7 +6,7 @@
 # ============================================
 # Stage 1: Base Image
 # ============================================
-FROM php:8.4.15-fpm-alpine AS base
+FROM php:8.4.17-fpm-alpine AS base
 
 # Install runtime dependencies only
 RUN apk add --no-cache \
@@ -45,7 +45,7 @@ WORKDIR /var/www/html
 # ============================================
 # Stage 2: Node Builder - Compile assets
 # ============================================
-FROM node:22-alpine AS node-builder
+FROM node:24-alpine AS node-builder
 
 WORKDIR /build
 
@@ -100,8 +100,8 @@ RUN set -eux; \
     sed -i 's/APP_ENV=dev/APP_ENV=prod/' .env; \
     sed -i 's/APP_DEBUG=1/APP_DEBUG=0/' .env; \
     if grep -q "APP_SECRET=$" .env || grep -q "APP_SECRET=\"\"" .env; then \
-        SECRET=$(head -c 32 /dev/urandom | base64 | tr -d '\n+=/' | head -c 32); \
-        sed -i "s|APP_SECRET=.*|APP_SECRET=${SECRET}|" .env; \
+    SECRET=$(head -c 32 /dev/urandom | base64 | tr -d '\n+=/' | head -c 32); \
+    sed -i "s|APP_SECRET=.*|APP_SECRET=${SECRET}|" .env; \
     fi
 
 # Copy built assets from node builder
