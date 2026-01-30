@@ -5,11 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-[Unreleased]
+## [Unreleased]
 
 ### Changed
-- **build:** Updated Docker base images:
-  - httpd: 2.4-alpine → 2.4.66-alpine, 2.4 → 2.4.66
+- **Docker Base Images**: Updated to latest stable versions
+  - httpd: 2.4-alpine → 2.4.66-alpine
   - elasticsearch: 9.2.2 → 9.2.4
   - php: 8.4.15-fpm → 8.4.17-fpm
   - node: 22-alpine → 24-alpine
@@ -22,13 +22,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Increased timeout from 24s to 60s for cold starts
 
 ### Dependencies
-- github/codeql-action: 4.31.8 → 4.31.10 (#59, #67)
+
+**Backend:**
+- symfony/process: 7.4.0 → 7.4.5 ([#75](https://github.com/josego85/pdf-content-search/pull/75))
+- phpunit/phpunit: 9.6.29 → 9.6.33 ([#76](https://github.com/josego85/pdf-content-search/pull/76))
+
+**Frontend:**
 - vue: 3.5.26 → 3.5.27
+- @vue/compiler-sfc: 3.5.26 → 3.5.27
 - @babel/core: 7.28.5 → 7.28.6
 - @babel/preset-env: 7.28.5 → 7.28.6
 - @biomejs/biome: 2.3.10 → 2.3.11
-- @vue/compiler-sfc: 3.5.26 → 3.5.27
 - sass: 1.97.1 → 1.97.2
+- lodash: 4.17.21 → 4.17.23 ([#72](https://github.com/josego85/pdf-content-search/pull/72))
+
+**CI/CD:**
+- github/codeql-action: 4.31.8 → 4.31.10 ([#59](https://github.com/josego85/pdf-content-search/pull/59), [#67](https://github.com/josego85/pdf-content-search/pull/67))
+- github-actions group: 2 updates ([#73](https://github.com/josego85/pdf-content-search/pull/73))
 
 ---
 
