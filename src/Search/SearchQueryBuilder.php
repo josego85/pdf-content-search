@@ -61,6 +61,7 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
             SearchStrategy::HYBRID => $this->buildHybridQuery($query),
             SearchStrategy::EXACT => $this->buildExactQuery($query),
             SearchStrategy::PREFIX => $this->buildPrefixQuery($query),
+            default => $this->buildHybridQuery($query),
         };
     }
 

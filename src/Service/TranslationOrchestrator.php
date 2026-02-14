@@ -59,9 +59,9 @@ final class TranslationOrchestrator
             ];
         }
 
-        $pdfFilename = $validation['pdfFilename'];
-        $pageNumber = $validation['pageNumber'];
-        $pdfPath = $validation['pdfPath'];
+        $pdfFilename = (string) $validation['pdfFilename'];
+        $pageNumber = (int) $validation['pageNumber'];
+        $pdfPath = (string) $validation['pdfPath'];
 
         // Extract text from PDF
         $originalText = $this->pdfProcessor->extractTextFromPage($pdfPath, $pageNumber);
@@ -173,9 +173,9 @@ final class TranslationOrchestrator
             ];
         }
 
-        $pdfFilename = $validation['pdfFilename'];
-        $pageNumber = $validation['pageNumber'];
-        $pdfPath = $validation['pdfPath'];
+        $pdfFilename = (string) $validation['pdfFilename'];
+        $pageNumber = (int) $validation['pageNumber'];
+        $pdfPath = (string) $validation['pdfPath'];
 
         // Extract original text
         $originalText = $this->pdfProcessor->extractTextFromPage($pdfPath, $pageNumber);

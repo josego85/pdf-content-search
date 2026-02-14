@@ -92,10 +92,8 @@ final class TranslatePageMessageHandler
             );
         } catch (\Exception $e) {
             // Mark job as failed
-            if ($job) {
-                $job->markAsFailed($e->getMessage());
-                $this->entityManager->flush();
-            }
+            $job->markAsFailed($e->getMessage());
+            $this->entityManager->flush();
 
             $this->logger->error('Translation failed', [
                 'pdf' => $message->getPdfFilename(),
