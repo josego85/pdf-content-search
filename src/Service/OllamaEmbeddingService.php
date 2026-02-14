@@ -64,7 +64,7 @@ final readonly class OllamaEmbeddingService implements EmbeddingServiceInterface
             }
         }
 
-        throw new \RuntimeException(sprintf('Failed to generate embedding after %d attempts: %s', self::MAX_RETRIES, $lastException?->getMessage()), 0, $lastException);
+        throw new \RuntimeException(sprintf('Failed to generate embedding after %d attempts: %s', self::MAX_RETRIES, $lastException->getMessage()), 0, $lastException);
     }
 
     public function embedBatch(array $texts): array

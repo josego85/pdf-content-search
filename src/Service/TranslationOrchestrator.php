@@ -6,7 +6,6 @@ namespace App\Service;
 
 use App\Entity\TranslationJob;
 use App\Message\TranslatePageMessage;
-use App\Repository\TranslationJobRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -30,8 +29,7 @@ final class TranslationOrchestrator
         private readonly TranslationRequestValidator $validator,
         private readonly QueueDuplicationChecker $queueChecker,
         private readonly MessageBusInterface $messageBus,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly TranslationJobRepository $jobRepository
+        private readonly EntityManagerInterface $entityManager
     ) {
     }
 

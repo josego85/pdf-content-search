@@ -23,6 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pre-commit hook integration via Husky
   - `composer phpstan` script and `make phpstan` target
 
+### Fixed
+- **PHPStan type safety**: Fix 18 real bugs detected by static analysis
+  - Nullsafe operator on guaranteed non-null variable (`OllamaEmbeddingService`)
+  - Unused `$jobRepository` dependency (`TranslationOrchestrator`)
+  - Missing `instanceof` type guard on `findOneBy()` result (`AnalyticsController`)
+  - Unhandled `false` returns from `getmypid()`, `strrpos()`, `preg_split()`, `preg_replace()`, `shell_exec()`
+
 ### Dependencies
 
 **Backend:**

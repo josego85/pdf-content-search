@@ -189,7 +189,7 @@ final class AnalyticsController extends AbstractController
             ['createdAt' => 'DESC']
         );
 
-        if ($analytics) {
+        if ($analytics instanceof \App\Entity\SearchAnalytics) {
             $analytics->setClicked(true);
             $analytics->setClickedPosition($position);
             $analytics->setClickedPdf($pdfPath);

@@ -64,7 +64,7 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
      */
     private function buildHybridQuery(string $query): array
     {
-        $words = preg_split('/\s+/', $query, -1, PREG_SPLIT_NO_EMPTY);
+        $words = preg_split('/\s+/', $query, -1, PREG_SPLIT_NO_EMPTY) ?: [];
         $hasLongWords = count(array_filter($words, static fn ($w) => mb_strlen($w) >= self::FUZZY_MIN_LENGTH)) > 0;
 
         return [

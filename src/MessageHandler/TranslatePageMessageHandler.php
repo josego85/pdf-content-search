@@ -50,14 +50,15 @@ final class TranslatePageMessageHandler
         }
 
         // Mark as processing with worker PID
-        $job->markAsProcessing(getmypid());
+        $pid = getmypid() ?: 0;
+        $job->markAsProcessing($pid);
         $this->entityManager->flush();
 
         $this->logger->info('Starting async translation', [
             'pdf' => $message->getPdfFilename(),
             'page' => $message->getPageNumber(),
             'target_language' => $message->getTargetLanguage(),
-            'worker_pid' => getmypid(),
+            'worker_pid' => $pid,
         ]);
 
         try {
