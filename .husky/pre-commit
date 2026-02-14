@@ -18,6 +18,17 @@ fi
 echo "✅ PHP code style is clean."
 echo ""
 
+echo "🔬 Running PHPStan static analysis..."
+docker compose exec -T php composer phpstan
+
+if [ $? -ne 0 ]; then
+  echo "❌ PHPStan found errors. Please fix them before committing."
+  exit 1
+fi
+
+echo "✅ PHPStan analysis passed."
+echo ""
+
 echo "🧪 Running PHP tests..."
 docker compose exec -T php bash -c "XDEBUG_MODE=coverage php bin/phpunit"
 

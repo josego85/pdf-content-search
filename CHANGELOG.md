@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Global position offset for accurate click analytics tracking
   - `PAGINATION.PAGE_SIZE` constant in `assets/constants/pagination.js`
 - **Elasticsearch Safety Cap**: Configurable `ELASTICSEARCH_MAX_RESULTS` env var (default: 100) to limit lexical query result sets
+- **PHPStan Static Analysis**: Level 8 with Symfony and Doctrine extensions
+  - `phpstan.neon` config with baseline for gradual adoption (86 existing errors)
+  - CI job `static-analysis` in GitHub Actions pipeline
+  - Pre-commit hook integration via Husky
+  - `composer phpstan` script and `make phpstan` target
 
 ### Dependencies
 
