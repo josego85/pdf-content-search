@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **TranslationOrchestrator**: Type-safe casts after validation (resolve 16 nullable chain errors)
 - **Dead code removal**: Remove always-true `if ($job)` guard in `TranslatePageMessageHandler`
 - **SearchQueryBuilder**: Add default fallback to match expression for unhandled strategies
+- **CI**: Fix `composer validate` failure caused by exact version constraint warnings (`--no-check-all`)
 
 ### Dependencies
 
