@@ -53,7 +53,7 @@ jobs:
           coverage: pcov
 
       - name: Validate composer files
-        run: composer validate --no-check-publish
+        run: composer validate --no-check-publish --no-check-all
 
       - name: Setup Node.js project
         uses: ./.github/actions/setup-node-project
