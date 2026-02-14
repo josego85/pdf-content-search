@@ -20,6 +20,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 
+**Backend:**
+- symfony/*: 7.4.0 → 7.4.4/7.4.5 (framework-bundle, http-client, validator, mime, property-info)
+- doctrine/dbal: 4.4.0 → 4.4.1
+- doctrine/doctrine-bundle: 3.1.0 → 3.1.1
+- doctrine/orm: 3.6.0 → 3.6.2
+- friendsofphp/php-cs-fixer: 3.92.3 → 3.94.0
+- phpunit/phpunit: 9.6.33 → 9.6.34
+- symfony/phpunit-bridge: 7.4.0 → 7.4.3
+- symfony/web-profiler-bundle: 7.4.0 → 7.4.4
+
+**Frontend:**
+- vue: 3.5.27 → 3.5.28
+- @vue/compiler-sfc: 3.5.27 → 3.5.28
+- @babel/core: 7.28.6 → 7.29.0
+- @babel/preset-env: 7.28.6 → 7.29.0
+- @biomejs/biome: 2.3.11 → 2.3.15
+- webpack: 5.104.1 → 5.105.2
+- tailwindcss: 3.4.17 → 3.4.19
+- sass: 1.97.2 → 1.97.3
+
 **CI/CD:**
 - github/codeql-action: 4.31.11 → 4.32.2 ([#79](https://github.com/josego85/pdf-content-search/pull/79), [#80](https://github.com/josego85/pdf-content-search/pull/80))
 
