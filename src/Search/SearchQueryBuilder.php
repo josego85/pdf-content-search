@@ -18,7 +18,8 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
 
     public function __construct(
         private QueryParser $parser,
-        private string $pdfPagesIndex
+        private string $pdfPagesIndex,
+        private int $maxResults = 100
     ) {
     }
 
@@ -34,6 +35,7 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
             'body' => [
                 'query' => $this->buildQuery($query, $parsedQuery, $strategy),
                 'highlight' => $this->buildHighlight(),
+                'size' => $this->maxResults,
             ],
         ];
     }

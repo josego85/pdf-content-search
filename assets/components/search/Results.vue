@@ -4,7 +4,7 @@
       v-for="(result, index) in results"
       :key="result?._id || index"
       :result="result"
-      :position="index + 1"
+      :position="index + 1 + offset"
       :query="query"
       @open="$emit('open', result)"
     />
@@ -23,6 +23,10 @@ export default {
 		results: {
 			type: Array,
 			required: true,
+		},
+		offset: {
+			type: Number,
+			default: 0,
 		},
 		viewMode: {
 			type: String,

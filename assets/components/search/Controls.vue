@@ -4,7 +4,9 @@
     <div class="flex items-center justify-between text-xs sm:text-sm gap-2">
       <div class="flex items-center gap-2 flex-wrap">
         <p class="text-gray-600">
-          <span class="hidden sm:inline">Found </span>
+          <span class="hidden sm:inline">Showing </span>
+          <span class="font-semibold text-gray-900">{{ from }}-{{ to }}</span>
+          of
           <span class="font-semibold text-gray-900">{{ resultCount }}</span>
           {{ resultCount === 1 ? 'result' : 'results' }}
           <span v-if="duration" class="text-gray-400 hidden sm:inline">in {{ duration }}ms</span>
@@ -44,6 +46,14 @@ export default {
 	name: "Controls",
 	props: {
 		resultCount: {
+			type: Number,
+			required: true,
+		},
+		from: {
+			type: Number,
+			required: true,
+		},
+		to: {
 			type: Number,
 			required: true,
 		},
