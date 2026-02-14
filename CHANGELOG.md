@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+---
+
+## [Unreleased]
+
+### Added
+- **Frontend Pagination**: Client-side pagination for search results (10 results per page)
+  - `Pagination.vue` component with prev/next, page numbers, and ellipsis navigation
+  - "Showing 1-10 of 42 results" range display in Controls
+  - Scroll-to-top on page change, auto-reset on new search
+  - Global position offset for accurate click analytics tracking
+  - `PAGINATION.PAGE_SIZE` constant in `assets/constants/pagination.js`
+- **Elasticsearch Safety Cap**: Configurable `ELASTICSEARCH_MAX_RESULTS` env var (default: 100) to limit lexical query result sets
+
+### Dependencies
+
+**CI/CD:**
+- github/codeql-action: 4.31.11 → 4.32.2 ([#79](https://github.com/josego85/pdf-content-search/pull/79), [#80](https://github.com/josego85/pdf-content-search/pull/80))
+
+
+---
+
 ## [1.11.1] - 2026-01-30
 
 ### Changed

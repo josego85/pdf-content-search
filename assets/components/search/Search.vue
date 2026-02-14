@@ -24,6 +24,8 @@
       <Controls
         v-if="hasResults"
         :result-count="results.length"
+        :from="paginationFrom"
+        :to="paginationTo"
         :duration="searchDuration"
         :view-mode="viewMode"
         @update:view-mode="viewMode = $event"
@@ -42,10 +44,19 @@
       <!-- Results Grid/List (only shown after committed search) -->
       <Results
         v-if="hasResults"
-        :results="results"
+        :results="paginatedResults"
+        :offset="paginationFrom - 1"
         :view-mode="viewMode"
         :query="searchQuery"
         @open="openDocument"
+      />
+
+      <!-- Pagination -->
+      <Pagination
+        v-if="hasResults"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        @update:current-page="goToPage"
       />
 
       <!-- Empty State -->
@@ -62,9 +73,11 @@
 </template>
 
 <script>
+import { PAGINATION } from "../../constants/pagination"
 import Bar from "./Bar.vue"
 import Controls from "./Controls.vue"
 import Hero from "./Hero.vue"
+import Pagination from "./Pagination.vue"
 import Results from "./Results.vue"
 import Empty from "./states/Empty.vue"
 import Error from "./states/Error.vue"
@@ -77,6 +90,7 @@ export default {
 		Hero,
 		Bar,
 		Controls,
+		Pagination,
 		Results,
 		Loading,
 		Error,
@@ -97,11 +111,25 @@ export default {
 			isFocused: false,
 			selectedSuggestionIndex: -1,
 			blurTimeout: null,
+			currentPage: 1,
 		}
 	},
 	computed: {
 		hasResults() {
 			return Array.isArray(this.results) && this.results.length > 0
+		},
+		totalPages() {
+			return Math.ceil(this.results.length / PAGINATION.PAGE_SIZE)
+		},
+		paginatedResults() {
+			const start = (this.currentPage - 1) * PAGINATION.PAGE_SIZE
+			return this.results.slice(start, start + PAGINATION.PAGE_SIZE)
+		},
+		paginationFrom() {
+			return (this.currentPage - 1) * PAGINATION.PAGE_SIZE + 1
+		},
+		paginationTo() {
+			return Math.min(this.currentPage * PAGINATION.PAGE_SIZE, this.results.length)
 		},
 		showSuggestions() {
 			return (
@@ -218,6 +246,7 @@ export default {
 
 				if (data.status === "success" && data.data?.hits) {
 					this.results = data.data.hits
+					this.currentPage = 1
 					this.searchDuration = data.data.duration_ms || Math.round(performance.now() - startTime)
 					// Don't update searchStrategy - let backend auto-detect each time
 					this.suggestions = [] // Clear suggestions after full search
@@ -264,7 +293,12 @@ export default {
 			this.error = null
 			this.searchDuration = null
 			this.selectedSuggestionIndex = -1
+			this.currentPage = 1
 			clearTimeout(this.blurTimeout)
+		},
+		goToPage(page) {
+			this.currentPage = page
+			window.scrollTo({ top: 0, behavior: "smooth" })
 		},
 		openDocument(result) {
 			window.open(this.getViewerLink(result), "_blank")
