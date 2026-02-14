@@ -26,11 +26,6 @@
 - [ ] **Export Analytics Data** - CSV/JSON export for dashboard data
 - [ ] **Filter by Search Strategy** - API endpoint to filter analytics by strategy
 
-### Search Features
-- [ ] **Frontend Pagination** - Paginate search results on frontend
-- [ ] **Search Operators** - Support boolean operators: `"exact phrase" +required -excluded`
-  - Example: `GET /api/search?q="jose gonzalez" +paraguay`
-
 ### Performance Optimization
 - [ ] **Optimize Elasticsearch** - Tune cluster settings, indices, and queries
 - [ ] **Optimize Indexing** - Improve PDF indexing performance (batch processing)
