@@ -70,6 +70,11 @@ final readonly class ReciprocalRankFusionService implements RankFusionServiceInt
 
     /**
      * Merge two document objects, combining highlights and preserving best source data.
+     *
+     * @param array<string, mixed> $doc1
+     * @param array<string, mixed> $doc2
+     *
+     * @return array<string, mixed>
      */
     private function mergeDocuments(array $doc1, array $doc2): array
     {

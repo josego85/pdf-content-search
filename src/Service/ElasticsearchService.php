@@ -39,6 +39,9 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
         $this->client = $clientBuilder->build();
     }
 
+    /**
+     * @param array<string, mixed> $settings
+     */
     public function createIndex(array $settings = []): void
     {
         $params = [
@@ -134,6 +137,9 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
         $this->client->ingest()->deletePipeline($params);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function indexDocument(string $index, string $id, array $data): void
     {
         $this->safeCall(
@@ -175,6 +181,11 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
         $this->indexDocument($this->pdfPagesIndex, $id, $document);
     }
 
+    /**
+     * @param array<string, mixed> $query
+     *
+     * @return array<string, mixed>
+     */
     public function search(array $query): array
     {
         return $this->safeCall(

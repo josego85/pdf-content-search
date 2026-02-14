@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `PAGINATION.PAGE_SIZE` constant in `assets/constants/pagination.js`
 - **Elasticsearch Safety Cap**: Configurable `ELASTICSEARCH_MAX_RESULTS` env var (default: 100) to limit lexical query result sets
 - **PHPStan Static Analysis**: Level 8 with Symfony and Doctrine extensions
-  - `phpstan.neon` config with baseline for gradual adoption (86 existing errors)
+  - `phpstan.neon` config with baseline for gradual adoption (32 remaining errors)
   - CI job `static-analysis` in GitHub Actions pipeline
   - Pre-commit hook integration via Husky
   - `composer phpstan` script and `make phpstan` target
@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Unused `$jobRepository` dependency (`TranslationOrchestrator`)
   - Missing `instanceof` type guard on `findOneBy()` result (`AnalyticsController`)
   - Unhandled `false` returns from `getmypid()`, `strrpos()`, `preg_split()`, `preg_replace()`, `shell_exec()`
+- **PHPStan PHPDoc types**: Add `@param`/`@return` array type annotations across 12 files (36 errors resolved)
+  - Contracts, Search builders, Services, Repository, Message classes
 
 ### Dependencies
 

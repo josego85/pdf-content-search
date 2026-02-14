@@ -23,6 +23,9 @@ final readonly class HybridSearchQueryBuilder implements QueryBuilderInterface
     ) {
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function build(string $query, SearchStrategy $strategy = SearchStrategy::HYBRID): array
     {
         return match ($strategy) {
@@ -35,6 +38,8 @@ final readonly class HybridSearchQueryBuilder implements QueryBuilderInterface
     /**
      * Build pure semantic search query using vector store abstraction.
      * Now database-agnostic: works with Elasticsearch, Pinecone, Weaviate, etc.
+     *
+     * @return array<string, mixed>
      */
     private function buildSemanticQuery(string $query): array
     {
@@ -58,6 +63,8 @@ final readonly class HybridSearchQueryBuilder implements QueryBuilderInterface
     /**
      * Build hybrid AI query: returns both lexical and semantic queries to be executed in parallel.
      * Results will be merged using RRF by the controller.
+     *
+     * @return array<string, mixed>
      */
     private function buildHybridAiQuery(string $query): array
     {

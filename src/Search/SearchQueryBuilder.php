@@ -25,6 +25,8 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
 
     /**
      * Build complete search parameters for Elasticsearch.
+     *
+     * @return array<string, mixed>
      */
     public function build(string $query, SearchStrategy $strategy = SearchStrategy::HYBRID): array
     {
@@ -42,6 +44,10 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
 
     /**
      * Build query clause based on strategy.
+     *
+     * @param array<string, mixed> $parsedQuery
+     *
+     * @return array<string, mixed>
      */
     private function buildQuery(string $query, array $parsedQuery, SearchStrategy $strategy): array
     {
@@ -61,6 +67,8 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
     /**
      * Hybrid: Exact matches first, fuzzy for long words.
      * Best balance between precision and recall.
+     *
+     * @return array<string, mixed>
      */
     private function buildHybridQuery(string $query): array
     {
@@ -107,6 +115,8 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
     /**
      * Exact: No fuzzy matching, exact words only.
      * Best for legal/academic precision.
+     *
+     * @return array<string, mixed>
      */
     private function buildExactQuery(string $query): array
     {
@@ -122,6 +132,8 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
     /**
      * Prefix: Match word beginnings with wildcard support.
      * Supports both * (multiple chars) and ? (single char) wildcards.
+     *
+     * @return array<string, mixed>
      */
     private function buildPrefixQuery(string $query): array
     {
@@ -154,6 +166,10 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
 
     /**
      * Build structured query from parsed operators.
+     *
+     * @param array<string, mixed> $parsedQuery
+     *
+     * @return array<string, mixed>
      */
     private function buildStructuredQuery(array $parsedQuery): array
     {
@@ -200,6 +216,8 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
 
     /**
      * Build highlight configuration.
+     *
+     * @return array<string, mixed>
      */
     private function buildHighlight(): array
     {

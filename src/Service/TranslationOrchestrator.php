@@ -37,7 +37,7 @@ final class TranslationOrchestrator
      * Request a translation for a PDF page.
      * Returns existing translation if available, otherwise queues for async processing.
      *
-     * @return array{data: array, status_code: int}
+     * @return array{data: array<string, mixed>, status_code: int}
      */
     public function requestTranslation(
         ?string $pdfFilename,
@@ -151,7 +151,7 @@ final class TranslationOrchestrator
      * Check translation status (polling endpoint).
      * Returns translation if ready, or status if still processing.
      *
-     * @return array{data: array, status_code: int}
+     * @return array{data: array<string, mixed>, status_code: int}
      */
     public function checkTranslationStatus(
         ?string $pdfFilename,
