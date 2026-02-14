@@ -12,7 +12,6 @@
 
 ### Infrastructure
 - [ ] **Composer Security Audit** - Add `composer audit` to CI/CD pipeline
-- [ ] **PHP Stan** - Add static analysis to CI/CD
 
 ## 🟡 Medium Priority
 

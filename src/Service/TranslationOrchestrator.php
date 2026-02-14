@@ -6,7 +6,6 @@ namespace App\Service;
 
 use App\Entity\TranslationJob;
 use App\Message\TranslatePageMessage;
-use App\Repository\TranslationJobRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -30,8 +29,7 @@ final class TranslationOrchestrator
         private readonly TranslationRequestValidator $validator,
         private readonly QueueDuplicationChecker $queueChecker,
         private readonly MessageBusInterface $messageBus,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly TranslationJobRepository $jobRepository
+        private readonly EntityManagerInterface $entityManager
     ) {
     }
 
@@ -39,7 +37,7 @@ final class TranslationOrchestrator
      * Request a translation for a PDF page.
      * Returns existing translation if available, otherwise queues for async processing.
      *
-     * @return array{data: array, status_code: int}
+     * @return array{data: array<string, mixed>, status_code: int}
      */
     public function requestTranslation(
         ?string $pdfFilename,
@@ -61,9 +59,9 @@ final class TranslationOrchestrator
             ];
         }
 
-        $pdfFilename = $validation['pdfFilename'];
-        $pageNumber = $validation['pageNumber'];
-        $pdfPath = $validation['pdfPath'];
+        $pdfFilename = (string) $validation['pdfFilename'];
+        $pageNumber = (int) $validation['pageNumber'];
+        $pdfPath = (string) $validation['pdfPath'];
 
         // Extract text from PDF
         $originalText = $this->pdfProcessor->extractTextFromPage($pdfPath, $pageNumber);
@@ -153,7 +151,7 @@ final class TranslationOrchestrator
      * Check translation status (polling endpoint).
      * Returns translation if ready, or status if still processing.
      *
-     * @return array{data: array, status_code: int}
+     * @return array{data: array<string, mixed>, status_code: int}
      */
     public function checkTranslationStatus(
         ?string $pdfFilename,
@@ -175,9 +173,9 @@ final class TranslationOrchestrator
             ];
         }
 
-        $pdfFilename = $validation['pdfFilename'];
-        $pageNumber = $validation['pageNumber'];
-        $pdfPath = $validation['pdfPath'];
+        $pdfFilename = (string) $validation['pdfFilename'];
+        $pageNumber = (int) $validation['pageNumber'];
+        $pdfPath = (string) $validation['pdfPath'];
 
         // Extract original text
         $originalText = $this->pdfProcessor->extractTextFromPage($pdfPath, $pageNumber);

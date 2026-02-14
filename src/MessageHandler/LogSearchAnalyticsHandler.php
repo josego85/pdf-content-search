@@ -51,7 +51,9 @@ final class LogSearchAnalyticsHandler
     {
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             // IPv4: Keep first 3 octets, zero last octet
-            return substr($ip, 0, strrpos($ip, '.')) . '.0';
+            $lastDot = strrpos($ip, '.');
+
+            return $lastDot !== false ? substr($ip, 0, $lastDot) . '.0' : '0.0.0.0';
         }
 
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {

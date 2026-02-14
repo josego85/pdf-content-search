@@ -17,6 +17,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Global position offset for accurate click analytics tracking
   - `PAGINATION.PAGE_SIZE` constant in `assets/constants/pagination.js`
 - **Elasticsearch Safety Cap**: Configurable `ELASTICSEARCH_MAX_RESULTS` env var (default: 100) to limit lexical query result sets
+- **PHPStan Static Analysis**: Level 8 with Symfony and Doctrine extensions
+  - `phpstan.neon` config with baseline for gradual adoption (5 remaining errors)
+  - CI job `static-analysis` in GitHub Actions pipeline
+  - Pre-commit hook integration via Husky
+  - `composer phpstan` script and `make phpstan` target
+
+### Fixed
+- **PHPStan type safety**: Fix 18 real bugs detected by static analysis
+  - Nullsafe operator on guaranteed non-null variable (`OllamaEmbeddingService`)
+  - Unused `$jobRepository` dependency (`TranslationOrchestrator`)
+  - Missing `instanceof` type guard on `findOneBy()` result (`AnalyticsController`)
+  - Unhandled `false` returns from `getmypid()`, `strrpos()`, `preg_split()`, `preg_replace()`, `shell_exec()`
+- **PHPStan PHPDoc types**: Add `@param`/`@return` array type annotations across 12 files (36 errors resolved)
+  - Contracts, Search builders, Services, Repository, Message classes
+- **TranslationJob entity**: Initialize non-nullable DB columns with proper defaults instead of `null`
+- **TranslationOrchestrator**: Type-safe casts after validation (resolve 16 nullable chain errors)
+- **Dead code removal**: Remove always-true `if ($job)` guard in `TranslatePageMessageHandler`
+- **SearchQueryBuilder**: Add default fallback to match expression for unhandled strategies
+- **CI**: Fix `composer validate` failure caused by exact version constraint warnings (`--no-check-all`)
 
 ### Dependencies
 

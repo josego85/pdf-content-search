@@ -18,7 +18,7 @@ interface QueryBuilderInterface
      * @param string $query User search query
      * @param SearchStrategy $strategy Search strategy to apply
      *
-     * @return array Engine-specific query parameters
+     * @return array<string, mixed> Engine-specific query parameters
      */
     public function build(string $query, SearchStrategy $strategy = SearchStrategy::HYBRID): array;
 }

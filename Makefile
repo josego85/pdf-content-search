@@ -5,7 +5,7 @@
 # ============================================
 
 .DEFAULT_GOAL := help
-.PHONY: help dev prod up down restart logs shell test clean rebuild status
+.PHONY: help dev prod up down restart logs shell test phpstan clean rebuild status
 
 # Colors for output
 BLUE := \033[0;34m
@@ -61,6 +61,7 @@ help: ## Show this help message
 	@echo "  $(YELLOW)make rebuild$(NC)          Rebuild images (ENV=dev|prod)"
 	@echo "  $(YELLOW)make clean$(NC)            Remove volumes - DESTRUCTIVE (ENV=dev|prod)"
 	@echo "  $(YELLOW)make test$(NC)             Run tests"
+	@echo "  $(YELLOW)make phpstan$(NC)          Run PHPStan static analysis"
 	@echo ""
 	@echo "$(GREEN)Examples:$(NC)"
 	@echo "  $(YELLOW)make dev$(NC)              # Start development"
@@ -149,6 +150,9 @@ clean: ## Remove ALL data for environment (ENV=dev|prod) - DESTRUCTIVE
 
 test: ## Run tests in development environment
 	@$(COMPOSE_DEV) exec php php bin/phpunit
+
+phpstan: ## Run PHPStan static analysis
+	@$(COMPOSE_DEV) exec php composer phpstan
 
 # ============================================
 # Internal Helpers (don't call directly)

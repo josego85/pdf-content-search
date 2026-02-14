@@ -50,14 +50,15 @@ final class TranslatePageMessageHandler
         }
 
         // Mark as processing with worker PID
-        $job->markAsProcessing(getmypid());
+        $pid = getmypid() ?: 0;
+        $job->markAsProcessing($pid);
         $this->entityManager->flush();
 
         $this->logger->info('Starting async translation', [
             'pdf' => $message->getPdfFilename(),
             'page' => $message->getPageNumber(),
             'target_language' => $message->getTargetLanguage(),
-            'worker_pid' => getmypid(),
+            'worker_pid' => $pid,
         ]);
 
         try {
@@ -91,10 +92,8 @@ final class TranslatePageMessageHandler
             );
         } catch (\Exception $e) {
             // Mark job as failed
-            if ($job) {
-                $job->markAsFailed($e->getMessage());
-                $this->entityManager->flush();
-            }
+            $job->markAsFailed($e->getMessage());
+            $this->entityManager->flush();
 
             $this->logger->error('Translation failed', [
                 'pdf' => $message->getPdfFilename(),

@@ -8,6 +8,9 @@ use App\Entity\SearchAnalytics;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<SearchAnalytics>
+ */
 class SearchAnalyticsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -17,6 +20,8 @@ class SearchAnalyticsRepository extends ServiceEntityRepository
 
     /**
      * Get overview metrics for dashboard.
+     *
+     * @return array<string, mixed>
      */
     public function getOverviewMetrics(\DateTime $startDate, \DateTime $endDate): array
     {
@@ -40,6 +45,8 @@ class SearchAnalyticsRepository extends ServiceEntityRepository
 
     /**
      * Get top queries by search count.
+     *
+     * @return list<array<string, mixed>>
      */
     public function getTopQueries(\DateTime $startDate, \DateTime $endDate, int $limit = 20): array
     {
@@ -63,6 +70,8 @@ class SearchAnalyticsRepository extends ServiceEntityRepository
 
     /**
      * Get search volume trends (daily aggregation).
+     *
+     * @return list<array<string, mixed>>
      */
     public function getSearchTrends(\DateTime $startDate, \DateTime $endDate): array
     {
@@ -90,6 +99,8 @@ class SearchAnalyticsRepository extends ServiceEntityRepository
 
     /**
      * Get click position distribution.
+     *
+     * @return list<array<string, mixed>>
      */
     public function getClickPositionDistribution(\DateTime $startDate, \DateTime $endDate): array
     {
@@ -111,6 +122,8 @@ class SearchAnalyticsRepository extends ServiceEntityRepository
 
     /**
      * Get zero-result queries (queries that need content).
+     *
+     * @return list<array<string, mixed>>
      */
     public function getZeroResultQueries(\DateTime $startDate, \DateTime $endDate, int $limit = 20): array
     {

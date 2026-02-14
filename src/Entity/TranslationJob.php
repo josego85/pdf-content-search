@@ -24,19 +24,19 @@ class TranslationJob
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $pdfFilename = null;
+    private string $pdfFilename = '';
 
     #[ORM\Column]
-    private ?int $pageNumber = null;
+    private int $pageNumber = 0;
 
     #[ORM\Column(length: 10)]
-    private ?string $targetLanguage = null;
+    private string $targetLanguage = 'es';
 
     #[ORM\Column(length: 20)]
-    private ?string $status = null;
+    private string $status = 'queued';
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $createdAt = null;
+    private \DateTimeInterface $createdAt;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $startedAt = null;
@@ -53,7 +53,6 @@ class TranslationJob
     public function __construct()
     {
         $this->createdAt = new \DateTime();
-        $this->status = 'queued';
     }
 
     public function getId(): ?int
@@ -61,7 +60,7 @@ class TranslationJob
         return $this->id;
     }
 
-    public function getPdfFilename(): ?string
+    public function getPdfFilename(): string
     {
         return $this->pdfFilename;
     }
@@ -73,7 +72,7 @@ class TranslationJob
         return $this;
     }
 
-    public function getPageNumber(): ?int
+    public function getPageNumber(): int
     {
         return $this->pageNumber;
     }
@@ -85,7 +84,7 @@ class TranslationJob
         return $this;
     }
 
-    public function getTargetLanguage(): ?string
+    public function getTargetLanguage(): string
     {
         return $this->targetLanguage;
     }
@@ -97,7 +96,7 @@ class TranslationJob
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): string
     {
         return $this->status;
     }
@@ -109,7 +108,7 @@ class TranslationJob
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
     }

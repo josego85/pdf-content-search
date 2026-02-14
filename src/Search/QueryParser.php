@@ -44,11 +44,11 @@ final readonly class QueryParser
             $result['phrases'] = $matches[1];
             $result['hasOperators'] = true;
             // Remove phrases from query
-            $query = preg_replace('/"[^"]+"/', '', $query);
+            $query = preg_replace('/"[^"]+"/', '', $query) ?? $query;
         }
 
         // Extract individual terms
-        $terms = preg_split('/\s+/', $query, -1, PREG_SPLIT_NO_EMPTY);
+        $terms = preg_split('/\s+/', $query, -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
         foreach ($terms as $term) {
             if (empty($term)) {
@@ -85,10 +85,10 @@ final readonly class QueryParser
         $clean = str_replace('"', '', $query);
 
         // Remove +/- operators
-        $clean = preg_replace('/[+-](\S+)/', '$1', $clean);
+        $clean = preg_replace('/[+-](\S+)/', '$1', $clean) ?? $clean;
 
         // Normalize spaces
-        $clean = preg_replace('/\s+/', ' ', $clean);
+        $clean = preg_replace('/\s+/', ' ', $clean) ?? $clean;
 
         return trim($clean);
     }

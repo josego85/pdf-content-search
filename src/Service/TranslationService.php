@@ -171,6 +171,8 @@ class TranslationService
 
     /**
      * Translates text, stores in database and cache.
+     *
+     * @return array{text: string, source: string, source_language: string, cached: bool}
      */
     private function translateAndStore(
         string $pdfFilename,

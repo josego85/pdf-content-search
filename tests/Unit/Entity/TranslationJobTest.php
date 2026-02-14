@@ -14,9 +14,9 @@ final class TranslationJobTest extends TestCase
         $job = new TranslationJob();
 
         self::assertNull($job->getId());
-        self::assertNull($job->getPdfFilename());
-        self::assertNull($job->getPageNumber());
-        self::assertNull($job->getTargetLanguage());
+        self::assertSame('', $job->getPdfFilename());
+        self::assertSame(0, $job->getPageNumber());
+        self::assertSame('es', $job->getTargetLanguage());
         self::assertSame('queued', $job->getStatus());
         self::assertInstanceOf(\DateTimeInterface::class, $job->getCreatedAt());
         self::assertNull($job->getStartedAt());

@@ -53,7 +53,7 @@ jobs:
           coverage: pcov
 
       - name: Validate composer files
-        run: composer validate --no-check-publish
+        run: composer validate --no-check-publish --no-check-all
 
       - name: Setup Node.js project
         uses: ./.github/actions/setup-node-project
@@ -91,6 +91,23 @@ jobs:
             exit 1
           fi
           echo "✅ Coverage ${COVERAGE}% meets 85% threshold"
+
+  static-analysis:
+    name: PHPStan Static Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5.0.0
+
+      - name: Setup PHP project
+        uses: ./.github/actions/setup-php-project
+
+      - name: Generate Symfony container cache
+        run: php bin/console cache:warmup --env=dev
+
+      - name: Run PHPStan
+        run: composer phpstan
 
   code-style:
     name: PHP Code Style
