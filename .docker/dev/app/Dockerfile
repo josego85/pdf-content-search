@@ -1,7 +1,6 @@
 # ============================================
-# Development Dockerfile - OPTIMIZED
-# Strategy: Maximum cache reuse + BuildKit
-# Build time: ~30s (vs 2min+ before)
+# Development Dockerfile
+# Strategy: Extensions cached + deps via entrypointd
 # ============================================
 
 # Stage 1: Build PHP extensions (cached indefinitely)
@@ -86,24 +85,6 @@ COPY .docker/dev/php/pcov.ini /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini
 # Copy Supervisor configuration
 COPY .docker/dev/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Copy dependency manifests first (better cache hit rate)
-COPY composer.json composer.lock ./
-
-# Use BuildKit cache mount for Composer (ultra-fast rebuilds)
-RUN --mount=type=cache,target=/root/.composer/cache \
-    composer install --prefer-dist --no-interaction --no-scripts \
-    && composer dump-autoload --optimize
-
-# Copy Node dependency manifests
-COPY package.json package-lock.json ./
-
-# Use BuildKit cache mount for npm (ultra-fast rebuilds)
-RUN --mount=type=cache,target=/root/.npm \
-    npm install --ignore-scripts
-
-# Copy application files (only rebuilds when code changes)
-COPY . .
-
 # Accept build arguments for user/group IDs (development)
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -111,19 +92,16 @@ ARG GROUP_ID=1000
 # Create user with matching host UID/GID for development
 # This prevents permission issues when VSCode creates files
 RUN if [ "$USER_ID" != "82" ]; then \
-    # Delete existing www-data user
     deluser www-data 2>/dev/null || true; \
-    # Create new www-data with host UID/GID
     addgroup -g ${GROUP_ID} www-data; \
     adduser -D -u ${USER_ID} -G www-data www-data; \
     fi
 
-# Set permissions
-RUN mkdir -p var/cache var/log var/sessions public/pdfs /var/log/supervisor \
-    && chown -R www-data:www-data var public/pdfs \
-    && chmod -R 775 var public/pdfs
+# Entrypoint installs deps on bind-mounted volume at startup
+COPY .docker/dev/app/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 9000
 
-# Start Supervisor (manages PHP-FPM + Messenger Worker)
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

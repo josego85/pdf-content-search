@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pre-commit hook integration via Husky
   - `composer phpstan` script and `make phpstan` target
 
+### Changed
+- **Dev Dockerfile**: Remove redundant `COPY` and dependency install steps; bind mount overwrites them
+- **Dev entrypoint**: New `entrypoint.sh` installs Composer/npm deps at startup on bind-mounted volume (skips if up-to-date)
+- **Makefile**: Remove duplicate `composer install` from `_init` (now handled by entrypoint)
+
 ### Fixed
 - **PHPStan type safety**: Fix 18 real bugs detected by static analysis
   - Nullsafe operator on guaranteed non-null variable (`OllamaEmbeddingService`)
