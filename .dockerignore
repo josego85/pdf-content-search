@@ -10,6 +10,7 @@ docker-compose*.yml
 !.docker/dev/php/php.ini
 !.docker/dev/php/pcov.ini
 !.docker/dev/supervisor/supervisord.conf
+!.docker/dev/app/entrypoint.sh
 .docker/prod
 !.docker/prod/apache/
 !.docker/prod/supervisor/supervisord.conf

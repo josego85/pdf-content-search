@@ -177,8 +177,6 @@ _wait-for-services: ## Internal: Wait for services to be ready
 	@echo "  $(GREEN)✓ All services ready$(NC)"
 
 _init: ## Internal: Initialize environment
-	@echo "$(BLUE)📦 Installing PHP dependencies...$(NC)"
-	@$(COMPOSE) exec -T php composer install --no-interaction 2>/dev/null || true
 	@echo "$(BLUE)🔧 Running database migrations...$(NC)"
 	@$(COMPOSE) exec -T php php bin/console doctrine:migrations:migrate --no-interaction 2>/dev/null || true
 	@echo "$(BLUE)📨 Setting up Messenger transports...$(NC)"
