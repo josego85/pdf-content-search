@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **OCR fallback**: Tesseract OCR for scanned PDFs when `pdftotext` returns insufficient text
+- **Semantic similarity threshold**: Configurable kNN `similarity` filter (default: 0.7) to discard irrelevant vector results
 - **Frontend Pagination**: Client-side pagination for search results (10 results per page)
   - `Pagination.vue` component with prev/next, page numbers, and ellipsis navigation
   - "Showing 1-10 of 42 results" range display in Controls
@@ -27,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Dev Dockerfile**: Remove redundant `COPY` and dependency install steps; bind mount overwrites them
 - **Dev entrypoint**: New `entrypoint.sh` installs Composer/npm deps at startup on bind-mounted volume (skips if up-to-date)
 - **Makefile**: Remove duplicate `composer install` from `_init` (now handled by entrypoint)
+- **LanguageDetector**: Align supported languages with frontend (9 → 3: es, en, de)
 
 ### Fixed
 - **PHPStan type safety**: Fix 18 real bugs detected by static analysis

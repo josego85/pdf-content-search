@@ -6,6 +6,7 @@
 parameters:
     elasticsearch.index_pdfs: '%env(ELASTICSEARCH_INDEX_PDFS)%'
     elasticsearch.max_results: '%env(int:ELASTICSEARCH_MAX_RESULTS)%'
+    elasticsearch.semantic_similarity_threshold: 0.7
 
 services:
     # default configuration for services in *this* file
@@ -61,6 +62,7 @@ services:
         arguments:
             $lexicalBuilder: '@App\Search\SearchQueryBuilder'
             $pdfPagesIndex: '%elasticsearch.index_pdfs%'
+            $similarityThreshold: '%elasticsearch.semantic_similarity_threshold%'
 
     # Bind interface to implementation (Dependency Inversion Principle)
     # Using HybridSearchQueryBuilder to support both lexical and semantic search
@@ -100,3 +102,9 @@ services:
     # Rank fusion service for hybrid search
     App\Service\ReciprocalRankFusionService: ~
     App\Contract\RankFusionServiceInterface: '@App\Service\ReciprocalRankFusionService'
+
+    # PDF text extraction with OCR fallback
+    App\Service\PdfProcessor:
+        arguments:
+            $ocrLanguages: '%pdf.ocr_languages%'
+            $minTextLength: '%pdf.min_text_length%'

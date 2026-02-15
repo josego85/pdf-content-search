@@ -1,0 +1,4 @@
+parameters:
+    # OCR fallback configuration for scanned PDFs
+    pdf.ocr_languages: 'eng+spa+deu'  # Tesseract language packs (must be installed in Docker)
+    pdf.min_text_length: 50  # Minimum chars from pdftotext before trying OCR

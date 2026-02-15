@@ -22,7 +22,7 @@ final class PdfProcessorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->processor = new PdfProcessor();
+        $this->processor = new PdfProcessor('eng+spa+deu', 50);
     }
 
     public function testExtractPageCountParsesValidOutput(): void
@@ -176,7 +176,7 @@ final class PdfProcessorTest extends TestCase
 
     public function testProcessorCanBeInstantiated(): void
     {
-        $processor = new PdfProcessor();
+        $processor = new PdfProcessor('eng+spa+deu', 50);
         $this->assertInstanceOf(PdfProcessor::class, $processor);
     }
 

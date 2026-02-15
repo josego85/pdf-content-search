@@ -16,8 +16,8 @@ class LanguageDetector
 
     public function __construct()
     {
-        // Focus on most common languages for better accuracy
-        $this->detector = new Language(['es', 'en', 'fr', 'pt', 'de', 'it', 'nl', 'pl', 'ru']);
+        // Aligned with frontend supported languages (assets/constants/languages.js)
+        $this->detector = new Language(['es', 'en', 'de']);
     }
 
     /**
