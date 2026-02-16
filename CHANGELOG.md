@@ -73,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - sass: 1.97.2 → 1.97.3
 
 **CI/CD:**
-- github/codeql-action: 4.31.11 → 4.32.2 ([#79](https://github.com/josego85/pdf-content-search/pull/79), [#80](https://github.com/josego85/pdf-content-search/pull/80))
+- github/codeql-action: 4.31.11 → 4.32.3 ([#79](https://github.com/josego85/pdf-content-search/pull/79), [#80](https://github.com/josego85/pdf-content-search/pull/80), [#89](https://github.com/josego85/pdf-content-search/pull/89))
 
 
 ---

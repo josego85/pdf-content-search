@@ -20,6 +20,7 @@ AI-powered PDF search with hybrid semantic capabilities using Elasticsearch 9.2 
 - 🌍 AI-powered PDF translation (Ollama qwen2.5)
 - 🔄 Async job processing with Symfony Messenger
 - 📊 **Analytics Dashboard** - Real-time search metrics with Vue.js + ApexCharts
+- 📝 **OCR for scanned PDFs** - Automatic text layer via `ocrmypdf` (enables search & highlighting)
 - 📱 Responsive Vue.js frontend with in-PDF highlighting
 
 ## Quick Start
@@ -93,7 +94,6 @@ docker compose -p pdf-content-search exec php php bin/console app:translation:mo
 
 ### Reference
 - [Frontend Architecture](docs/reference/frontend-architecture.md) - Webpack, Vue.js, Tailwind
-- [Security](SECURITY-FIXES-APPLIED.md) - Security status (8.0/10 - Production ready)
 
 ## License
 
