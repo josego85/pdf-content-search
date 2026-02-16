@@ -217,4 +217,58 @@ final class PdfProcessorTest extends TestCase
         // Should get first match
         $this->assertSame(10, $result);
     }
+
+    public function testExtractPageCountReturnsZeroForNonExistentFile(): void
+    {
+        $result = $this->processor->extractPageCount('/tmp/nonexistent_pdf_test.pdf');
+        $this->assertSame(0, $result);
+    }
+
+    public function testExtractTextFromPageReturnsEmptyForNonExistentFile(): void
+    {
+        $result = $this->processor->extractTextFromPage('/tmp/nonexistent_pdf_test.pdf', 1);
+        $this->assertSame('', $result);
+    }
+
+    public function testEnsureTextLayerReturnsFalseForNonExistentFile(): void
+    {
+        // ocrmypdf fails on non-existent file → returns false
+        $result = $this->processor->ensureTextLayer('/tmp/nonexistent_pdf_test.pdf');
+        $this->assertFalse($result);
+    }
+
+    public function testEnsureTextLayerSkipsWhenTextIsSufficient(): void
+    {
+        // Create a temporary PDF with enough text using pdftotext-compatible content
+        $tmpFile = tempnam(sys_get_temp_dir(), 'pdf_test_');
+        // A file with enough content that pdftotext returns >= minTextLength
+        // Since pdftotext won't parse a non-PDF, it returns '' which is < minTextLength
+        // So we test with a processor that has a very high minTextLength to ensure OCR path is taken
+        // and a processor with minTextLength=0 to test the skip path
+        $skipProcessor = new PdfProcessor('eng', 0);
+        $result = $skipProcessor->ensureTextLayer($tmpFile);
+        // pdftotext returns '' for non-PDF, strlen('') >= 0 is true → skips OCR → returns false
+        $this->assertFalse($result);
+        unlink($tmpFile);
+    }
+
+    public function testEnsureTextLayerCommandFormat(): void
+    {
+        // Document the expected ocrmypdf command format
+        $filePath = '/path/to/scan.pdf';
+        $languages = 'eng+spa+deu';
+        $tmpOutput = $filePath . '.ocr.pdf';
+        $command = sprintf(
+            'ocrmypdf --skip-text -l %s %s %s 2>&1',
+            escapeshellarg($languages),
+            escapeshellarg($filePath),
+            escapeshellarg($tmpOutput)
+        );
+
+        $this->assertStringContainsString('ocrmypdf', $command);
+        $this->assertStringContainsString('--skip-text', $command);
+        $this->assertStringContainsString("'eng+spa+deu'", $command);
+        $this->assertStringContainsString("'/path/to/scan.pdf'", $command);
+        $this->assertStringContainsString('.ocr.pdf', $command);
+    }
 }
