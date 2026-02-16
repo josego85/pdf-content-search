@@ -41,24 +41,15 @@ final class LanguageDetectorTest extends TestCase
         self::assertIsArray($result['all']);
     }
 
-    public function testDetectFrenchText(): void
+    public function testDetectFrenchTextFallsToSupported(): void
     {
+        // French is not a supported language (only es, en, de)
+        // Detector should return the closest supported language
         $text = 'Ceci est un texte en français avec plusieurs mots pour détecter la langue correctement.';
 
         $result = $this->detector->detect($text);
 
-        self::assertSame('fr', $result['language']);
-        self::assertGreaterThan(0, $result['confidence']);
-    }
-
-    public function testDetectPortugueseText(): void
-    {
-        $text = 'Este é um texto em português brasileiro com muitas palavras específicas como açúcar, coração e também.';
-
-        $result = $this->detector->detect($text);
-
-        // Portuguese and Spanish are very similar, so we check it's one of them
-        self::assertContains($result['language'], ['pt', 'es']);
+        self::assertContains($result['language'], ['es', 'en', 'de']);
         self::assertGreaterThan(0, $result['confidence']);
     }
 

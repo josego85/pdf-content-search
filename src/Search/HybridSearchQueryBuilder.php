@@ -19,7 +19,8 @@ final readonly class HybridSearchQueryBuilder implements QueryBuilderInterface
         private SearchQueryBuilder $lexicalBuilder,
         private EmbeddingServiceInterface $embeddingService,
         private VectorStoreInterface $vectorStore,
-        private string $pdfPagesIndex
+        private string $pdfPagesIndex,
+        private float $similarityThreshold,
     ) {
     }
 
@@ -54,6 +55,7 @@ final readonly class HybridSearchQueryBuilder implements QueryBuilderInterface
                     'query_vector' => $embedding,
                     'k' => 50,
                     'num_candidates' => 100,
+                    'similarity' => $this->similarityThreshold,
                 ],
                 '_source' => ['title', 'page', 'text', 'path', 'total_pages', 'language', 'date'],
             ],

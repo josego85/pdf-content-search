@@ -18,6 +18,10 @@ RUN apk add --no-cache \
     libxml2 \
     oniguruma \
     poppler-utils \
+    ocrmypdf \
+    tesseract-ocr-data-eng \
+    tesseract-ocr-data-spa \
+    tesseract-ocr-data-deu \
     supervisor
 
 # Install PHP extensions (build deps removed after)
