@@ -102,6 +102,11 @@ class IndexarPdfsCommand extends Command
                 continue;
             }
 
+            // Add text layer to scanned PDFs (enables viewer highlighting)
+            if ($this->pdfProcessor->ensureTextLayer($path)) {
+                $output->writeln("  <comment>OCR text layer added to {$filename}</comment>");
+            }
+
             for ($page = 1; $page <= $totalPages; ++$page) {
                 $text = $this->pdfProcessor->extractTextFromPage($path, $page);
 

@@ -15,7 +15,7 @@ services:
     image: httpd:2.4.66
     ports:
       - "80:80"
-    volumes:
+    volumes: !override
       - .:/var/www/html
       - ./.docker/dev/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
       - ./.docker/dev/apache/vhost.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
@@ -28,7 +28,7 @@ services:
       args:
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
-    volumes:
+    volumes: !override
       - .:/var/www/html
       - ./.docker/dev/php/php.ini:/usr/local/etc/php/php.ini
     environment:

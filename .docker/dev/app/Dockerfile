@@ -65,7 +65,7 @@ RUN apk add --no-cache \
     libxml2 \
     oniguruma \
     poppler-utils \
-    tesseract-ocr \
+    ocrmypdf \
     tesseract-ocr-data-eng \
     tesseract-ocr-data-spa \
     tesseract-ocr-data-deu \

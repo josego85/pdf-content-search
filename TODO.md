@@ -53,3 +53,9 @@
 - 🔴 High Priority - Security, production readiness, legal compliance
 - 🟡 Medium Priority - User-facing features, performance improvements
 - 🟢 Low Priority - Nice-to-have features, long-term improvements
+
+
+**Extras**
+- Rector
+- Cache
+- Index and search markdown, text, image 

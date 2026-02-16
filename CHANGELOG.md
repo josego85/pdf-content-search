@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **OCR fallback**: Tesseract OCR for scanned PDFs when `pdftotext` returns insufficient text
+- **OCR text layer**: `ocrmypdf` adds invisible text layer to scanned PDFs during indexing, enabling `pdftotext` extraction and viewer highlights
 - **Semantic similarity threshold**: Configurable kNN `similarity` filter (default: 0.7) to discard irrelevant vector results
 - **Frontend Pagination**: Client-side pagination for search results (10 results per page)
   - `Pagination.vue` component with prev/next, page numbers, and ellipsis navigation
@@ -26,12 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `composer phpstan` script and `make phpstan` target
 
 ### Changed
+- **Viewer highlight system**: Overlay rects from `<mark>` bounding boxes with OCR scale detection for scanned PDFs
+- **Viewer container**: Replaced Tailwind `.container` class with `#pdf-container` to avoid style conflicts
+- **Docker volumes**: `!override` on dev apache/php services to prevent merging with base compose
 - **Dev Dockerfile**: Remove redundant `COPY` and dependency install steps; bind mount overwrites them
 - **Dev entrypoint**: New `entrypoint.sh` installs Composer/npm deps at startup on bind-mounted volume (skips if up-to-date)
 - **Makefile**: Remove duplicate `composer install` from `_init` (now handled by entrypoint)
 - **LanguageDetector**: Align supported languages with frontend (9 → 3: es, en, de)
 
 ### Fixed
+- **Scanned PDF highlights**: Insert virtual spaces between OCR text spans for correct term matching in viewer
+- **pdftotext/pdfinfo stderr**: Suppress `Syntax Warning` output with `2>/dev/null`
 - **PHPStan type safety**: Fix 18 real bugs detected by static analysis
   - Nullsafe operator on guaranteed non-null variable (`OllamaEmbeddingService`)
   - Unused `$jobRepository` dependency (`TranslationOrchestrator`)
