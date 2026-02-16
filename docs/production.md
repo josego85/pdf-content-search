@@ -65,7 +65,7 @@ PostgreSQL 16
   ├─ Production database (pdf_search_prod)
   └─ Secure password (auto-generated)
 
-Elasticsearch 9.2
+Elasticsearch 9.3
   ├─ Authentication enabled
   ├─ 512MB JVM heap
   └─ Vector search (768 dimensions)
