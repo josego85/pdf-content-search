@@ -1,6 +1,6 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.11.1-blue.svg)](https://github.com/josego85/pdf-content-search)
+[![Version](https://img.shields.io/badge/Version-1.12.0-blue.svg)](https://github.com/josego85/pdf-content-search)
 [![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-7.4-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![Elasticsearch](https://img.shields.io/badge/Elasticsearch-9.2-005571?logo=elasticsearch&logoColor=white)](https://www.elastic.co/)
