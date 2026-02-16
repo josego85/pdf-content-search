@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.12.0] - 2026-02-16
 
 ### Added
 - **OCR text layer**: `ocrmypdf` adds invisible text layer to scanned PDFs during indexing, enabling `pdftotext` extraction and viewer highlights
