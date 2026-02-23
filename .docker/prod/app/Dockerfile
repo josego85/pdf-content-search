@@ -6,7 +6,7 @@
 # ============================================
 # Stage 1: Base Image
 # ============================================
-FROM php:8.4.17-fpm-alpine AS base
+FROM php:8.4.18-fpm-alpine AS base
 
 # Install runtime dependencies only
 RUN apk add --no-cache \
