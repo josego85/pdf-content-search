@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **Elasticsearch**: 9.2.4 → 9.3.0 (improved kNN early termination, adaptive HNSW, Zstd compression)
+- **Docker Base Images**: Updated to latest stable versions
+  - php: 8.4.17-fpm → 8.4.18-fpm
+
+### Security
+- **ajv**: Patched moderate severity ReDoS vulnerability ([GHSA-2g4f-4pwh-qvx6](https://github.com/advisories/GHSA-2g4f-4pwh-qvx6))
+  - Issue: ReDoS when using the `$data` option in schema validation
+  - ajv: 8.17.1 → 8.18.0
+  - file-loader/node_modules/ajv: 6.12.6 → 6.14.0
 
 ---
 
