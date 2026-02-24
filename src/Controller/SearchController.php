@@ -61,11 +61,8 @@ final class SearchController extends AbstractController
                 $lexicalResults = $this->searchEngine->search($searchParams['lexical']);
                 $semanticResults = $this->searchEngine->search($searchParams['semantic']);
 
-                $lexicalHits = $lexicalResults['hits']['hits'] ?? [];
-                $semanticHits = $semanticResults['hits']['hits'] ?? [];
-
                 // Merge results using RRF (equal weights: 0.5 lexical, 0.5 semantic)
-                $mergedHits = $this->rankFusion->merge([$lexicalHits, $semanticHits], [0.5, 0.5]);
+                $mergedHits = $this->rankFusion->merge([$lexicalResults->hits, $semanticResults->hits], [0.5, 0.5]);
 
                 $duration = (int) ((microtime(true) - $startTime) * 1000);
 
@@ -96,15 +93,13 @@ final class SearchController extends AbstractController
             $results = $this->searchEngine->search($searchParams);
             $duration = (int) ((microtime(true) - $startTime) * 1000);
 
-            $resultsCount = $results['hits']['total']['value'] ?? 0;
-
             // Log analytics only if this is a committed search (user pressed ENTER)
             if ($shouldLog) {
                 $this->analyticsCollector->logSearch(
                     $request,
                     $query,
                     $strategy->value,
-                    $resultsCount,
+                    $results->total,
                     $duration
                 );
             }
@@ -112,8 +107,8 @@ final class SearchController extends AbstractController
             return new JsonResponse([
                 'status' => 'success',
                 'data' => [
-                    'hits' => $results['hits']['hits'] ?? [],
-                    'total' => $resultsCount,
+                    'hits' => $results->hits,
+                    'total' => $results->total,
                     'strategy' => $strategy->value,
                 ],
             ]);

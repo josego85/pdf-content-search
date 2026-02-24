@@ -6,6 +6,7 @@ namespace App\Command;
 
 use App\Contract\EmbeddingServiceInterface;
 use App\Contract\PdfIndexerInterface;
+use App\DTO\PdfPageDocument;
 use App\Service\LanguageDetector;
 use App\Service\PdfProcessor;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -22,10 +23,12 @@ use Symfony\Component\Finder\Finder;
 )]
 class IndexarPdfsCommand extends Command
 {
+    private const int FLUSH_SIZE = 500;
+
     private string $pdfFolder = __DIR__ . '/../../public/pdfs';
 
     public function __construct(
-        private readonly PdfIndexerInterface $es,
+        private readonly PdfIndexerInterface $indexer,
         private readonly PdfProcessor $pdfProcessor,
         private readonly LanguageDetector $languageDetector,
         private readonly EmbeddingServiceInterface $embeddingService
@@ -87,8 +90,9 @@ class IndexarPdfsCommand extends Command
         $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%');
         $progressBar->start();
 
-        $indexedPages = 0;
+        $pages = [];
         $errorCount = 0;
+        $indexedPages = 0;
 
         foreach ($filesData as $fileData) {
             $filename = $fileData['filename'];
@@ -102,7 +106,6 @@ class IndexarPdfsCommand extends Command
                 continue;
             }
 
-            // Add text layer to scanned PDFs (enables viewer highlighting)
             if ($this->pdfProcessor->ensureTextLayer($path)) {
                 $output->writeln("  <comment>OCR text layer added to {$filename}</comment>");
             }
@@ -112,37 +115,36 @@ class IndexarPdfsCommand extends Command
 
                 if (!empty($text)) {
                     try {
-                        // Detect language
-                        $detectionResult = $this->languageDetector->detect($text);
-                        $language = $detectionResult['language'];
-
-                        // Generate embedding if not skipped
-                        $embedding = null;
-
-                        if (!$skipEmbeddings) {
-                            $embedding = $this->embeddingService->embed($text);
-                        }
-
-                        $this->es->indexPdfPage(
-                            $pdfId . '_page_' . $page,
-                            $filename,
-                            $page,
-                            $text,
-                            '/pdfs/' . $filename,
-                            $totalPages,
-                            $language,
-                            $embedding
+                        $pages[] = new PdfPageDocument(
+                            id: $pdfId . '_page_' . $page,
+                            title: $filename,
+                            page: $page,
+                            text: $text,
+                            path: '/pdfs/' . $filename,
+                            totalPages: $totalPages,
+                            language: $this->languageDetector->detect($text)['language'],
+                            embedding: !$skipEmbeddings ? $this->embeddingService->embed($text) : null,
                         );
-
-                        ++$indexedPages;
                     } catch (\Exception $e) {
                         ++$errorCount;
                     }
                 }
 
                 $progressBar->advance();
+
+                if (\count($pages) >= self::FLUSH_SIZE) {
+                    [$flushed, $errors] = $this->flushPages($pages);
+                    $indexedPages += $flushed;
+                    $errorCount += $errors;
+                    $pages = [];
+                }
             }
         }
+
+        // Flush remaining pages
+        [$flushed, $errors] = $this->flushPages($pages);
+        $indexedPages += $flushed;
+        $errorCount += $errors;
 
         $progressBar->finish();
         $output->writeln('');
@@ -157,5 +159,25 @@ class IndexarPdfsCommand extends Command
         ));
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * @param PdfPageDocument[] $pages
+     *
+     * @return array{0: int, 1: int} [indexed, errors]
+     */
+    private function flushPages(array $pages): array
+    {
+        if (empty($pages)) {
+            return [0, 0];
+        }
+
+        try {
+            $this->indexer->indexPages($pages);
+
+            return [\count($pages), 0];
+        } catch (\Exception) {
+            return [0, \count($pages)];
+        }
     }
 }
