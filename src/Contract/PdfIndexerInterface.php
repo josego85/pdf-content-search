@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Contract;
 
+use App\DTO\PdfPageDocument;
+
 interface PdfIndexerInterface
 {
     /**
-     * Index a single PDF page with optional embedding vector.
+     * Index a collection of PDF pages into the search engine.
+     * Implementations are free to choose their own batching and optimization strategies.
      *
-     * @param array<float>|null $embedding Optional 768-dim embedding vector for semantic search
+     * @param PdfPageDocument[] $pages
      */
-    public function indexPdfPage(string $id, string $title, int $page, string $text, string $path, int $totalPages, string $language = 'unknown', ?array $embedding = null): void;
+    public function indexPages(array $pages): void;
 }

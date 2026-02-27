@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Contract\IndexManagementInterface;
 use App\Contract\PdfIndexerInterface;
-use App\Contract\PipelineManagementInterface;
 use App\Contract\SearchEngineInterface;
+use App\DTO\PdfPageDocument;
+use App\DTO\SearchResult;
 use App\Shared\Traits\SafeCallerTrait;
 use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\ClientBuilder;
 
-class ElasticsearchService implements IndexManagementInterface, PipelineManagementInterface, PdfIndexerInterface, SearchEngineInterface
+class ElasticsearchService implements PdfIndexerInterface, SearchEngineInterface
 {
     use SafeCallerTrait;
+
+    private const int BATCH_SIZE = 100;
 
     private Client $client;
 
@@ -61,145 +63,99 @@ class ElasticsearchService implements IndexManagementInterface, PipelineManageme
         }
     }
 
-    public function createIngestPipeline(string $pipelineId = 'remove_accents'): void
-    {
-        $params = [
-            'id' => $pipelineId,
-            'body' => [
-                'processors' => [
-                    [
-                        'script' => [
-                            'lang' => 'painless',
-                            'source' => "
-                                if (ctx.text != null) {
-                                    ctx.text = ctx.text
-                                        .replace('á', 'a')
-                                        .replace('à', 'a')
-                                        .replace('ä', 'a')
-                                        .replace('â', 'a')
-                                        .replace('ã', 'a')
-                                        .replace('å', 'a')
-                                        .replace('Á', 'A')
-                                        .replace('À', 'A')
-                                        .replace('Ä', 'A')
-                                        .replace('Â', 'A')
-                                        .replace('Ã', 'A')
-                                        .replace('Å', 'A')
-                                        .replace('é', 'e')
-                                        .replace('è', 'e')
-                                        .replace('ë', 'e')
-                                        .replace('ê', 'e')
-                                        .replace('É', 'E')
-                                        .replace('È', 'E')
-                                        .replace('Ë', 'E')
-                                        .replace('Ê', 'E')
-                                        .replace('í', 'i')
-                                        .replace('ì', 'i')
-                                        .replace('ï', 'i')
-                                        .replace('î', 'i')
-                                        .replace('Í', 'I')
-                                        .replace('Ì', 'I')
-                                        .replace('Ï', 'I')
-                                        .replace('Î', 'I')
-                                        .replace('ó', 'o')
-                                        .replace('ò', 'o')
-                                        .replace('ö', 'o')
-                                        .replace('ô', 'o')
-                                        .replace('õ', 'o')
-                                        .replace('ø', 'o')
-                                        .replace('Ó', 'O')
-                                        .replace('Ò', 'O')
-                                        .replace('Ö', 'O')
-                                        .replace('Ô', 'O')
-                                        .replace('Õ', 'O')
-                                        .replace('Ø', 'O')
-                                        .replace('ú', 'u')
-                                        .replace('ù', 'u')
-                                        .replace('ü', 'u')
-                                        .replace('û', 'u')
-                                        .replace('Ú', 'U')
-                                        .replace('Ù', 'U')
-                                        .replace('Ü', 'U')
-                                        .replace('Û', 'U');
-                                }
-                            ",
-                        ],
-                    ],
-                ],
-            ],
-        ];
-        $this->client->ingest()->putPipeline($params);
-    }
-
-    public function deleteIngestPipeline(string $pipelineId = 'remove_accents'): void
-    {
-        $params = ['id' => $pipelineId];
-        $this->client->ingest()->deletePipeline($params);
-    }
-
     /**
-     * @param array<string, mixed> $data
+     * @param PdfPageDocument[] $pages
      */
-    public function indexDocument(string $index, string $id, array $data): void
+    public function indexPages(array $pages): void
+    {
+        if (empty($pages)) {
+            return;
+        }
+
+        $this->disableRefresh();
+
+        try {
+            foreach (array_chunk($pages, self::BATCH_SIZE) as $batch) {
+                $this->sendBulkRequest($batch);
+            }
+        } finally {
+            $this->restoreRefresh();
+        }
+    }
+
+    private function disableRefresh(): void
     {
         $this->safeCall(
-            fn () => $this->client->index([
-                'index' => $index,
-                'id' => $id,
-                'body' => $data,
-                'pipeline' => 'remove_accents',
+            fn () => $this->client->indices()->putSettings([
+                'index' => $this->pdfPagesIndex,
+                'body' => ['refresh_interval' => '-1'],
             ]),
-            'Indexing document failed'
+            'Failed to disable refresh interval'
         );
     }
 
-    public function indexPdfPage(
-        string $id,
-        string $title,
-        int $page,
-        string $text,
-        string $path,
-        int $totalPages,
-        string $language = 'unknown',
-        ?array $embedding = null
-    ): void {
-        $document = [
-            'title' => $title,
-            'page' => $page,
-            'text' => $text,
-            'path' => $path,
-            'total_pages' => $totalPages,
-            'language' => $language,
-            'date' => date('Y-m-d H:i:s'),
-        ];
+    private function restoreRefresh(): void
+    {
+        $this->safeCall(
+            fn () => $this->client->indices()->putSettings([
+                'index' => $this->pdfPagesIndex,
+                'body' => ['refresh_interval' => '1s'],
+            ]),
+            'Failed to restore refresh interval'
+        );
 
-        // Add embedding if provided (for semantic search)
-        if ($embedding !== null) {
-            $document['text_embedding'] = $embedding;
+        $this->safeCall(
+            fn () => $this->client->indices()->refresh(['index' => $this->pdfPagesIndex]),
+            'Failed to refresh index'
+        );
+    }
+
+    /**
+     * @param PdfPageDocument[] $batch
+     */
+    private function sendBulkRequest(array $batch): void
+    {
+        $operations = [];
+
+        foreach ($batch as $page) {
+            $operations[] = ['index' => ['_index' => $this->pdfPagesIndex, '_id' => $page->id]];
+
+            $document = [
+                'title' => $page->title,
+                'page' => $page->page,
+                'text' => $page->text,
+                'path' => $page->path,
+                'total_pages' => $page->totalPages,
+                'language' => $page->language,
+                'date' => date('Y-m-d H:i:s'),
+            ];
+
+            if (null !== $page->embedding) {
+                $document['text_embedding'] = $page->embedding;
+            }
+
+            $operations[] = $document;
         }
 
-        $this->indexDocument($this->pdfPagesIndex, $id, $document);
+        $this->safeCall(
+            fn () => $this->client->bulk(['body' => $operations]),
+            'Bulk indexing failed'
+        );
     }
 
     /**
      * @param array<string, mixed> $query
-     *
-     * @return array<string, mixed>
      */
-    public function search(array $query): array
+    public function search(array $query): SearchResult
     {
-        return $this->safeCall(
+        $raw = $this->safeCall(
             fn () => $this->client->search($query)->asArray(),
             'Search query failed'
         );
-    }
 
-    /**
-     * Get Elasticsearch client for advanced use cases.
-     * Used by ElasticsearchVectorStore to share the same client instance.
-     */
-    public function getClient(): Client
-    {
-        return $this->client;
+        return new SearchResult(
+            hits: $raw['hits']['hits'] ?? [],
+            total: $raw['hits']['total']['value'] ?? 0,
+        );
     }
 }

@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Contract\IndexManagementInterface;
-use App\Contract\PipelineManagementInterface;
+use App\Service\ElasticsearchService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,8 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CreatePdfIndexCommand extends Command
 {
     public function __construct(
-        private readonly IndexManagementInterface $im,
-        private readonly PipelineManagementInterface $pm
+        private readonly ElasticsearchService $es
     ) {
         parent::__construct();
     }
@@ -28,6 +26,8 @@ class CreatePdfIndexCommand extends Command
     {
         $settings = [
             'settings' => [
+                'number_of_shards' => 1,
+                'number_of_replicas' => 0,  // single-node: no replicas → GREEN health
                 'analysis' => [
                     'analyzer' => [
                         'custom_analyzer' => [
@@ -45,6 +45,7 @@ class CreatePdfIndexCommand extends Command
                     'title' => [
                         'type' => 'text',
                         'analyzer' => 'custom_analyzer',
+                        'index_options' => 'offsets',
                     ],
                     'page' => [
                         'type' => 'integer',
@@ -52,12 +53,16 @@ class CreatePdfIndexCommand extends Command
                     'text' => [
                         'type' => 'text',
                         'analyzer' => 'custom_analyzer',
+                        'index_options' => 'offsets',  // store positions → faster highlighting
                     ],
                     'path' => [
                         'type' => 'keyword',
                     ],
                     'total_pages' => [
                         'type' => 'integer',
+                    ],
+                    'language' => [
+                        'type' => 'keyword',  // explicit mapping — avoids dynamic inference
                     ],
                     'date' => [
                         'type' => 'date',
@@ -69,7 +74,7 @@ class CreatePdfIndexCommand extends Command
                         'index' => true,
                         'similarity' => 'cosine',
                         'index_options' => [
-                            'type' => 'hnsw',
+                            'type' => 'int8_hnsw',
                             'm' => 16,
                             'ef_construction' => 100,
                         ],
@@ -79,9 +84,8 @@ class CreatePdfIndexCommand extends Command
         ];
 
         try {
-            $this->pm->createIngestPipeline('remove_accents');
-            $this->im->deleteIndex();
-            $this->im->createIndex($settings);
+            $this->es->deleteIndex();
+            $this->es->createIndex($settings);
             $output->writeln('<info>Index <comment>pdf_pages</comment> created successfully.</info>');
         } catch (\Exception $e) {
             $output->writeln("<error>Failed to create index: {$e->getMessage()}</error>");

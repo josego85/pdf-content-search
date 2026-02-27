@@ -19,12 +19,6 @@ parameters:
 			path: src/Service/ElasticsearchService.php
 
 		-
-			message: '#^Call to an undefined method Elastic\\Elasticsearch\\Response\\Elasticsearch\|Http\\Promise\\Promise\:\:asArray\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Service/ElasticsearchVectorStore.php
-
-		-
 			message: '#^Method App\\Service\\LanguageDetector\:\:detect\(\) should return array\{language\: string, confidence\: float, all\: array\<string, float\>\} but returns array\{language\: int\|string, confidence\: mixed, all\: array\}\.$#'
 			identifier: return.type
 			count: 1

@@ -35,9 +35,12 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
         return [
             'index' => $this->pdfPagesIndex,
             'body' => [
+                '_source' => ['title', 'page', 'text', 'path', 'total_pages', 'language', 'date'],
                 'query' => $this->buildQuery($query, $parsedQuery, $strategy),
                 'highlight' => $this->buildHighlight(),
                 'size' => $this->maxResults,
+                'timeout' => '5s',
+                'track_total_hits' => $this->maxResults,
             ],
         ];
     }
