@@ -74,7 +74,7 @@ class CreatePdfIndexCommand extends Command
                         'index' => true,
                         'similarity' => 'cosine',
                         'index_options' => [
-                            'type' => 'hnsw',
+                            'type' => 'int8_hnsw',
                             'm' => 16,
                             'ef_construction' => 100,
                         ],

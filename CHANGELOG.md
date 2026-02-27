@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Elasticsearch indexing**: Replaced per-document HTTP requests with Bulk API (10–50x faster); `refresh_interval` disabled during bulk load and restored with forced refresh after
 - **`IndexarPdfsCommand`**: Streaming buffer of 500 pages (`FLUSH_SIZE`) before sending to ES — bounds peak memory regardless of corpus size
 - **`SearchQueryBuilder`**: Added `_source` filtering (excludes `text_embedding` vector, ~300 KB saved per search), `timeout: 5s`, and `track_total_hits` bounded to `maxResults`
-- **Index mapping**: Added `number_of_replicas: 0` (single-node cluster reaches GREEN health), explicit `language: keyword` mapping, and `index_options: offsets` on text fields for faster highlighting
+- **Index mapping**: Added `number_of_replicas: 0` (single-node cluster reaches GREEN health), explicit `language: keyword` mapping, `index_options: offsets` on text fields for faster highlighting, and `int8_hnsw` quantization (4x less RAM for vectors vs float32)
 - **Architecture**: Removed `IndexManagementInterface` and `PipelineManagementInterface` (ES-specific abstractions with no real swap value); `CreatePdfIndexCommand` now depends on `ElasticsearchService` directly
 - **Elasticsearch**: 9.2.4 → 9.3.0 (improved kNN early termination, adaptive HNSW, Zstd compression)
 - **Docker Base Images**: Updated to latest stable versions
