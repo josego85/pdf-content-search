@@ -63,82 +63,6 @@ class ElasticsearchService implements PdfIndexerInterface, SearchEngineInterface
         }
     }
 
-    public function createIngestPipeline(string $pipelineId = 'remove_accents'): void
-    {
-        $params = [
-            'id' => $pipelineId,
-            'body' => [
-                'processors' => [
-                    [
-                        'script' => [
-                            'lang' => 'painless',
-                            'source' => "
-                                if (ctx.text != null) {
-                                    ctx.text = ctx.text
-                                        .replace('á', 'a')
-                                        .replace('à', 'a')
-                                        .replace('ä', 'a')
-                                        .replace('â', 'a')
-                                        .replace('ã', 'a')
-                                        .replace('å', 'a')
-                                        .replace('Á', 'A')
-                                        .replace('À', 'A')
-                                        .replace('Ä', 'A')
-                                        .replace('Â', 'A')
-                                        .replace('Ã', 'A')
-                                        .replace('Å', 'A')
-                                        .replace('é', 'e')
-                                        .replace('è', 'e')
-                                        .replace('ë', 'e')
-                                        .replace('ê', 'e')
-                                        .replace('É', 'E')
-                                        .replace('È', 'E')
-                                        .replace('Ë', 'E')
-                                        .replace('Ê', 'E')
-                                        .replace('í', 'i')
-                                        .replace('ì', 'i')
-                                        .replace('ï', 'i')
-                                        .replace('î', 'i')
-                                        .replace('Í', 'I')
-                                        .replace('Ì', 'I')
-                                        .replace('Ï', 'I')
-                                        .replace('Î', 'I')
-                                        .replace('ó', 'o')
-                                        .replace('ò', 'o')
-                                        .replace('ö', 'o')
-                                        .replace('ô', 'o')
-                                        .replace('õ', 'o')
-                                        .replace('ø', 'o')
-                                        .replace('Ó', 'O')
-                                        .replace('Ò', 'O')
-                                        .replace('Ö', 'O')
-                                        .replace('Ô', 'O')
-                                        .replace('Õ', 'O')
-                                        .replace('Ø', 'O')
-                                        .replace('ú', 'u')
-                                        .replace('ù', 'u')
-                                        .replace('ü', 'u')
-                                        .replace('û', 'u')
-                                        .replace('Ú', 'U')
-                                        .replace('Ù', 'U')
-                                        .replace('Ü', 'U')
-                                        .replace('Û', 'U');
-                                }
-                            ",
-                        ],
-                    ],
-                ],
-            ],
-        ];
-        $this->client->ingest()->putPipeline($params);
-    }
-
-    public function deleteIngestPipeline(string $pipelineId = 'remove_accents'): void
-    {
-        $params = ['id' => $pipelineId];
-        $this->client->ingest()->deletePipeline($params);
-    }
-
     /**
      * @param PdfPageDocument[] $pages
      */
@@ -214,10 +138,7 @@ class ElasticsearchService implements PdfIndexerInterface, SearchEngineInterface
         }
 
         $this->safeCall(
-            fn () => $this->client->bulk([
-                'pipeline' => 'remove_accents',
-                'body' => $operations,
-            ]),
+            fn () => $this->client->bulk(['body' => $operations]),
             'Bulk indexing failed'
         );
     }
@@ -236,14 +157,5 @@ class ElasticsearchService implements PdfIndexerInterface, SearchEngineInterface
             hits: $raw['hits']['hits'] ?? [],
             total: $raw['hits']['total']['value'] ?? 0,
         );
-    }
-
-    /**
-     * Get Elasticsearch client for advanced use cases.
-     * Used by ElasticsearchVectorStore to share the same client instance.
-     */
-    public function getClient(): Client
-    {
-        return $this->client;
     }
 }

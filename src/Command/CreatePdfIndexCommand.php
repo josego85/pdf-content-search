@@ -84,7 +84,6 @@ class CreatePdfIndexCommand extends Command
         ];
 
         try {
-            $this->es->createIngestPipeline('remove_accents');
             $this->es->deleteIndex();
             $this->es->createIndex($settings);
             $output->writeln('<info>Index <comment>pdf_pages</comment> created successfully.</info>');
