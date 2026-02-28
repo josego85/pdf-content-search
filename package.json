@@ -17,6 +17,9 @@
     "vue": "3.5.28",
     "vue3-apexcharts": "1.10.0"
   },
+  "overrides": {
+    "serialize-javascript": "7.0.3"
+  },
   "devDependencies": {
     "@babel/core": "7.29.0",
     "@babel/preset-env": "7.29.0",
