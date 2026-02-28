@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.13.0] - 2026-02-28
 
 ### Added
 - **`PdfPageDocument` DTO**: Typed value object replacing raw arrays for PDF page data, enabling engine-agnostic indexing
@@ -38,3 +38,969 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - file-loader/node_modules/ajv: 6.12.6 → 6.14.0
 
 ---
+
+## [1.12.0] - 2026-02-16
+
+### Added
+- **OCR text layer**: `ocrmypdf` adds invisible text layer to scanned PDFs during indexing, enabling `pdftotext` extraction and viewer highlights
+- **Semantic similarity threshold**: Configurable kNN `similarity` filter (default: 0.7) to discard irrelevant vector results
+- **Frontend Pagination**: Client-side pagination for search results (10 results per page)
+  - `Pagination.vue` component with prev/next, page numbers, and ellipsis navigation
+  - "Showing 1-10 of 42 results" range display in Controls
+  - Scroll-to-top on page change, auto-reset on new search
+  - Global position offset for accurate click analytics tracking
+  - `PAGINATION.PAGE_SIZE` constant in `assets/constants/pagination.js`
+- **Elasticsearch Safety Cap**: Configurable `ELASTICSEARCH_MAX_RESULTS` env var (default: 100) to limit lexical query result sets
+- **PHPStan Static Analysis**: Level 8 with Symfony and Doctrine extensions
+  - `phpstan.neon` config with baseline for gradual adoption (5 remaining errors)
+  - CI job `static-analysis` in GitHub Actions pipeline
+  - Pre-commit hook integration via Husky
+  - `composer phpstan` script and `make phpstan` target
+
+### Changed
+- **Viewer highlight system**: Overlay rects from `<mark>` bounding boxes with OCR scale detection for scanned PDFs
+- **Viewer container**: Replaced Tailwind `.container` class with `#pdf-container` to avoid style conflicts
+- **Docker volumes**: `!override` on dev apache/php services to prevent merging with base compose
+- **Dev Dockerfile**: Remove redundant `COPY` and dependency install steps; bind mount overwrites them
+- **Dev entrypoint**: New `entrypoint.sh` installs Composer/npm deps at startup on bind-mounted volume (skips if up-to-date)
+- **Makefile**: Remove duplicate `composer install` from `_init` (now handled by entrypoint)
+- **LanguageDetector**: Align supported languages with frontend (9 → 3: es, en, de)
+
+### Fixed
+- **Scanned PDF highlights**: Insert virtual spaces between OCR text spans for correct term matching in viewer
+- **pdftotext/pdfinfo stderr**: Suppress `Syntax Warning` output with `2>/dev/null`
+- **PHPStan type safety**: Fix 18 real bugs detected by static analysis
+  - Nullsafe operator on guaranteed non-null variable (`OllamaEmbeddingService`)
+  - Unused `$jobRepository` dependency (`TranslationOrchestrator`)
+  - Missing `instanceof` type guard on `findOneBy()` result (`AnalyticsController`)
+  - Unhandled `false` returns from `getmypid()`, `strrpos()`, `preg_split()`, `preg_replace()`, `shell_exec()`
+- **PHPStan PHPDoc types**: Add `@param`/`@return` array type annotations across 12 files (36 errors resolved)
+  - Contracts, Search builders, Services, Repository, Message classes
+- **TranslationJob entity**: Initialize non-nullable DB columns with proper defaults instead of `null`
+- **TranslationOrchestrator**: Type-safe casts after validation (resolve 16 nullable chain errors)
+- **Dead code removal**: Remove always-true `if ($job)` guard in `TranslatePageMessageHandler`
+- **SearchQueryBuilder**: Add default fallback to match expression for unhandled strategies
+- **CI**: Fix `composer validate` failure caused by exact version constraint warnings (`--no-check-all`)
+
+### Dependencies
+
+**Backend:**
+- symfony/*: 7.4.0 → 7.4.4/7.4.5 (framework-bundle, http-client, validator, mime, property-info)
+- doctrine/dbal: 4.4.0 → 4.4.1
+- doctrine/doctrine-bundle: 3.1.0 → 3.1.1
+- doctrine/orm: 3.6.0 → 3.6.2
+- friendsofphp/php-cs-fixer: 3.92.3 → 3.94.0
+- phpunit/phpunit: 9.6.33 → 9.6.34
+- symfony/phpunit-bridge: 7.4.0 → 7.4.3
+- symfony/web-profiler-bundle: 7.4.0 → 7.4.4
+
+**Frontend:**
+- vue: 3.5.27 → 3.5.28
+- @vue/compiler-sfc: 3.5.27 → 3.5.28
+- @babel/core: 7.28.6 → 7.29.0
+- @babel/preset-env: 7.28.6 → 7.29.0
+- @biomejs/biome: 2.3.11 → 2.3.15
+- webpack: 5.104.1 → 5.105.2
+- tailwindcss: 3.4.17 → 3.4.19
+- sass: 1.97.2 → 1.97.3
+
+**CI/CD:**
+- github/codeql-action: 4.31.11 → 4.32.3 ([#79](https://github.com/josego85/pdf-content-search/pull/79), [#80](https://github.com/josego85/pdf-content-search/pull/80), [#89](https://github.com/josego85/pdf-content-search/pull/89))
+
+
+---
+
+## [1.11.1] - 2026-01-30
+
+### Changed
+- **Docker Base Images**: Updated to latest stable versions
+  - httpd: 2.4-alpine → 2.4.66-alpine
+  - elasticsearch: 9.2.2 → 9.2.4
+  - php: 8.4.15-fpm → 8.4.17-fpm
+  - node: 22-alpine → 24-alpine
+- **Scripts**: Moved `coverage.sh` from `docker/` to `.docker/` (consistent naming convention)
+- **CS Fixer**: Excluded autogenerated `config/reference.php` from analysis
+
+### Fixed
+- **Makefile**: Database health check now uses Docker's native healthcheck instead of manual `pg_isready`
+  - Fixes timeout issues after `docker system prune`
+  - Increased timeout from 24s to 60s for cold starts
+
+### Dependencies
+
+**Backend:**
+- symfony/process: 7.4.0 → 7.4.5 ([#75](https://github.com/josego85/pdf-content-search/pull/75))
+- phpunit/phpunit: 9.6.29 → 9.6.33 ([#76](https://github.com/josego85/pdf-content-search/pull/76))
+
+**Frontend:**
+- vue: 3.5.26 → 3.5.27
+- @vue/compiler-sfc: 3.5.26 → 3.5.27
+- @babel/core: 7.28.5 → 7.28.6
+- @babel/preset-env: 7.28.5 → 7.28.6
+- @biomejs/biome: 2.3.10 → 2.3.11
+- sass: 1.97.1 → 1.97.2
+- lodash: 4.17.21 → 4.17.23 ([#72](https://github.com/josego85/pdf-content-search/pull/72))
+
+**CI/CD:**
+- github/codeql-action: 4.31.8 → 4.31.10 ([#59](https://github.com/josego85/pdf-content-search/pull/59), [#67](https://github.com/josego85/pdf-content-search/pull/67))
+- github-actions group: 2 updates ([#73](https://github.com/josego85/pdf-content-search/pull/73))
+
+---
+
+## [1.11.0] - 2026-01-03
+
+### Added
+- **Makefile**: Single entry point for all operations (dev/prod)
+  - `make dev` - Auto-setup development (migrations, ES index, Ollama models)
+  - `make prod` - Production with environment validation
+  - `make up` - Start without rebuild (faster for quick restarts)
+  - Unified commands with ENV parameter (eliminates duplication)
+  - Smart service health checks with database readiness verification
+- **Ollama Auto-Download**: Models downloaded automatically via healthcheck
+  - qwen2.5:7b (translation) + nomic-embed-text (embeddings)
+  - Zero manual steps required
+- **Messenger Setup**: Auto-creates messenger_messages table on init
+  - Enables background translation processing
+  - 3 workers managed by Supervisor
+  - Reliable initialization with error detection and retry
+- **Symfony .env Pattern**: Migrated from custom to industry standard
+  - `.env` (base, committed) + `.env.local` (dev overrides)
+  - `.env.prod` (config) + `.env.prod.local` (secrets, auto-generated)
+  - Clear separation: configuration vs secrets
+- **bin/init-prod-secrets.sh**: Auto-generates production secrets (APP_SECRET, passwords)
+
+### Changed
+- **Docker Compose Architecture**: Explicit layered composition
+  - BASE (docker-compose.yml) + DEV (docker-compose.dev.yml) or PROD (docker-compose.prod.yml)
+  - Separate project names prevent dev/prod volume conflicts
+  - Can run both environments simultaneously
+- **Environment Files**: Cleaned up obsolete files
+  - Removed `.env.dev`, `.env.docker`, `.env.production`
+  - Standardized on Symfony pattern
+- **Security Improvements**:
+  - Elasticsearch authentication enabled by default (production)
+  - Required environment variables with `?` syntax (fail-safe)
+  - Secrets in `.env.prod.local` (never committed)
+- **Translation Model**: qwen2.5:7b (default, was llama3.2:1b)
+- **Languages**: Reduced to ES/EN/DE (removed 10 unused languages)
+- **Messenger Workers**: Optimized for long-running AI translations
+  - Time limit: 60s → 3600s (1 hour) - prevents worker restarts during translation
+  - Memory limit: 128M → 256M (dev), 512M (prod)
+  - Fixes translation failures with qwen2.5:7b (2-3 min per translation)
+- **Ollama Timeout**: Increased from 120s to 300s (5 minutes)
+  - Accommodates qwen2.5:7b CPU processing time
+  - Prevents premature timeout errors during translation
+- **Frontend Bundle Optimization**: Aggressive code splitting reduces initial load by ~94%
+  - Webpack advanced chunk splitting with vendor-specific cache groups
+  - PDF.js (408KB), ApexCharts (572KB), Vue (68KB) lazy-loaded separately
+  - Initial load: 661KB → 35KB (pdfViewer), 733KB → 18KB (analytics)
+  - Improved first contentful paint and time-to-interactive
+- **Frontend Dependencies**: Updated to latest stable versions
+  - Babel: 7.26 → 7.28, Webpack: 5.99 → 5.104, Sass: 1.86 → 1.97
+  - Core-js: 3.38 → 3.47
+  - Webpack Encore: 5.1 → 5.3
+- **Apache Performance Optimization**: Brotli compression + HTTP/2 + aggressive caching
+  - Brotli compression (30-50% better than gzip) - Quality 11 (prod), 6 (dev)
+  - HTTP/2 protocol with multiplexing and server push
+  - Cache headers: 1 year immutable for versioned assets, 1 week for dev
+  - Security headers: X-Frame-Options, X-Content-Type-Options, Referrer-Policy
+  - Static files served directly (no PHP processing overhead)
+- **Documentation Reorganization**: Applied SOLID/DRY principles to eliminate duplication
+  - Created comprehensive guides: getting-started.md, configuration.md, production.md
+  - Merged duplicated content: translation-tracking.md + messenger-worker.md → features/translation.md
+  - Organized by purpose: Getting Started, Features, Reference
+  - Renamed development.md → testing.md (accurate naming)
+  - Updated README with streamlined structure, added full docker-compose commands
+  - Zero information loss, improved discoverability
+
+### Fixed
+- **Test Suite**: Updated OllamaEmbeddingService tests for current API
+  - Corrected endpoint: `/api/embeddings` → `/api/embed`
+  - Fixed request parameters: `prompt` → `input`
+  - Updated response structure: `embedding` → `embeddings` (array)
+- **PHPUnit Deprecations**: Replaced `at()` matcher with `willReturnCallback()`
+
+### Removed
+- **Shell Scripts**: docker-dev.sh, docker-prod.sh, docker-build.sh (replaced by Makefile)
+- **docker-compose.override.yml**: Replaced with explicit docker-compose.dev.yml
+- **Obsolete .env Files**: .env.dev, .env.docker, .env.production
+- **Obsolete Documentation**: docker.md, setup.md (merged to getting-started.md)
+  - messenger-worker.md, translation-tracking.md (merged to features/translation.md)
+
+---
+
+## [1.10.0] - 2025-12-20
+
+### Added
+- **Analytics Dashboard**: Vue.js 3 + ApexCharts + PostgreSQL 16
+  - Real-time KPI cards (searches, response time, success rate, sessions)
+  - Interactive charts (trends, strategy distribution, top queries with click rates)
+  - Time filters (7/14/30/90 days), GDPR-compliant IP anonymization
+  - Async logging via Symfony Messenger, click tracking for engagement metrics
+- **REST API**: 5 analytics endpoints + search endpoint
+  - `/api/analytics/overview`, `/api/analytics/top-queries`, `/api/analytics/trends`
+  - `/api/analytics/click-positions`, `/api/analytics/zero-results`, `/api/analytics/track-click`
+  - Date range filtering, limit parameter (no max validation)
+  - Conditional search logging via `log=1/0` parameter
+- **Google-like Search UX**: Suggestions dropdown, keyboard navigation (↑↓), 300ms debounce
+  - Analytics logs only committed searches (ENTER/click), prevents partial query logging
+  - Strategy auto-detection: wildcards → PREFIX, quotes → EXACT, default → HYBRID_AI
+- **Wildcard Search**: `*` (0+ chars), `?` (1 char) - Examples: `java*`, `te?t`
+- **Test Coverage**: 87.42% (361 tests, 959 assertions) - Unit, Integration, Functional
+- **Biome Integration**: Modern linter/formatter (10-100x faster than ESLint/Prettier)
+  - CI/CD parallel frontend-lint job, Docker-integrated pre-commit hooks
+- **Documentation**: Comprehensive guides following Single Responsibility Principle
+  - `docs/analytics.md` - Dashboard usage, KPIs, charts, use cases
+  - `docs/api.md` - REST API reference with implementation status warnings
+  - `docs/troubleshooting.md` - Analytics, search, Docker, performance issues
+  - Clear "NOT IMPLEMENTED" warnings for auth, rate limiting, pagination offset
+
+### Changed
+- **Documentation Reorganization**: Applied Single Responsibility Principle
+  - Deleted 1700-line implementation plan (replaced with focused docs)
+  - Updated `TODO.md` with prioritized task list (High/Medium/Low)
+  - README simplified: overview + links to detailed docs
+- Removed Kibana from docker-compose
+
+### Dependencies
+
+**Backend:**
+- Doctrine ORM: 3.5.3 → 3.5.8 (#53)
+- PHP-CS-Fixer: 3.91.3 → 3.92.0 (#49)
+
+**Frontend:**
+- Vue.js: 3.5.25 → 3.5.26
+- @vue/compiler-sfc: 3.5.24 → 3.5.26
+- apexcharts: 5.3.6 (new)
+- vue3-apexcharts: 1.10.0 (new)
+- autoprefixer: 10.4.21 → 10.4.23
+- sass-loader: 16.0.5 → 16.0.6
+
+**CI/CD:**
+- actions/upload-artifact: 5.0.0 → 6.0.0 (#52)
+- github/codeql-action: 4.31.7 → 4.31.8 (#50)
+
+---
+
+## [1.9.0] - 2025-12-09
+
+### Added
+- **Hybrid Semantic Search with RAG**
+  - EmbeddingServiceInterface + OllamaEmbeddingService (nomic-embed-text, 768 dims)
+  - RankFusionServiceInterface + ReciprocalRankFusionService (RRF k=60)
+  - HybridSearchQueryBuilder with decorator pattern (lexical + semantic)
+  - SEMANTIC and HYBRID_AI search strategies
+  - dense_vector field in Elasticsearch (HNSW, cosine similarity, m=16, ef=100)
+  - Parallel query execution with RRF merging in SearchController
+  - --skip-embeddings option in IndexarPdfsCommand
+  - **Performance**: 28ms hybrid search, 1035 pages indexed with embeddings in ~30min
+  - **Breaking**: Requires Ollama nomic-embed-text and index recreation
+
+- **VectorStoreInterface** for database-agnostic vector search
+  - Abstraction layer for vector stores (Elasticsearch, Pinecone, Weaviate, Qdrant)
+  - ElasticsearchVectorStore implementation with kNN search
+  - HybridSearchQueryBuilder uses VectorStoreInterface (decoupled from Elasticsearch)
+  - Dynamic vector field name via `getVectorFieldName()`
+
+- **Frontend UX improvements**
+  - Simplified Hero badge: "AI-Powered Search"
+  - Removed strategy selector from Controls (cleaner UI)
+  - Auto-detection: queries with quotes use EXACT strategy
+  - Smart badges: "RRF" for hybrid_ai, "Score" for other strategies
+  - Removed unused props/methods (strategy, updateStrategy)
+  - Updated Initial.vue features: "AI Hybrid Search", "Exact Match Mode", "In-PDF Highlighting"
+
+- **Comprehensive test coverage (86.99%)**
+  - **OllamaEmbeddingServiceTest**: 13 tests covering embedding generation (100% coverage)
+    * Dimension validation (768 dims for nomic-embed-text)
+    * Retry logic with exponential backoff (3 attempts)
+    * Batch processing and edge cases
+  - **ReciprocalRankFusionServiceTest**: 15 tests covering RRF algorithm (91.89% coverage)
+    * RRF score calculation (k=60 formula)
+    * Highlight and score merging across result sets
+    * Custom weights and deduplication
+  - **SearchStrategyTest**: Updated for 5 strategies (HYBRID, EXACT, PREFIX, SEMANTIC, HYBRID_AI)
+  - Total: 279 passing tests, 745 assertions
+
+- **Documentation updates**
+  - README: Version bump 1.8.1 → 1.9.0
+  - README: Enhanced badges (Elasticsearch, Vue.js, Ollama, Docker, Test Coverage 87%)
+  - README: Updated tagline to emphasize AI-powered hybrid search
+  - README: Updated features to highlight AI Hybrid Search
+  - README: Added nomic-embed-text model download instructions
+  - docs/setup.md: Added embedding model setup (nomic-embed-text ~274MB)
+  - docs/setup.md: Added --skip-embeddings option documentation
+  - docs/setup.md: Updated Ollama configuration with embedding model params
+
+### Changed
+- **Elasticsearch 8.17 → 9.2.2 and Kibana** (Lucene 10.3.2)
+  - elasticsearch/elasticsearch 8.19.0 → 9.2.0
+  - 40% faster vector search (BBQ + SIMD)
+  - Prepares for RAG semantic search implementation
+  - **Breaking**: Required clean volumes and re-indexing
+
+### Dependencies
+- Bump friendsofphp/php-cs-fixer 3.91.2 → 3.91.3 (#42)
+- Bump the github-actions group (#44)
+  - actions/checkout 6.0.0 → 6.0.1
+  - github/codeql-action 4.31.5 → 4.31.7
+- Bump vue 3.5.24 → 3.5.25 (#43)
+
+---
+
+## [1.8.1] - 2025-12-03
+
+### Added
+- **Production Docker Configuration**:
+  - Production Dockerfile with Supervisor (manages PHP-FPM + 3 Messenger workers)
+  - Apache configs for production (`/prod/apache/`)
+  - Supervisor config with optimized worker settings (1h time-limit, 256MB memory)
+  - `.env` auto-configuration during build (APP_ENV=prod, APP_SECRET generation)
+
+- **Management Scripts**:
+  - `docker-dev.sh` - Development environment management (up/down/logs/exec/build/clean)
+  - `docker-prod.sh` - Production environment management with auto-migrations
+  - Complete isolation between dev (port 80) and prod (port 8080) environments
+
+### Changed
+- **Docker Architecture** (Senior Dev Best Practices):
+  - Dev/prod now use separate Docker projects with isolated volumes
+  - Production uses optimized multi-stage build with supervisor
+  - `.dockerignore` updated to include production configs
+  - `docker-compose.yml` - Production base (port 8080, named volumes, restart policies)
+  - `docker-compose.override.yml` - Development overrides (source mounts, exposed ports)
+
+- **Documentation**:
+  - Updated `README.md` with Quick Start including `npm run build` and Ollama setup
+  - Enhanced `docs/setup.md` with Ollama model download step and Elasticsearch index creation
+  - Revised `docs/docker.md` with management scripts and dev/prod separation
+
+### Fixed
+- Production environment now properly runs Messenger workers via Supervisor
+- Ollama model download documented as required setup step
+- Frontend assets build step now prominent in documentation
+
+### Dependencies
+- **build:** Updated PHP from 8.4.14 to 8.4.15
+- **deps-dev:** Bumped development-dependencies group (#39)
+- **deps:** Bumped pdfjs-dist from 5.4.394 to 5.4.449 (#35)
+
+---
+
+## [1.8.0] - 2025-12-02
+
+### Added
+- **AI-Powered PDF Translation System**:
+  - On-demand page-by-page translation using Ollama AI (60-80s per page)
+  - Async job processing with 3 parallel workers via Symfony Messenger
+  - Real-time job tracking (queued → processing → completed/failed)
+  - Translation caching (7-day TTL) and duplicate prevention
+  - Frontend polling with 1s interval for instant status updates
+  - Translation overlay UI with original/translated view toggle
+  - 10 supported languages: Spanish, English, French, German, Portuguese, Italian, Dutch, Russian, Chinese, Japanese
+
+- **Comprehensive Test Suite**:
+  - 217 unit tests covering entities, services, message handlers, and controllers
+  - Test infrastructure: TranslationJob, TranslationOrchestrator, OllamaService, LanguageDetector, etc.
+
+- **Monitoring Tools**:
+  - `bin/monitor-jobs.sh` - Real-time translation job monitoring dashboard
+  - `bin/worker-logs.sh` - Worker activity and error logs
+  - `app:translation:monitor` - Symfony console command for job inspection
+  - Displays: job status, duration, worker PID, errors
+
+### Changed
+- **Architecture Refactoring (SOLID Principles)**:
+  - Extracted TranslationOrchestrator service (234 lines) for workflow coordination
+  - Created TranslationController for dedicated API endpoints (`/api/translations/*`)
+  - Simplified PdfController from 228 to 31 lines (viewer-only responsibility)
+  - Enhanced TranslationRequestValidator with complete validation metadata
+  - Migrated API routes: `/api/pdf/*` → `/api/translations/*`
+
+- **Search UI Improvements**:
+  - Added "Score:" label prefix to search relevance scores (clarifies it's not a percentage)
+  - Fixed page number format to consistent "Page 7/8" display
+  - Fixed language selector dropdown visibility (text color was white-on-white)
+
+- **Documentation**:
+  - Simplified README.md (320 → 76 lines, -76% reduction)
+  - New focused docs: `translation-tracking.md`, `frontend.md`, `messenger-worker.md`, `setup.md`
+  - Migrated to English-only documentation for international collaboration
+
+### Fixed
+- PDF viewer language dropdown now shows options in black text instead of invisible white
+- Search results page indicator spacing issues resolved
+- Translation job worker tracking and error handling improvements
+
+### Technical Details
+- **Backend**: TranslationJob entity, MessageHandler with PID tracking, OllamaService integration
+- **Frontend**: MVC architecture (Controllers, Services, UI), TranslationApiService with polling
+- **Infrastructure**: Supervisor with 3 workers (60s time-limit), PostgreSQL for queue tracking
+- **Code Quality**: Clean architecture, Single Responsibility Principle, 84.89% test coverage
+
+---
+
+## [1.7.0] - 2025-11-29
+
+### Changed
+- **Backend Dependencies:**
+  - Updated Symfony from 7.3.6 to 7.4.0
+  - Updated Doctrine DBAL from 3.10.3 to 4.4.0 (BREAKING)
+  - Updated Doctrine Bundle from 2.18.1 to 3.1.0 (BREAKING)
+  - Updated PHP CS Fixer from 3.89.2 to 3.91.0
+- **CI/CD:**
+  - Bump actions/checkout from 6.pre.beta to 6.0.0 ([#28](https://github.com/josego85/pdf-content-search/pull/28))
+  - Bump the github-actions group with 2 updates ([#27](https://github.com/josego85/pdf-content-search/pull/27))
+  - Added CI step to auto-fix code style on autogenerated files
+- **Configuration:**
+  - Migrated routing configuration from XML to PHP format
+  - Reorganized Doctrine ORM configuration for Bundle 3.x compatibility
+  - Force test environment in `tests/bootstrap.php` to ensure PHPUnit runs in test mode
+  - Added `config/reference.php` to `.gitignore` (autogenerated file)
+  - Added coverage files to `.gitignore` (`coverage.xml`, `coverage/`)
+
+### Removed
+- Removed deprecated `use_savepoints` option (removed in DBAL 4.x)
+- Removed `enable_native_lazy_objects` option (now enabled by default)
+- Removed XML routing files in favor of PHP routing
+- Removed `config/reference.php` from repository tracking
+
+### Fixed
+- Eliminated all Doctrine deprecation warnings
+- Fixed compatibility with PHP 8.4 native lazy objects
+- Fixed CI code style check for autogenerated `config/reference.php`
+- Fixed PHPUnit not using test environment (was loading dev environment from `.env`)
+
+---
+
+## [1.6.2] - 2025-11-19
+
+### Security
+- **Fixed npm Security Vulnerabilities**:
+  - **glob** (10.4.5 → 10.5.0): Resolved high severity command injection vulnerability
+    - CVE: [GHSA-5j98-mcp5-4vw2](https://github.com/advisories/GHSA-5j98-mcp5-4vw2)
+    - Issue: glob CLI could execute matches with `shell:true` via `-c/--cmd` flag
+  - **js-yaml** (4.1.0 → 4.1.1): Resolved moderate severity prototype pollution vulnerability
+    - CVE: [GHSA-mh29-5h37-fv8m](https://github.com/advisories/GHSA-mh29-5h37-fv8m)
+    - Issue: Prototype pollution in merge (`<<`) operator
+
+### Changed
+- **build(deps)**: Updated npm dependencies via `npm audit fix`:
+  - glob: 10.4.5 → 10.5.0
+  - js-yaml: 4.1.0 → 4.1.1
+- **ci(deps)**: Bump codecov/codecov-action from 4 to 5 ([#20](https://github.com/josego85/pdf-content-search/pull/20))
+  - Updated GitHub Actions workflow dependency for code coverage reporting
+
+---
+
+## [1.6.1] - 2025-11-13
+
+### Fixed
+- **Docker Build Optimization**:
+  - Fixed pcov 1.0.11 incompatibility with PHP 8.4.14 (upgraded to 1.0.12)
+  - Resolved compilation error: `too many arguments to function 'php_pcre_match_impl'`
+  - Fixed pcov not loading due to missing `extension=pcov.so` directive
+- **Frontend Asset Compilation**:
+  - Fixed JavaScript module loading errors in Chrome console
+  - Removed unused Stimulus framework completely:
+    - Deleted `assets/bootstrap.js`
+    - Deleted `assets/controllers/` directory
+    - Deleted `assets/controllers.json`
+    - Removed `symfony/stimulus-bundle` from composer.json
+    - Removed `symfony/ux-turbo` from composer.json
+    - Removed StimulusBundle and TurboBundle from `config/bundles.php`
+    - Deleted `importmap.php` file
+  - Resolved MIME type errors for JavaScript modules
+  - Added placeholder favicon.ico to prevent 404 errors
+- **CI/CD Pipeline**:
+  - Fixed CI workflow to run on fix/** branches
+
+### Changed
+- **Docker Performance Improvements** (24x faster rebuilds):
+  - Implemented multi-stage build architecture
+  - Separated PHP extension compilation into cached layer
+  - Added BuildKit cache mounts for Composer and npm
+  - Optimized layer ordering for maximum cache hits
+  - First build: ~2min | Rebuilds: ~5-15s (was 2min+)
+  - Smart build script with auto-detection of available features
+  - Optional COMPOSE_BAKE support (auto-detected if buildx available)
+
+### Added
+- **Build Scripts & Documentation**:
+  - `docker-build.sh`: Intelligent build script with feature detection
+  - `docs/docker-buildx-install.md`: Optional buildx installation guide
+  - `.env.docker`: Build performance configuration file
+
+### Technical Details
+- pcov: 1.0.11 → 1.0.12 (PHP 8.4 compatibility)
+- Build strategy: Single-stage → Multi-stage with BuildKit
+- Cache efficiency: 0% → ~95% on code changes
+- COMPOSE_BAKE: Optional, auto-detected when buildx available
+
+---
+
+## [1.6.0] - 2025-11-09
+
+### Added
+- **PHPUnit Test Suite**:
+  - 128 comprehensive tests (103 Unit + 25 Functional)
+  - 85%+ code coverage with PCOV (faster than Xdebug)
+  - Test environment configuration for Symfony
+  - Test fixtures and factories for reusable test data
+  - Testing documentation in `docs/testing.md`
+- **Comprehensive CI/CD Pipeline**:
+  - **CI Workflow**: Automated testing, code style checks, and frontend build validation
+    - PHPUnit tests for PHP 8.4
+    - PHP-CS-Fixer code style validation
+    - Frontend asset build verification
+    - Composer dependency caching for faster builds
+    - npm caching for optimized workflow performance
+  - **CodeQL Security Analysis**: Automated static code analysis for JavaScript/TypeScript
+    - Scheduled weekly security scans every Monday at 6:00 AM UTC
+    - Runs on push to main/develop branches and pull requests
+    - Security vulnerability detection for JavaScript codebase
+  - **Security Audit Workflow**: Comprehensive dependency vulnerability scanning
+    - npm audit for JavaScript dependencies (moderate severity threshold)
+    - Composer audit for PHP dependencies
+    - Dependency Review action for pull requests
+    - Daily scheduled security audits at 2:00 AM UTC
+    - Audit reports uploaded as artifacts with 30-day retention
+    - Manual trigger capability via workflow_dispatch
+  - **Dependabot Configuration**: Automated dependency updates
+    - Weekly updates for Composer (PHP) dependencies every Monday
+    - Weekly updates for npm (JavaScript) dependencies every Monday
+    - Weekly updates for GitHub Actions
+    - Docker base image updates
+    - Grouped updates for Symfony, Babel, and Webpack ecosystems
+    - Intelligent major version ignoring for critical packages (Vue.js, Webpack)
+    - Automatic PR creation with proper labels and conventional commit messages
+  - **CI/CD Badges**: Added workflow status badges to README
+    - CI build status
+    - CodeQL security analysis status
+    - Security audit status
+- **Composite Actions for Code Reusability**:
+  - **setup-php-project**: Reusable action for PHP project setup
+    - Configures PHP with specified version and extensions
+    - Implements Composer dependency caching
+    - Installs dependencies automatically
+    - Supports customization via inputs (php-version, extensions, tools)
+  - **setup-node-project**: Reusable action for Node.js project setup
+    - Configures Node.js with specified version
+    - Implements npm caching automatically
+    - Installs dependencies with npm ci
+    - Supports customization via inputs (node-version)
+
+### Changed
+- **Testing Infrastructure**:
+  - Enabled PHPUnit tests in CI workflow (previously disabled)
+  - Migrated from Xdebug to PCOV for 10x faster coverage generation
+  - Excluded non-testable components (CLI Commands, ElasticsearchService) from coverage metrics
+  - Coverage calculation uses line coverage (industry standard)
+  - Frontend assets built before tests to support Functional tests
+- **Workflow Triggers**: Enhanced workflow execution triggers to run on feature branches
+  - All workflows now trigger on `main`, `develop`, `feature/**`, and `claude/**` branches
+  - Enables CI/CD testing during feature development before PR creation
+  - Maintains PR-based triggers for main/develop branches
+  - Improves feedback loop for developers working on feature branches
+- **PHP Tests Job**: Temporarily disabled in CI workflow
+  - Job configured but not executed (`if: false`)
+  - Easy to re-enable when tests are implemented
+  - Code style and frontend build checks remain active
+- **Workflow Architecture Refactoring**: Major DRY improvements
+  - Eliminated ~60% code duplication across workflows
+  - Reduced workflow complexity from 250 to ~150 lines total
+  - Centralized PHP/Node.js setup logic in composite actions
+  - Single source of truth for dependency management
+  - Easier maintenance: Update SHA in one place vs seven places
+  - Improved readability: Focus on business logic vs boilerplate
+
+### Security
+- **HTTP Method Restrictions**: Added explicit GET-only methods to controller routes (prevents CSRF attacks)
+- **Pinned GitHub Actions to SHA**: All workflow actions now use commit SHA instead of tags for supply chain attack prevention
+  - `actions/checkout@v5.0.0` → SHA `71cf2267d89c5cb81562390fa70a37fa40b1305e`
+  - `shivammathur/setup-php@v2.31.1` → SHA `c541c155eee45413f5b09a52248675b1a2575231`
+  - `actions/cache@v4.2.0` → SHA `1bd1e32a3bdc45362d1e726936510720a7c30a57`
+  - `actions/setup-node@v4.0.3` → SHA `1e60f620b9541d16bece96c5465dc8ee9832be0b`
+  - `actions/upload-artifact@v5.0.0` → SHA `330a01c490aca151604b8cf639adc76d48f6c5d4`
+  - `github/codeql-action/*@v4.31.2` → SHA `0499de31b99561a6d14a36a5f662c2a54f91beee`
+  - `actions/dependency-review-action@v4.8.1` → SHA `40c09b7dc99638e5ddb0bfd91c1673effc064d8a`
+  - Comments with version tags maintained for reference and easier updates
+
+## [1.5.0] - 2025-11-08
+
+### Added
+- **Professional Search UI**:
+  - Modern gradient background design (gray-50 → blue-50 → gray-100)
+  - Hero section with centered icon and professional typography
+  - Enhanced search box with keyboard shortcuts (/ to focus, ESC to clear)
+  - Search performance metrics display (result count and duration in ms)
+  - Grid/List view toggle for search results
+  - Favorites system with localStorage persistence
+  - Professional loading states with dual-ring spinner
+  - Improved empty states with actionable suggestions
+  - Initial state showing feature benefits (Lightning Fast, Smart Highlighting, In-Page Highlighting)
+
+### Changed
+- **Comprehensive Responsive Design Implementation**:
+  - **CRITICAL FIX**: Added viewport meta tag to `base.html.twig` (essential for proper mobile rendering)
+  - **Mobile-First Strategy**: Implemented progressive enhancement from mobile (320px) → tablet (640px+) → desktop (1024px+)
+  - **Responsive Breakpoints**:
+    - Mobile (default): 0-640px - Single column layout, compact UI, essential features
+    - Tablet (sm): 640px+ - Two column grid, medium spacing, expanded features
+    - Desktop (md/lg): 768px+ - Full feature set, maximum spacing, complete text labels
+  - **Touch Optimization**:
+    - All interactive elements meet 44x44px minimum touch target size
+    - Added `touch-manipulation` CSS for better mobile interaction
+    - Improved button and control sizes for tablet/mobile devices
+  - **Typography Scaling**:
+    - Hero title: `text-3xl` (mobile) → `sm:text-4xl` (tablet) → `md:text-5xl` (desktop)
+    - Search input: `py-3` (mobile) → `sm:py-4` (tablet) → `md:py-5` (desktop)
+    - All text elements scale progressively across breakpoints
+  - **Component-Specific Improvements**:
+    - **Search Container**: Responsive padding `px-4 sm:px-6 lg:px-8`, `py-6 sm:py-8 md:py-12`
+    - **Hero**: Scaled icons and text with horizontal padding to prevent clipping
+    - **Search Bar**: Optimized input padding, simplified placeholder for mobile, responsive clear button
+    - **Controls**: Conditional text display (hide verbose labels on mobile), responsive icons
+    - **Results Grid**: Smart breakpoints `grid-cols-1 sm:grid-cols-2`, progressive gap sizing
+    - **Result Cards**: Compact badges on mobile, icon-only "View PDF" button on small screens, improved text truncation
+    - **State Components**: All loading, empty, error, and initial states fully responsive
+  - **Layout Optimizations**:
+    - Progressive spacing: smaller margins/padding on mobile, larger on desktop
+    - Responsive border radius: `rounded-xl sm:rounded-2xl`
+    - Flexible grid layouts with proper breakpoint transitions
+  - **Accessibility Enhancements**:
+    - Added ARIA labels to all interactive buttons
+    - Improved semantic HTML with `lang="en"` attribute
+    - Better keyboard navigation support
+    - Enhanced screen reader compatibility
+  - **Technical Improvements**:
+    - Added `flex-shrink-0` to prevent unwanted layout collapse
+    - Used `break-words` for proper long text handling
+    - Implemented `min-w-0` for correct flexbox text truncation
+    - Replaced `space-x` with `gap` utilities for better mobile support
+    - All interactive states include `active:` pseudo-classes for touch feedback
+- **Modular Component Architecture (SOLID Principles)**:
+  - Refactored `SearchComponent.vue` (440 lines) into 9 specialized components
+  - Applied Single Responsibility Principle for better maintainability
+  - Component structure: `search/Search.vue` with `Hero`, `Bar`, `Controls`, `Results`, `ResultCard`, and 4 state components
+- **Vue.js Optimization**:
+  - Enabled runtime-only build (~33KB bundle size reduction)
+  - Updated `webpack.config.js` with `runtimeCompilerBuild: false`
+  - Migrated from DOM template compilation to direct component mounting
+  - Simplified `templates/search.html.twig` (removed `<search-component>` tag)
+- **Component Naming Convention**:
+  - Adopted Vue 3 Style Guide enterprise conventions
+  - Path-based naming: components named by context, not redundant prefixes
+  - Cleaner imports: `import Hero from './Hero.vue'` vs `import SearchHero from './SearchHero.vue'`
+
+### Removed
+- Monolithic `SearchComponent.vue` replaced by modular architecture
+
+## [1.4.0] - 2025-11-08
+
+### Added
+- **PDF Highlighting System**:
+  - Intelligent hybrid word boundary detection for accurate highlighting
+  - Automatic detection of malformed PDF text layers (words without spaces)
+  - Context-aware matching: strict word boundaries for normal text, permissive for malformed PDFs
+  - Support for special characters in word boundaries (bullets, em-dashes, etc.)
+  - Position mapping system for precise character-level highlighting across normalized and original text
+- **Search Architecture (SOLID)**:
+  - `QueryBuilderInterface` contract for search engine abstraction
+  - `SearchStrategy` enum (HYBRID, EXACT, PREFIX) for configurable search behavior
+  - `QueryParser` service for advanced search operators (`"quotes"`, `+required`, `-exclude`)
+  - `SearchQueryBuilder` with intelligent hybrid search: exact matches prioritized, fuzzy only for 5+ char words
+- **Docker Infrastructure**:
+  - Multi-stage Docker setup (development and production)
+  - Alpine-based images for 71% size reduction (525MB dev, ~250MB prod vs 1.82GB)
+  - Separate Dockerfiles for dev and prod environments
+  - `.dockerignore` for optimized builds
+  - Comprehensive Docker documentation in `docs/docker.md`
+
+### Changed
+- **PDF.js Upgrade**:
+  - Upgraded PDF.js from v2.16.105 (2022) to v5.4.394 (2025)
+  - Migrated to modern PDF.js v5 API (`TextLayer` class instead of `TextLayerBuilder`)
+  - Updated webpack configuration to copy `.mjs` worker files for PDF.js v5
+  - Improved text layer rendering with better spacing and positioning
+- **PDF Highlighting**:
+  - Refactored highlighting algorithm to mark all occurrences (previously only first occurrence)
+  - Implemented word boundary validation to prevent false matches (e.g., "java" in "javascript")
+  - Uses ultra-minimal CSS with `all: unset` to prevent text duplication
+  - Highlight color changed to soft yellow (#fef3c7) matching search results preview
+  - Text rendered on canvas with transparent text layer overlay for clean highlighting
+  - Removed debugging console.log statements for production-ready code
+- **Search Logic**:
+  - Refactored search to prioritize exact matches (10x boost), then word matches (5x), then fuzzy (1x)
+  - Fixes issue where "jos" incorrectly matched "job" - now only exact or close matches
+  - `SearchController` now depends on `QueryBuilderInterface` (Dependency Inversion Principle)
+- **Docker Configuration**:
+  - Migrated from Debian to Alpine Linux base images
+  - Reorganized Docker files: `.docker/dev/` and `.docker/prod/` structure
+  - Renamed `compose.yaml` to `docker-compose.yml` (production base)
+  - `docker-compose.override.yml` auto-loaded for development
+  - Apache and PHP configs moved to `.docker/dev/` subdirectories
+- **Documentation**:
+  - Moved Docker documentation from README to `docs/docker.md`
+  - Simplified README with link to detailed Docker docs
+- **build:** Updated PHP from version 8.4.11 to 8.4.14
+- **build:** Updated ElasticSearch from version 8.17.1 to 8.17.10
+- **build:** Updated Kibana from version 8.17.1 to 8.17.10
+- **build(deps):** Updated Composer dependencies to latest compatible versions
+- **build(deps):** Updated npm dependencies:
+  - Vue.js from 3.5.13 to 3.5.24
+  - @vue/compiler-sfc from 3.5.13 to 3.5.24
+  - postcss from 8.5.3 to 8.5.6
+  - Fixed dependency versions (removed ^ ranges) for reproducible builds
+  - Fixed 2 low severity npm vulnerabilities (brace-expansion, tmp)
+
+### Removed
+- Root `Dockerfile` in favor of organized `.docker/dev/` and `.docker/prod/` structure
+- `compose.override.yaml` replaced by `docker-compose.override.yml`
+- Makefile commands (using standard `docker-compose` commands)
+
+### Fixed
+- **PDF Highlighting Issues**:
+  - Fixed text duplication/overlapping in PDF viewer caused by visible text in both canvas and text layer
+  - Corrected word boundary detection to properly skip compound words like "javascript" when searching "java"
+  - Fixed highlighting to find all occurrences instead of just the first one per span
+  - Resolved issues with highlighting words containing accents (e.g., "José" when searching "jose")
+  - Fixed text layer dimensions to match viewport size in PDF.js v5
+- Elasticsearch single-node configuration (`cluster.routing.allocation.disk.threshold_enabled=false`)
+- `ElasticsearchService::deleteIndex()` now checks index existence before deletion
+
+## [1.3.1] - 2025-08-05
+
+### Added
+- Support for the PHP `intl` extension to enhance internationalization features and improve overall performance.
+
+### Changed
+- **build:** Upgraded Symfony from version 7.2 to 7.3.
+- **build:** Upgraded PHP from version 8.3 to 8.4.
+- **docs:** Updated application version badge in `README.md`.
+
+### Fixed
+- Missing `intl` PHP extension warning in Symfony during runtime.
+
+## [1.3.0] - 2025-08-05
+
+### Added
+
+- **PDF Viewer Integration**:
+  - Added a new PDF viewer route (`/viewer`) that allows users to open a PDF document at a specific page using `?path=...&page=...`.
+  - Integrated [PDF.js](https://mozilla.github.io/pdf.js/) from Mozilla to render PDF pages directly in the browser using a `<canvas>` and a dynamic text layer.
+  - Implemented search term highlighting for a given query using `?q=...`, applied on the specified page.
+  - Highlighting is case-insensitive and styled using `<mark>` elements injected into the text layer.
+  - The highlight feature now retrieves terms directly from the **Elasticsearch results** (search highlights), enabling a more seamless experience when navigating between results.
+  - Added parsing and injection of the highlighted terms into the PDF viewer dynamically, improving the user experience.
+  - **Limitations**: Currently highlights only the **first occurrence** of the search term per span (this limitation will be improved in future versions).
+  - **Improved the highlight feature to correctly show all matches including those with accented characters, fixing issues where accented terms were partially or incorrectly highlighted.**
+
+- **Project Management**:
+  - Added `TODO.md` document to track pending features, improvements, and technical debt.
+  - Serves as a lightweight roadmap for contributors and team members.
+
+- **Accent and Special Character Normalization**:
+  - The indexer now replaces accented characters and special variations of vowels (e.g., á, é, í, ó, ú, ü) with their plain equivalents (a, e, i, o, u) during indexing.
+  - This improves the consistency of search queries and results when users omit accents.
+
+### Changed
+
+- **Indexer and Search Refactoring**:
+  - Major refactor of the indexer and search logic to improve maintainability and search consistency.
+  - Normalized input during both indexing and querying phases to better handle special characters and improve match accuracy.
+
+- **Search Results Handling**:
+  - The highlight terms fetched from Elasticsearch are now processed and passed to the PDF viewer for more accurate highlighting.
+  - The search terms in Elasticsearch are parsed to ensure they are appropriately reflected in the PDF viewer.
+  - Enhanced handling of search results to integrate smoothly with the PDF viewer.
+
+### Known Issues
+
+- **Character Encoding**:
+  - There may be issues with certain characters (e.g., accented characters) not being properly highlighted in the PDF viewer. This issue will be addressed in future versions.
+  - The rendering of accented characters such as `José` in the highlights might not be perfect due to encoding differences between the PDF content and the search terms.
+
+## [1.2.2] - 2025-04-09
+
+### Added
+
+- `.php-cs-fixer.cache` added to `.gitignore` to avoid committing temporary fixer cache files.
+- Code Style Enforcement:
+  - Introduced [Husky](https://typicode.github.io/husky) to run style checks automatically before each commit.
+  - Configured a `pre-commit` Git hook to run `composer cs-check` and block commits if style violations are detected.
+- `.editorconfig` added to enforce consistent formatting across editors:
+  - Enforces 4-space indentation for PHP, 2 spaces for YAML, JSON, and JS files.
+  - Uses LF line endings and trims trailing whitespace.
+  - Ensures consistent newline endings and UTF-8 encoding.
+
+### Changed
+
+- Enhanced PHP-CS-Fixer configuration:
+  - Added full rule set aligned with PHP 8.3 best practices.
+  - Enforced stricter and explicit code style across the codebase.
+- Applied PHP-CS-Fixer rules to refactor and reformat multiple PHP files for consistency.
+
+## [1.2.1] - 2025-04-08
+
+### Added
+- Documentation Improvements:
+  - Expanded README.md with detailed sections:
+    - Features: Highlighting key functionalities like page-level PDF search, real-time results, and content highlighting.
+    - Technologies: Comprehensive list of tools and frameworks used.
+    - Requirements: Clear prerequisites for running the project.
+    - Installation: Step-by-step guide for setting up the project.
+    - Docker Setup: Instructions for building and running containers.
+    - Configuration: Explanation of environment variables and service bindings.
+    - PDF Management: Instructions for organizing and indexing PDFs.
+    - Usage: Detailed guide on how to use the application.
+    - Development: Added frontend and backend development workflows.
+    - Elasticsearch: Commands for managing indices and monitoring cluster health.
+    - Maintenance: Steps for clearing caches, updating dependencies, and rebuilding containers.
+    - Troubleshooting: Common issues and solutions for Elasticsearch, frontend, and PDF indexing.
+    - Security: Recommendations for securing the application in production.
+    - Contributing: Guidelines for contributing to the project.
+
+### Changed
+- Refactored PDF indexing process:
+  - Split PDFs into individual pages for better granularity.
+  - Improved text extraction accuracy using `pdftotext`.
+  - Enhanced metadata handling (e.g., total page count, file paths).
+  - Improved error reporting for failed indexing operations.
+- SearchController constructor refactoring:
+  - Injected pdfPagesIndex from configuration instead of hardcoding the index name.
+- Dockerfile cleanup:
+  - Removed unused system package previously required for older workflows.
+- PDF folder restructuring:
+  - Changed location of indexed PDFs from var/pdfs/ to a more appropriate and web-accessible directory (public/pdfs/) for easier linking and access.
+
+### Fixed
+- Fixed Search Issues:
+  - Resolved issue where similar words (e.g., "lose" instead of "Jose") were incorrectly highlighted.
+  - Adjusted frontend logic to highlight only exact matches for search terms using regular expressions.
+  - Enhanced backend query precision for Elasticsearch highlighting.
+  - Fixed context display in search results for better readability.
+- Addressed missing or unclear instructions in the README.md:
+  - Added steps for verifying dependencies and services.
+  - Clarified Docker commands for starting and stopping containers.
+  - Included examples for debugging and troubleshooting common issues.
+  
+## [1.2.0] - 2025-04-08
+
+### Added
+- PDF Page-Level Search:
+  - Individual page indexing for PDFs
+  - Page content extraction with context
+  - Page number tracking in search results
+  - Direct PDF page links in results
+- Enhanced Search Results:
+  - Context snippets with highlighted matches
+  - Page-specific navigation in PDFs
+  - PDF preview integration in browser
+  - Page count information display
+- Command Improvements:
+  - Page-by-page PDF processing
+  - Unique ID generation per page
+  - Better error handling per page
+  - Progress indicators for indexing
+
+### Changed
+- Refactored PDF indexing process:
+  - Split PDFs into individual pages
+  - Improved text extraction accuracy
+  - Enhanced metadata handling
+  - Better error reporting
+- Updated search interface:
+  - Added page-specific result display
+  - Improved result highlighting
+  - Enhanced PDF viewer integration
+  - Better result organization
+
+### Fixed
+- PDF page counting accuracy
+- Text extraction reliability
+- Search result context display
+- PDF viewer integration issues
+- Improved Content Highlighting:
+  - Resolved issue where similar words (e.g., "lose" instead of "Jose") were incorrectly highlighted.
+  - Adjusted frontend logic to highlight only exact matches for search terms.
+  - Enhanced backend query to improve precision in highlighting.
+
+## [1.1.0] - 2025-04-08
+
+### Added
+- Created `SearchEngineInterface` for search service abstraction
+- Improved error handling in Elasticsearch operations
+- Added type hints and return types for better code clarity
+- Frontend Search Implementation:
+  - Vue.js search component with real-time feedback
+  - Tailwind CSS styling and responsive design
+  - Search results highlighting
+  - Loading states and error handling
+  - Debounced search functionality
+  - Document metadata display (date, score)
+- Development Tools:
+  - Added PHP-CS-Fixer for code style enforcement
+  - Configured Symfony and PSR-12 coding standards
+  - Added composer scripts for style checking
+  - VS Code integration setup
+- Monitoring Tools:
+  - Added Kibana 8.17.1 integration
+  - Configured health checks for Kibana
+  - Added Elasticsearch monitoring dashboard
+  - Integrated with existing Elasticsearch setup
+
+### Changed
+- Refactored `ElasticsearchService` to implement `SearchEngineInterface`
+- Improved Elasticsearch client configuration
+- Enhanced exception handling for Elasticsearch operations
+
+## [1.0.0] - 2025-04-08
+
+### Added
+- Initial project setup with Symfony 7.2
+- Docker infrastructure:
+  - PostgreSQL 16 with health checks
+  - Apache 2.4 web server
+  - PHP-FPM 8.3 configuration
+  - Elasticsearch 8.17.1 integration
+- Basic project configuration:
+  - Docker Compose setup
+  - Environment variables structure
+  - Project documentation
+- Elasticsearch features:
+  - Health checks implementation
+  - Volume persistence
+  - Memory optimization
+  - Security configuration
+- Apache and PHP integration
+- Database configuration and persistence
+- Console Commands:
+  - PDF indexer command (`app:index-pdfs`)
+  - Automatic text extraction from PDFs
+  - Elasticsearch document indexing
+- Documentation:
+  - Comprehensive README.md with:
+    - Project description
+    - Installation instructions
+    - Docker setup guide
+    - Usage examples
+    - Development guidelines
+    - Contributing guidelines
+    - License information
+
+### Changed
+- N/A
+
+### Deprecated
+- N/A
+
+### Removed
+- N/A
+
+### Fixed
+- N/A
+
+### Security
+- Disabled Elasticsearch security for development
+- Basic authentication setup for services
