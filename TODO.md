@@ -26,8 +26,7 @@
 - [ ] **Filter by Search Strategy** - API endpoint to filter analytics by strategy
 
 ### Performance Optimization
-- [ ] **Optimize Elasticsearch** - Tune cluster settings, indices, and queries
-- [ ] **Optimize Indexing** - Improve PDF indexing performance (batch processing)
+- [ ] **Optimize Embedding Generation** - Ollama generates embeddings at ~1s/page on CPU (~18 min for 1k pages); consider GPU acceleration or a faster embedding model
 
 ### Testing
 - [ ] **JavaScript/Vue Testing** - Add unit tests for frontend components
