@@ -26,7 +26,7 @@ final class SearchAnalyticsRepositoryIntegrationTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $container = static::getContainer();
+        $container = self::getContainer();
         $this->entityManager = $container->get('doctrine')->getManager();
         $this->repository = $this->entityManager->getRepository(SearchAnalytics::class);
 

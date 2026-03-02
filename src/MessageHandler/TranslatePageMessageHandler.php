@@ -18,21 +18,20 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * Processes TranslatePageMessage from the queue.
  */
 #[AsMessageHandler]
-final class TranslatePageMessageHandler
+final readonly class TranslatePageMessageHandler
 {
     public function __construct(
-        private readonly TranslationService $translationService,
-        private readonly QueueDuplicationChecker $queueChecker,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly TranslationJobRepository $jobRepository,
-        private readonly LoggerInterface $logger
+        private TranslationService $translationService,
+        private QueueDuplicationChecker $queueChecker,
+        private EntityManagerInterface $entityManager,
+        private TranslationJobRepository $jobRepository,
+        private LoggerInterface $logger
     ) {
     }
 
     public function __invoke(TranslatePageMessage $message): void
     {
         $startTime = microtime(true);
-        $job = null;
 
         // Find or create job tracking record
         $job = $this->jobRepository->findExistingJob(
@@ -41,7 +40,7 @@ final class TranslatePageMessageHandler
             $message->getTargetLanguage()
         );
 
-        if (!$job) {
+        if (!$job instanceof TranslationJob) {
             $job = new TranslationJob();
             $job->setPdfFilename($message->getPdfFilename());
             $job->setPageNumber($message->getPageNumber());

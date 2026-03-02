@@ -10,9 +10,9 @@ namespace App\Tests\Fixtures\Factory;
  */
 final class PdfDocumentFactory
 {
-    private const DEFAULT_FILENAME = 'sample-document.pdf';
-    private const DEFAULT_PAGE_COUNT = 5;
-    private const DEFAULT_CONTENT = 'Sample PDF content for testing search functionality.';
+    private const string DEFAULT_FILENAME = 'sample-document.pdf';
+    private const int DEFAULT_PAGE_COUNT = 5;
+    private const string DEFAULT_CONTENT = 'Sample PDF content for testing search functionality.';
 
     private string $filename;
 
@@ -82,11 +82,7 @@ final class PdfDocumentFactory
 
     public function buildPageDocument(int $page): array
     {
-        if (!isset($this->pageContents[$page])) {
-            $content = self::DEFAULT_CONTENT . " (Page {$page})";
-        } else {
-            $content = $this->pageContents[$page];
-        }
+        $content = $this->pageContents[$page] ?? self::DEFAULT_CONTENT . " (Page {$page})";
 
         $documentId = str_replace('.pdf', '', $this->filename) . "_page_{$page}";
 

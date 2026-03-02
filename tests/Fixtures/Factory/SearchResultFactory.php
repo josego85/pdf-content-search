@@ -10,12 +10,12 @@ namespace App\Tests\Fixtures\Factory;
  */
 final class SearchResultFactory
 {
-    private const DEFAULT_TITLE = 'test-document.pdf';
-    private const DEFAULT_PAGE = 1;
-    private const DEFAULT_TOTAL_PAGES = 10;
-    private const DEFAULT_TEXT = 'This is a sample text content for testing purposes.';
-    private const DEFAULT_HIGHLIGHT = '<mark>sample</mark> text';
-    private const DEFAULT_SCORE = 1.5;
+    private const string DEFAULT_TITLE = 'test-document.pdf';
+    private const int DEFAULT_PAGE = 1;
+    private const int DEFAULT_TOTAL_PAGES = 10;
+    private const string DEFAULT_TEXT = 'This is a sample text content for testing purposes.';
+    private const string DEFAULT_HIGHLIGHT = '<mark>sample</mark> text';
+    private const float DEFAULT_SCORE = 1.5;
 
     private string $id;
 
@@ -113,7 +113,7 @@ final class SearchResultFactory
             ],
         ];
 
-        if (!empty($this->highlight)) {
+        if ($this->highlight !== []) {
             $result['highlight'] = $this->highlight;
         }
 

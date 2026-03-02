@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  */
 final class AnalyticsControllerTest extends WebTestCase
 {
-    private function skipIfDatabaseNotAvailable($response): void
+    private function skipIfDatabaseNotAvailable(object $response): void
     {
         // Skip tests if database is not available (common in CI/test environments)
         if ($response->getStatusCode() === 500) {
@@ -23,8 +23,8 @@ final class AnalyticsControllerTest extends WebTestCase
 
     public function testOverviewReturnsJsonResponse(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/analytics/overview');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/api/analytics/overview');
 
         $response = $client->getResponse();
         $this->skipIfDatabaseNotAvailable($response);
@@ -39,8 +39,8 @@ final class AnalyticsControllerTest extends WebTestCase
 
     public function testOverviewReturnsExpectedMetrics(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/analytics/overview');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/api/analytics/overview');
 
         $response = $client->getResponse();
         $this->skipIfDatabaseNotAvailable($response);
@@ -58,12 +58,12 @@ final class AnalyticsControllerTest extends WebTestCase
 
     public function testOverviewAcceptsDaysParameter(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $daysValues = [7, 14, 30];
 
         foreach ($daysValues as $days) {
-            $client->request('GET', '/api/analytics/overview', ['days' => $days]);
+            $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/api/analytics/overview', ['days' => $days]);
 
             $response = $client->getResponse();
             $this->skipIfDatabaseNotAvailable($response);
@@ -77,8 +77,8 @@ final class AnalyticsControllerTest extends WebTestCase
 
     public function testTopQueriesReturnsJsonResponse(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/analytics/top-queries');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/api/analytics/top-queries');
 
         $response = $client->getResponse();
         $this->skipIfDatabaseNotAvailable($response);
@@ -94,8 +94,8 @@ final class AnalyticsControllerTest extends WebTestCase
 
     public function testTopQueriesReturnsExpectedFields(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/analytics/top-queries');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/api/analytics/top-queries');
 
         $response = $client->getResponse();
         $this->skipIfDatabaseNotAvailable($response);
@@ -118,8 +118,8 @@ final class AnalyticsControllerTest extends WebTestCase
 
     public function testTopQueriesAcceptsLimitParameter(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/analytics/top-queries', ['limit' => 10]);
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/api/analytics/top-queries', ['limit' => 10]);
 
         $response = $client->getResponse();
         $this->skipIfDatabaseNotAvailable($response);
@@ -133,8 +133,8 @@ final class AnalyticsControllerTest extends WebTestCase
 
     public function testTrendsReturnsJsonResponse(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/analytics/trends');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/api/analytics/trends');
 
         $response = $client->getResponse();
         $this->skipIfDatabaseNotAvailable($response);
@@ -150,8 +150,8 @@ final class AnalyticsControllerTest extends WebTestCase
 
     public function testTrendsReturnsExpectedStructure(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/analytics/trends');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/api/analytics/trends');
 
         $response = $client->getResponse();
         $this->skipIfDatabaseNotAvailable($response);
@@ -172,8 +172,8 @@ final class AnalyticsControllerTest extends WebTestCase
 
     public function testClickPositionsReturnsJsonResponse(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/analytics/click-positions');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/api/analytics/click-positions');
 
         $response = $client->getResponse();
         $this->skipIfDatabaseNotAvailable($response);
@@ -189,8 +189,8 @@ final class AnalyticsControllerTest extends WebTestCase
 
     public function testZeroResultsReturnsJsonResponse(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/analytics/zero-results');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/api/analytics/zero-results');
 
         $response = $client->getResponse();
         $this->skipIfDatabaseNotAvailable($response);
@@ -209,7 +209,7 @@ final class AnalyticsControllerTest extends WebTestCase
      */
     public function testTrackClickWithValidPayload(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $payload = [
             'query' => 'test query',
@@ -219,7 +219,7 @@ final class AnalyticsControllerTest extends WebTestCase
         ];
 
         $client->request(
-            'POST',
+            \Symfony\Component\HttpFoundation\Request::METHOD_POST,
             '/api/analytics/track-click',
             [],
             [],
@@ -244,7 +244,7 @@ final class AnalyticsControllerTest extends WebTestCase
      */
     public function testTrackClickWithMissingQuery(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $payload = [
             'position' => 1,
@@ -252,7 +252,7 @@ final class AnalyticsControllerTest extends WebTestCase
         ];
 
         $client->request(
-            'POST',
+            \Symfony\Component\HttpFoundation\Request::METHOD_POST,
             '/api/analytics/track-click',
             [],
             [],
@@ -275,9 +275,9 @@ final class AnalyticsControllerTest extends WebTestCase
      */
     public function testTrackClickOnlyAcceptsPost(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
-        $client->request('GET', '/api/analytics/track-click');
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/api/analytics/track-click');
 
         // Should return 405 Method Not Allowed
         $this->assertResponseStatusCodeSame(405);
@@ -288,10 +288,10 @@ final class AnalyticsControllerTest extends WebTestCase
      */
     public function testTrackClickWithInvalidJson(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->request(
-            'POST',
+            \Symfony\Component\HttpFoundation\Request::METHOD_POST,
             '/api/analytics/track-click',
             [],
             [],
@@ -311,7 +311,7 @@ final class AnalyticsControllerTest extends WebTestCase
      */
     public function testTrackClickTracksPosition(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $positions = [1, 2, 3];
 
@@ -322,7 +322,7 @@ final class AnalyticsControllerTest extends WebTestCase
             ];
 
             $client->request(
-                'POST',
+                \Symfony\Component\HttpFoundation\Request::METHOD_POST,
                 '/api/analytics/track-click',
                 [],
                 [],
@@ -345,7 +345,7 @@ final class AnalyticsControllerTest extends WebTestCase
      */
     public function testTrackClickWithOptionalPage(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         // Without page
         $payload1 = [
@@ -355,7 +355,7 @@ final class AnalyticsControllerTest extends WebTestCase
         ];
 
         $client->request(
-            'POST',
+            \Symfony\Component\HttpFoundation\Request::METHOD_POST,
             '/api/analytics/track-click',
             [],
             [],
@@ -377,7 +377,7 @@ final class AnalyticsControllerTest extends WebTestCase
         ];
 
         $client->request(
-            'POST',
+            \Symfony\Component\HttpFoundation\Request::METHOD_POST,
             '/api/analytics/track-click',
             [],
             [],

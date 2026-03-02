@@ -61,9 +61,7 @@ class PdfProcessor
 
     public function extractTextFromPage(string $filePath, int $page): string
     {
-        $text = $this->extractWithPdftotext($filePath, $page);
-
-        return $text;
+        return $this->extractWithPdftotext($filePath, $page);
     }
 
     private function extractWithPdftotext(string $filePath, int $page): string

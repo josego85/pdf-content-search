@@ -15,14 +15,13 @@ use PHPUnit\Framework\TestCase;
  */
 final class SearchQueryBuilderTest extends TestCase
 {
-    private const TEST_INDEX_NAME = 'test_pdf_pages';
-    private const FUZZY_MIN_LENGTH = 5;
-    private const EXACT_PHRASE_BOOST = 10;
-    private const ALL_WORDS_EXACT_BOOST = 5;
-    private const FUZZY_BOOST = 1;
-    private const HIGHLIGHT_FRAGMENT_SIZE = 150;
-    private const HIGHLIGHT_FRAGMENTS_COUNT = 3;
-    private const PREFIX_MAX_EXPANSIONS = 50;
+    private const string TEST_INDEX_NAME = 'test_pdf_pages';
+    private const int EXACT_PHRASE_BOOST = 10;
+    private const int ALL_WORDS_EXACT_BOOST = 5;
+    private const int FUZZY_BOOST = 1;
+    private const int HIGHLIGHT_FRAGMENT_SIZE = 150;
+    private const int HIGHLIGHT_FRAGMENTS_COUNT = 3;
+    private const int PREFIX_MAX_EXPANSIONS = 50;
 
     private SearchQueryBuilder $builder;
 
@@ -290,15 +289,12 @@ final class SearchQueryBuilderTest extends TestCase
         $query = 'regular1 regular2 "phrase"';
 
         // Act
-        $result = $this->builder->build($query);
-
-        // Assert
-        $boolQuery = $result['body']['query']['bool'];
+        $this->builder->build($query);
 
         // When we have phrase, it goes to must, so this test needs adjustment
         // Let's use a query without phrase but with multiple words
         $query2 = 'word1 word2';
-        $result2 = $this->builder->build($query2);
+        $this->builder->build($query2);
 
         // This won't trigger structured query (no operators), will use strategy instead
         // Let's correct: use only excluded to trigger operators without must
@@ -438,7 +434,7 @@ final class SearchQueryBuilderTest extends TestCase
         $mustClauses = $boolQuery['must'];
 
         // Should have 2 phrase clauses
-        $phraseClauses = array_filter($mustClauses, static fn ($clause) => isset($clause['match_phrase']));
+        $phraseClauses = array_filter($mustClauses, static fn (array $clause): bool => isset($clause['match_phrase']));
         $this->assertCount(2, $phraseClauses);
     }
 

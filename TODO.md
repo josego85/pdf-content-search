@@ -55,6 +55,5 @@
 
 
 **Extras**
-- Rector
 - Cache
 - Index and search markdown, text, image 

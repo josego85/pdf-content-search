@@ -13,11 +13,11 @@ use PHPUnit\Framework\TestCase;
  */
 final class SearchStrategyTest extends TestCase
 {
-    private const STRATEGY_HYBRID_VALUE = 'hybrid';
-    private const STRATEGY_EXACT_VALUE = 'exact';
-    private const STRATEGY_PREFIX_VALUE = 'prefix';
-    private const STRATEGY_SEMANTIC_VALUE = 'semantic';
-    private const STRATEGY_HYBRID_AI_VALUE = 'hybrid_ai';
+    private const string STRATEGY_HYBRID_VALUE = 'hybrid';
+    private const string STRATEGY_EXACT_VALUE = 'exact';
+    private const string STRATEGY_PREFIX_VALUE = 'prefix';
+    private const string STRATEGY_SEMANTIC_VALUE = 'semantic';
+    private const string STRATEGY_HYBRID_AI_VALUE = 'hybrid_ai';
 
     public function testHybridStrategyHasCorrectValue(): void
     {

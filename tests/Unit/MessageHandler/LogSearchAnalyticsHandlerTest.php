@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
  */
 final class LogSearchAnalyticsHandlerTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
+    private \PHPUnit\Framework\MockObject\MockObject $entityManager;
 
     private LogSearchAnalyticsHandler $handler;
 
@@ -44,16 +44,14 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
         $this->entityManager
             ->expects($this->once())
             ->method('persist')
-            ->with($this->callback(static function (SearchAnalytics $analytics) {
-                return $analytics->getSessionId() === 'test-session-123'
-                    && $analytics->getQuery() === 'artificial intelligence'
-                    && $analytics->getSearchStrategy() === 'hybrid_ai'
-                    && $analytics->getResultsCount() === 15
-                    && $analytics->getResponseTimeMs() === 120
-                    && $analytics->getUserIp() === '192.168.1.0' // Anonymized
-                    && $analytics->getUserAgent() === 'Mozilla/5.0'
-                    && $analytics->getReferer() === 'https://example.com';
-            }));
+            ->with($this->callback(static fn (SearchAnalytics $analytics): bool => $analytics->getSessionId() === 'test-session-123'
+                && $analytics->getQuery() === 'artificial intelligence'
+                && $analytics->getSearchStrategy() === 'hybrid_ai'
+                && $analytics->getResultsCount() === 15
+                && $analytics->getResponseTimeMs() === 120
+                && $analytics->getUserIp() === '192.168.1.0' // Anonymized
+                && $analytics->getUserAgent() === 'Mozilla/5.0'
+                && $analytics->getReferer() === 'https://example.com'));
 
         $this->entityManager
             ->expects($this->once())
@@ -77,16 +75,14 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
         $this->entityManager
             ->expects($this->once())
             ->method('persist')
-            ->with($this->callback(static function (SearchAnalytics $analytics) {
-                return $analytics->getSessionId() === 'test-session-456'
-                    && $analytics->getQuery() === 'test query'
-                    && $analytics->getSearchStrategy() === 'exact'
-                    && $analytics->getResultsCount() === 5
-                    && $analytics->getResponseTimeMs() === 80
-                    && $analytics->getUserIp() === null
-                    && $analytics->getUserAgent() === null
-                    && $analytics->getReferer() === null;
-            }));
+            ->with($this->callback(static fn (SearchAnalytics $analytics): bool => $analytics->getSessionId() === 'test-session-456'
+                && $analytics->getQuery() === 'test query'
+                && $analytics->getSearchStrategy() === 'exact'
+                && $analytics->getResultsCount() === 5
+                && $analytics->getResponseTimeMs() === 80
+                && $analytics->getUserIp() === null
+                && $analytics->getUserAgent() === null
+                && $analytics->getReferer() === null));
 
         $this->entityManager
             ->expects($this->once())
@@ -109,9 +105,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
         $this->entityManager
             ->expects($this->once())
             ->method('persist')
-            ->with($this->callback(static function (SearchAnalytics $analytics) {
-                return $analytics->getSearchStrategy() === 'hybrid_ai';
-            }));
+            ->with($this->callback(static fn (SearchAnalytics $analytics): bool => $analytics->getSearchStrategy() === 'hybrid_ai'));
 
         $this->entityManager->expects($this->once())->method('flush');
 
@@ -134,10 +128,10 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
         $this->entityManager
             ->expects($this->once())
             ->method('persist')
-            ->with($this->callback(static function (SearchAnalytics $analytics) {
+            ->with($this->callback(
                 // IPv4 anonymization: 192.168.1.100 -> 192.168.1.0
-                return $analytics->getUserIp() === '192.168.1.0';
-            }));
+                static fn (SearchAnalytics $analytics): bool => $analytics->getUserIp() === '192.168.1.0'
+            ));
 
         $this->entityManager->expects($this->once())->method('flush');
 
@@ -168,9 +162,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
             $this->entityManager
                 ->expects($this->once())
                 ->method('persist')
-                ->with($this->callback(static function (SearchAnalytics $analytics) use ($expectedIp) {
-                    return $analytics->getUserIp() === $expectedIp;
-                }));
+                ->with($this->callback(static fn (SearchAnalytics $analytics): bool => $analytics->getUserIp() === $expectedIp));
 
             $this->entityManager->expects($this->once())->method('flush');
 
@@ -198,10 +190,10 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
         $this->entityManager
             ->expects($this->once())
             ->method('persist')
-            ->with($this->callback(static function (SearchAnalytics $analytics) {
+            ->with($this->callback(
                 // IPv6 anonymization: keep first 4 groups
-                return $analytics->getUserIp() === '2001:0db8:85a3:0000::';
-            }));
+                static fn (SearchAnalytics $analytics): bool => $analytics->getUserIp() === '2001:0db8:85a3:0000::'
+            ));
 
         $this->entityManager->expects($this->once())->method('flush');
 
@@ -224,10 +216,10 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
         $this->entityManager
             ->expects($this->once())
             ->method('persist')
-            ->with($this->callback(static function (SearchAnalytics $analytics) {
+            ->with($this->callback(
                 // Invalid IP becomes 0.0.0.0
-                return $analytics->getUserIp() === '0.0.0.0';
-            }));
+                static fn (SearchAnalytics $analytics): bool => $analytics->getUserIp() === '0.0.0.0'
+            ));
 
         $this->entityManager->expects($this->once())->method('flush');
 
@@ -249,10 +241,8 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
         $this->entityManager
             ->expects($this->once())
             ->method('persist')
-            ->with($this->callback(static function (SearchAnalytics $analytics) {
-                return $analytics->getQuery() === 'java*'
-                    && $analytics->getSearchStrategy() === 'prefix';
-            }));
+            ->with($this->callback(static fn (SearchAnalytics $analytics): bool => $analytics->getQuery() === 'java*'
+                && $analytics->getSearchStrategy() === 'prefix'));
 
         $this->entityManager->expects($this->once())->method('flush');
 
@@ -274,10 +264,8 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
         $this->entityManager
             ->expects($this->once())
             ->method('persist')
-            ->with($this->callback(static function (SearchAnalytics $analytics) {
-                return $analytics->getQuery() === '"artificial intelligence"'
-                    && $analytics->getSearchStrategy() === 'exact';
-            }));
+            ->with($this->callback(static fn (SearchAnalytics $analytics): bool => $analytics->getQuery() === '"artificial intelligence"'
+                && $analytics->getSearchStrategy() === 'exact'));
 
         $this->entityManager->expects($this->once())->method('flush');
 
@@ -299,9 +287,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
         $this->entityManager
             ->expects($this->once())
             ->method('persist')
-            ->with($this->callback(static function (SearchAnalytics $analytics) {
-                return $analytics->getResultsCount() === 0;
-            }));
+            ->with($this->callback(static fn (SearchAnalytics $analytics): bool => $analytics->getResultsCount() === 0));
 
         $this->entityManager->expects($this->once())->method('flush');
 

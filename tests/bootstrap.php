@@ -11,5 +11,5 @@ $_SERVER['APP_ENV'] = $_ENV['APP_ENV'] = 'test';
 $_SERVER['APP_DEBUG'] = $_ENV['APP_DEBUG'] = '1';
 
 if (method_exists(Dotenv::class, 'bootEnv')) {
-    (new Dotenv())->bootEnv(dirname(__DIR__) . '/.env');
+    new Dotenv()->bootEnv(dirname(__DIR__) . '/.env');
 }

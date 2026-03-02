@@ -10,7 +10,7 @@ final class TranslationControllerTest extends WebTestCase
 {
     public function testTranslateEndpointWithMissingParameters(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->jsonRequest('POST', '/api/translations/translate', []);
 
@@ -21,7 +21,7 @@ final class TranslationControllerTest extends WebTestCase
 
     public function testTranslateEndpointWithInvalidFile(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->jsonRequest('POST', '/api/translations/translate', [
             'filename' => 'nonexistent.pdf',
@@ -36,7 +36,7 @@ final class TranslationControllerTest extends WebTestCase
 
     public function testTranslateEndpointHandlesExceptions(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->jsonRequest('POST', '/api/translations/translate', [
             'filename' => null,
@@ -50,7 +50,7 @@ final class TranslationControllerTest extends WebTestCase
 
     public function testStatusEndpointWithMissingParameters(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->jsonRequest('POST', '/api/translations/status', []);
 
@@ -61,7 +61,7 @@ final class TranslationControllerTest extends WebTestCase
 
     public function testStatusEndpointWithInvalidFile(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->jsonRequest('POST', '/api/translations/status', [
             'filename' => 'missing.pdf',
@@ -76,7 +76,7 @@ final class TranslationControllerTest extends WebTestCase
 
     public function testStatusEndpointReturnsProcessingWhenNotReady(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->jsonRequest('POST', '/api/translations/status', [
             'filename' => 'nonexistent.pdf',
@@ -90,7 +90,7 @@ final class TranslationControllerTest extends WebTestCase
 
     public function testTranslateEndpointReturnsJsonResponse(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->jsonRequest('POST', '/api/translations/translate', [
             'filename' => 'test.pdf',
@@ -103,7 +103,7 @@ final class TranslationControllerTest extends WebTestCase
 
     public function testStatusEndpointReturnsJsonResponse(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->jsonRequest('POST', '/api/translations/status', [
             'filename' => 'test.pdf',
@@ -116,7 +116,7 @@ final class TranslationControllerTest extends WebTestCase
 
     public function testTranslateEndpointWithDefaultLanguage(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->jsonRequest('POST', '/api/translations/translate', [
             'filename' => 'test.pdf',
@@ -129,7 +129,7 @@ final class TranslationControllerTest extends WebTestCase
 
     public function testStatusEndpointWithDefaultLanguage(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
         $client->jsonRequest('POST', '/api/translations/status', [
             'filename' => 'test.pdf',

@@ -14,24 +14,24 @@ final class HomeControllerTest extends WebTestCase
 {
     public function testHomePageIsAccessible(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/');
 
         $this->assertResponseIsSuccessful();
     }
 
     public function testHomePageReturnsHtml(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/');
 
         $this->assertResponseHeaderSame('Content-Type', 'text/html; charset=UTF-8');
     }
 
     public function testHomePageContainsSearchTemplate(): void
     {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/');
 
         // Should render the search.html.twig template
         $this->assertResponseIsSuccessful();
@@ -40,16 +40,16 @@ final class HomeControllerTest extends WebTestCase
 
     public function testHomePageStatusCode200(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/');
 
         $this->assertResponseStatusCodeSame(200);
     }
 
     public function testHomePageDoesNotRedirect(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/');
+        $client = self::createClient();
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/');
 
         $this->assertResponseIsSuccessful();
         $response = $client->getResponse();

@@ -8,10 +8,10 @@ use App\Message\LogSearchAnalyticsMessage;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class AnalyticsCollector
+final readonly class AnalyticsCollector
 {
     public function __construct(
-        private readonly MessageBusInterface $messageBus
+        private MessageBusInterface $messageBus
     ) {
     }
 
@@ -30,7 +30,7 @@ final class AnalyticsCollector
         $cleanQuery = trim($query, " \t\n\r\0\x0B\"'");
 
         // Don't log empty queries or only quotes
-        if (empty($cleanQuery) || $query === '""' || $query === "''") {
+        if ($cleanQuery === '' || $cleanQuery === '0' || $query === '""' || $query === "''") {
             return;
         }
 
@@ -52,14 +52,8 @@ final class AnalyticsCollector
     /**
      * Log click event (to be implemented in future phase).
      */
-    public function logClick(
-        string $sessionId,
-        string $query,
-        int $position,
-        string $pdfFilename,
-        int $pageNumber,
-        int $timeToClickMs
-    ): void {
+    public function logClick(): void
+    {
         // TODO: Implement click tracking in Phase 5
         // This will update existing SearchAnalytics records with click data
     }

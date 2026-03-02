@@ -23,19 +23,19 @@ final class TranslationOrchestratorTest extends TestCase
 {
     private TranslationOrchestrator $orchestrator;
 
-    private PdfProcessor $pdfProcessor;
+    private \PHPUnit\Framework\MockObject\MockObject $pdfProcessor;
 
-    private TranslationService $translationService;
+    private \PHPUnit\Framework\MockObject\MockObject $translationService;
 
     private TranslationRequestValidator $validator;
 
     private QueueDuplicationChecker $queueChecker;
 
-    private MessageBusInterface $messageBus;
+    private \PHPUnit\Framework\MockObject\MockObject $messageBus;
 
-    private EntityManagerInterface $entityManager;
+    private \PHPUnit\Framework\MockObject\MockObject $entityManager;
 
-    private TranslationJobRepository $jobRepository;
+    private \PHPUnit\Framework\MockObject\MockObject $jobRepository;
 
     private string $testPdfsDirectory;
 
@@ -66,7 +66,7 @@ final class TranslationOrchestratorTest extends TestCase
     protected function tearDown(): void
     {
         if (is_dir($this->testPdfsDirectory)) {
-            array_map('unlink', glob($this->testPdfsDirectory . '/*'));
+            array_map(unlink(...), glob($this->testPdfsDirectory . '/*'));
             rmdir($this->testPdfsDirectory);
         }
     }

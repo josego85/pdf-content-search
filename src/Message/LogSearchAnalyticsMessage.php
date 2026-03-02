@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Message;
 
-final class LogSearchAnalyticsMessage
+final readonly class LogSearchAnalyticsMessage
 {
     /**
      * @param array<string, mixed> $data
      */
     public function __construct(
-        private readonly array $data
+        private array $data
     ) {
     }
 

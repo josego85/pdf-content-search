@@ -5,7 +5,7 @@
 # ============================================
 
 .DEFAULT_GOAL := help
-.PHONY: help dev prod up down restart logs shell test phpstan clean rebuild status
+.PHONY: help dev prod up down restart logs shell test phpstan rector rector-dry clean rebuild status
 
 # Colors for output
 BLUE := \033[0;34m
@@ -62,6 +62,8 @@ help: ## Show this help message
 	@echo "  $(YELLOW)make clean$(NC)            Remove volumes - DESTRUCTIVE (ENV=dev|prod)"
 	@echo "  $(YELLOW)make test$(NC)             Run tests"
 	@echo "  $(YELLOW)make phpstan$(NC)          Run PHPStan static analysis"
+	@echo "  $(YELLOW)make rector$(NC)           Run Rector dry-run (preview)"
+	@echo "  $(YELLOW)make rector-fix$(NC)       Run Rector and apply changes"
 	@echo ""
 	@echo "$(GREEN)Examples:$(NC)"
 	@echo "  $(YELLOW)make dev$(NC)              # Start development"
@@ -153,6 +155,12 @@ test: ## Run tests in development environment
 
 phpstan: ## Run PHPStan static analysis
 	@$(COMPOSE_DEV) exec php composer phpstan
+
+rector: ## Run Rector in dry-run mode (preview changes, no writes)
+	@$(COMPOSE_DEV) exec php composer rector-dry
+
+rector-fix: ## Run Rector and apply changes (always run rector first!)
+	@$(COMPOSE_DEV) exec php composer rector
 
 # ============================================
 # Internal Helpers (don't call directly)

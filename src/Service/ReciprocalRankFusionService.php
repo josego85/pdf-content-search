@@ -19,12 +19,12 @@ final readonly class ReciprocalRankFusionService implements RankFusionServiceInt
 
     public function merge(array $resultSets, array $weights = []): array
     {
-        if (empty($resultSets)) {
+        if ($resultSets === []) {
             return [];
         }
 
         // Default to equal weights if not provided
-        if (empty($weights)) {
+        if ($weights === []) {
             $weights = array_fill(0, count($resultSets), 1.0);
         }
 
