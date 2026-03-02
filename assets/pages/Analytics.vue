@@ -118,7 +118,7 @@ const loadData = async () => {
 		const [overviewRes, trendsRes, queriesRes] = await Promise.all([
 			fetch(`/api/analytics/overview?days=${days}`),
 			fetch(`/api/analytics/trends?days=${days}`),
-			fetch(`/api/analytics/top-queries?days=${days}`),
+			fetch(`/api/analytics/top-queries?days=${days}&limit=50`),
 		])
 
 		const [overviewData, trendsData, queriesData] = await Promise.all([
