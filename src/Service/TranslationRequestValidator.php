@@ -8,10 +8,10 @@ namespace App\Service;
  * Validates translation requests.
  * Single Responsibility: Input validation for translation operations.
  */
-final class TranslationRequestValidator
+final readonly class TranslationRequestValidator
 {
     public function __construct(
-        private readonly string $pdfsDirectory
+        private string $pdfsDirectory
     ) {
     }
 
@@ -22,7 +22,7 @@ final class TranslationRequestValidator
      */
     public function validate(?string $filename, mixed $pageNumber): array
     {
-        if (empty($filename)) {
+        if (in_array($filename, [null, '', '0'], true)) {
             return [
                 'valid' => false,
                 'error' => 'Missing filename',

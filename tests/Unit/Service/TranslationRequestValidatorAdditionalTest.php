@@ -23,7 +23,7 @@ final class TranslationRequestValidatorAdditionalTest extends TestCase
     protected function tearDown(): void
     {
         if (is_dir($this->testPdfsDirectory)) {
-            array_map('unlink', glob($this->testPdfsDirectory . '/*') ?: []);
+            array_map(unlink(...), glob($this->testPdfsDirectory . '/*') ?: []);
             rmdir($this->testPdfsDirectory);
         }
     }

@@ -69,7 +69,7 @@ class TranslationService
             $targetLanguage
         );
 
-        if ($translation) {
+        if ($translation instanceof PdfPageTranslation) {
             // Store in cache for next time
             $this->storeInCache($cacheKey, $translation->getTranslatedText());
 
@@ -129,7 +129,7 @@ class TranslationService
             $targetLanguage
         );
 
-        if ($translation) {
+        if ($translation instanceof PdfPageTranslation) {
             // Store in cache for next time
             $this->storeInCache($cacheKey, $translation->getTranslatedText());
 

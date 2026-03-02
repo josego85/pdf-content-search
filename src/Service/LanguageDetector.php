@@ -12,7 +12,7 @@ use LanguageDetection\Language;
  */
 class LanguageDetector
 {
-    private Language $detector;
+    private readonly Language $detector;
 
     public function __construct()
     {

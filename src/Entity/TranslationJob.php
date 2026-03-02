@@ -14,8 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Entity(repositoryClass: TranslationJobRepository::class)]
 #[ORM\Table(name: 'translation_jobs')]
-#[ORM\Index(columns: ['status'], name: 'idx_translation_jobs_status')]
-#[ORM\Index(columns: ['pdf_filename', 'page_number', 'target_language'], name: 'idx_translation_jobs_lookup')]
+#[ORM\Index(name: 'idx_translation_jobs_status', columns: ['status'])]
+#[ORM\Index(name: 'idx_translation_jobs_lookup', columns: ['pdf_filename', 'page_number', 'target_language'])]
 class TranslationJob
 {
     #[ORM\Id]
@@ -190,7 +190,7 @@ class TranslationJob
 
     public function getDurationSeconds(): ?int
     {
-        if (!$this->startedAt) {
+        if (!$this->startedAt instanceof \DateTimeInterface) {
             return null;
         }
 

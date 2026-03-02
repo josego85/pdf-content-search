@@ -68,7 +68,7 @@ class ElasticsearchService implements PdfIndexerInterface, SearchEngineInterface
      */
     public function indexPages(array $pages): void
     {
-        if (empty($pages)) {
+        if ($pages === []) {
             return;
         }
 

@@ -10,9 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SearchAnalyticsRepository::class)]
 #[ORM\Table(name: 'search_analytics')]
-#[ORM\Index(columns: ['created_at'], name: 'idx_created_at')]
-#[ORM\Index(columns: ['session_id'], name: 'idx_session')]
-#[ORM\Index(columns: ['clicked'], name: 'idx_clicked')]
+#[ORM\Index(name: 'idx_created_at', columns: ['created_at'])]
+#[ORM\Index(name: 'idx_session', columns: ['session_id'])]
+#[ORM\Index(name: 'idx_clicked', columns: ['clicked'])]
 class SearchAnalytics
 {
     #[ORM\Id]

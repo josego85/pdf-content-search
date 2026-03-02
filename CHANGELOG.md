@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Rector 2.x**: Automated refactoring tooling (`rector.php`) targeting PHP 8.4, Symfony 7.4, and Doctrine ORM 3.x sets; scripts `composer rector` / `composer rector-dry` and `make rector` / `make rector-fix` targets added
+
+### Changed
+- **Rector applied across `src/` and `tests/`**:
+  - `empty()` replaced with explicit comparisons (`=== []`, `!== ''`) — eliminates hidden `"0"` edge case
+  - `readonly` lifted to class level where all properties are readonly (`LogSearchAnalyticsMessage`, `TranslatePageMessage`, others)
+  - Symfony routes flattened from class-level prefix to explicit full paths per method (`AnalyticsController`)
+  - Unused catch variables removed, closure type hints added, Doctrine attribute argument order standardized
+- **`web_profiler.yaml`**: `profiler.collect_serializer_data` moved to global scope — fixes Symfony 7.3 deprecation in test output
+- **CI/CD**: Bumped GitHub Actions dependencies
+  - `actions/upload-artifact`: 6.0.0 → 7.0.0
+  - Added `rector` job to CI pipeline — fails if unapplied Rector changes are detected on push/PR
+
+---
+
 ## [1.13.0] - 2026-02-28
 
 ### Added

@@ -14,9 +14,7 @@ use PHPUnit\Framework\TestCase;
  */
 final class PdfProcessorTest extends TestCase
 {
-    private const TEST_PDF_PATH = '/tmp/test.pdf';
-    private const VALID_PAGE_COUNT_OUTPUT = "Pages:          10\n";
-    private const VALID_TEXT_OUTPUT = "Sample text from PDF\n";
+    private const string VALID_PAGE_COUNT_OUTPUT = "Pages:          10\n";
 
     private PdfProcessor $processor;
 

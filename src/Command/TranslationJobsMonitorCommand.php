@@ -78,7 +78,7 @@ HELP
             ? $this->jobRepository->findBy([], ['createdAt' => 'DESC'], 50)
             : $this->jobRepository->findActiveJobs();
 
-        if (empty($jobs)) {
+        if ($jobs === []) {
             $io->info('No ' . ($showAll ? '' : 'active ') . 'translation jobs found');
 
             return;

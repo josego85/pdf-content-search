@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/analytics', name: 'api_analytics_')]
+#[Route(name: 'api_analytics_')]
 final class AnalyticsController extends AbstractController
 {
     public function __construct(
@@ -18,7 +18,7 @@ final class AnalyticsController extends AbstractController
     ) {
     }
 
-    #[Route('/overview', name: 'overview', methods: ['GET'])]
+    #[Route('/api/analytics/overview', name: 'api_analytics_overview', methods: ['GET'])]
     public function overview(Request $request): JsonResponse
     {
         $days = (int) $request->query->get('days', 7);
@@ -58,7 +58,7 @@ final class AnalyticsController extends AbstractController
         ]);
     }
 
-    #[Route('/top-queries', name: 'top_queries', methods: ['GET'])]
+    #[Route('/api/analytics/top-queries', name: 'api_analytics_top_queries', methods: ['GET'])]
     public function topQueries(Request $request): JsonResponse
     {
         $days = (int) $request->query->get('days', 7);
@@ -70,7 +70,7 @@ final class AnalyticsController extends AbstractController
         $queries = $this->analyticsRepository->getTopQueries($startDate, $endDate, $limit);
 
         // Format results
-        $formatted = array_map(static function ($item) {
+        $formatted = array_map(static function (array $item): array {
             $searchCount = (int) $item['searchCount'];
             $clicks = (int) $item['clicks'];
 
@@ -91,7 +91,7 @@ final class AnalyticsController extends AbstractController
         ]);
     }
 
-    #[Route('/trends', name: 'trends', methods: ['GET'])]
+    #[Route('/api/analytics/trends', name: 'api_analytics_trends', methods: ['GET'])]
     public function trends(Request $request): JsonResponse
     {
         $days = (int) $request->query->get('days', 7);
@@ -129,7 +129,7 @@ final class AnalyticsController extends AbstractController
         ]);
     }
 
-    #[Route('/click-positions', name: 'click_positions', methods: ['GET'])]
+    #[Route('/api/analytics/click-positions', name: 'api_analytics_click_positions', methods: ['GET'])]
     public function clickPositions(Request $request): JsonResponse
     {
         $days = (int) $request->query->get('days', 7);
@@ -138,12 +138,10 @@ final class AnalyticsController extends AbstractController
 
         $positions = $this->analyticsRepository->getClickPositionDistribution($startDate, $endDate);
 
-        $formatted = array_map(static function ($item) {
-            return [
-                'position' => (int) $item['position'],
-                'clicks' => (int) $item['clicks'],
-            ];
-        }, $positions);
+        $formatted = array_map(static fn (array $item): array => [
+            'position' => (int) $item['position'],
+            'clicks' => (int) $item['clicks'],
+        ], $positions);
 
         return new JsonResponse([
             'status' => 'success',
@@ -151,7 +149,7 @@ final class AnalyticsController extends AbstractController
         ]);
     }
 
-    #[Route('/zero-results', name: 'zero_results', methods: ['GET'])]
+    #[Route('/api/analytics/zero-results', name: 'api_analytics_zero_results', methods: ['GET'])]
     public function zeroResults(Request $request): JsonResponse
     {
         $days = (int) $request->query->get('days', 7);
@@ -168,7 +166,7 @@ final class AnalyticsController extends AbstractController
         ]);
     }
 
-    #[Route('/track-click', name: 'track_click', methods: ['POST'])]
+    #[Route('/api/analytics/track-click', name: 'api_analytics_track_click', methods: ['POST'])]
     public function trackClick(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -209,6 +207,6 @@ final class AnalyticsController extends AbstractController
         return new JsonResponse([
             'status' => 'error',
             'message' => 'Search not found',
-        ], 404);
+        ], \Symfony\Component\HttpFoundation\Response::HTTP_NOT_FOUND);
     }
 }

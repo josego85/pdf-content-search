@@ -15,11 +15,11 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  */
 final class OllamaEmbeddingServiceTest extends TestCase
 {
-    private const OLLAMA_HOST = 'http://ollama:11434';
-    private const EMBEDDING_MODEL = 'nomic-embed-text';
-    private const DIMENSIONS = 768;
+    private const string OLLAMA_HOST = 'http://ollama:11434';
+    private const string EMBEDDING_MODEL = 'nomic-embed-text';
+    private const int DIMENSIONS = 768;
 
-    private HttpClientInterface $httpClient;
+    private \PHPUnit\Framework\MockObject\MockObject $httpClient;
 
     private OllamaEmbeddingService $service;
 
@@ -51,11 +51,9 @@ final class OllamaEmbeddingServiceTest extends TestCase
             ->with(
                 'POST',
                 self::OLLAMA_HOST . '/api/embed',
-                $this->callback(static function ($options) use ($text) {
-                    return $options['json']['model'] === self::EMBEDDING_MODEL
-                        && $options['json']['input'] === $text
-                        && $options['timeout'] === 30;
-                })
+                $this->callback(static fn ($options): bool => $options['json']['model'] === self::EMBEDDING_MODEL
+                    && $options['json']['input'] === $text
+                    && $options['timeout'] === 30)
             )
             ->willReturn($response);
 

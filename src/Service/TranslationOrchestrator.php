@@ -21,15 +21,15 @@ use Symfony\Component\Messenger\MessageBusInterface;
  * - Queue management
  * - Job tracking
  */
-final class TranslationOrchestrator
+final readonly class TranslationOrchestrator
 {
     public function __construct(
-        private readonly PdfProcessor $pdfProcessor,
-        private readonly TranslationService $translationService,
-        private readonly TranslationRequestValidator $validator,
-        private readonly QueueDuplicationChecker $queueChecker,
-        private readonly MessageBusInterface $messageBus,
-        private readonly EntityManagerInterface $entityManager
+        private PdfProcessor $pdfProcessor,
+        private TranslationService $translationService,
+        private TranslationRequestValidator $validator,
+        private QueueDuplicationChecker $queueChecker,
+        private MessageBusInterface $messageBus,
+        private EntityManagerInterface $entityManager
     ) {
     }
 
@@ -66,7 +66,7 @@ final class TranslationOrchestrator
         // Extract text from PDF
         $originalText = $this->pdfProcessor->extractTextFromPage($pdfPath, $pageNumber);
 
-        if (empty($originalText)) {
+        if ($originalText === '' || $originalText === '0') {
             return [
                 'data' => [
                     'status' => 'error',
@@ -180,7 +180,7 @@ final class TranslationOrchestrator
         // Extract original text
         $originalText = $this->pdfProcessor->extractTextFromPage($pdfPath, $pageNumber);
 
-        if (empty($originalText)) {
+        if ($originalText === '' || $originalText === '0') {
             return [
                 'data' => [
                     'status' => 'error',

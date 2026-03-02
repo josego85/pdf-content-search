@@ -14,7 +14,7 @@ use App\Contract\QueryBuilderInterface;
  */
 final readonly class SearchQueryBuilder implements QueryBuilderInterface
 {
-    private const FUZZY_MIN_LENGTH = 5; // Only apply fuzzy to words with 5+ chars
+    private const int FUZZY_MIN_LENGTH = 5; // Only apply fuzzy to words with 5+ chars
 
     public function __construct(
         private QueryParser $parser,
@@ -77,7 +77,7 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
     private function buildHybridQuery(string $query): array
     {
         $words = preg_split('/\s+/', $query, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-        $hasLongWords = count(array_filter($words, static fn ($w) => mb_strlen($w) >= self::FUZZY_MIN_LENGTH)) > 0;
+        $hasLongWords = count(array_filter($words, static fn ($w): bool => mb_strlen((string) $w) >= self::FUZZY_MIN_LENGTH)) > 0;
 
         return [
             'bool' => [
@@ -210,10 +210,10 @@ final readonly class SearchQueryBuilder implements QueryBuilderInterface
 
         return [
             'bool' => array_filter([
-                'must' => !empty($must) ? $must : null,
-                'must_not' => !empty($mustNot) ? $mustNot : null,
-                'should' => !empty($should) ? $should : null,
-                'minimum_should_match' => !empty($should) && empty($must) ? 1 : null,
+                'must' => $must === [] ? null : $must,
+                'must_not' => $mustNot === [] ? null : $mustNot,
+                'should' => $should === [] ? null : $should,
+                'minimum_should_match' => $should !== [] && $must === [] ? 1 : null,
             ]),
         ];
     }

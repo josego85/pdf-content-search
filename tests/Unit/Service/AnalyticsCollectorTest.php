@@ -19,7 +19,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
  */
 final class AnalyticsCollectorTest extends TestCase
 {
-    private MessageBusInterface $messageBus;
+    private \PHPUnit\Framework\MockObject\MockObject $messageBus;
 
     private AnalyticsCollector $analyticsCollector;
 
@@ -31,7 +31,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchDispatchesMessageForValidQuery(): void
     {
-        $request = $this->createMockRequest('test query');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->once())
@@ -50,7 +50,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchDoesNotLogEmptyQuery(): void
     {
-        $request = $this->createMockRequest('');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->never())
@@ -67,7 +67,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchDoesNotLogOnlySpaces(): void
     {
-        $request = $this->createMockRequest('   ');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->never())
@@ -84,7 +84,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchDoesNotLogEmptyQuotes(): void
     {
-        $request = $this->createMockRequest('""');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->never())
@@ -101,7 +101,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchDoesNotLogEmptySingleQuotes(): void
     {
-        $request = $this->createMockRequest("''");
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->never())
@@ -118,7 +118,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchAcceptsValidQueries(): void
     {
-        $request = $this->createMockRequest('java');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->once())
@@ -136,7 +136,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchAcceptsWildcardQueries(): void
     {
-        $request = $this->createMockRequest('java*');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->once())
@@ -154,7 +154,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchAcceptsQuestionMarkWildcard(): void
     {
-        $request = $this->createMockRequest('te?t');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->once())
@@ -172,7 +172,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchAcceptsQuotedPhrases(): void
     {
-        $request = $this->createMockRequest('"artificial intelligence"');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->once())
@@ -190,7 +190,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchAcceptsMultiWordQueries(): void
     {
-        $request = $this->createMockRequest('machine learning algorithms');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->once())
@@ -208,7 +208,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchHandlesSpecialCharacters(): void
     {
-        $request = $this->createMockRequest('C++ programming');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->once())
@@ -226,7 +226,7 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchHandlesUnicodeCharacters(): void
     {
-        $request = $this->createMockRequest('inteligencia artificial');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->once())
@@ -244,12 +244,12 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchCapturesSessionId(): void
     {
-        $request = $this->createMockRequest('test');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->once())
             ->method('dispatch')
-            ->with($this->callback(static function (LogSearchAnalyticsMessage $message) {
+            ->with($this->callback(static function (LogSearchAnalyticsMessage $message): bool {
                 $data = $message->getData();
 
                 return isset($data['session_id']) && $data['session_id'] === 'test-session-id';
@@ -267,12 +267,12 @@ final class AnalyticsCollectorTest extends TestCase
 
     public function testLogSearchCapturesAllMetrics(): void
     {
-        $request = $this->createMockRequest('complete test');
+        $request = $this->createMockRequest();
 
         $this->messageBus
             ->expects($this->once())
             ->method('dispatch')
-            ->with($this->callback(static function (LogSearchAnalyticsMessage $message) {
+            ->with($this->callback(static function (LogSearchAnalyticsMessage $message): bool {
                 $data = $message->getData();
 
                 return $data['query'] === 'complete test'
@@ -297,28 +297,22 @@ final class AnalyticsCollectorTest extends TestCase
     /**
      * Create a mock Request with session and headers.
      */
-    private function createMockRequest(string $query): Request
+    private function createMockRequest(): Request
     {
         $request = new Request();
-
         // Mock session
         $session = $this->createMock(SessionInterface::class);
         $session->method('getId')->willReturn('test-session-id');
         $request->setSession($session);
-
         // Mock headers
         $headers = $this->createMock(HeaderBag::class);
-        $headers->method('get')->willReturnCallback(static function ($key) {
-            return match ($key) {
-                'User-Agent' => 'PHPUnit Test Browser',
-                'Referer' => 'http://localhost/test',
-                default => null,
-            };
+        $headers->method('get')->willReturnCallback(static fn ($key): ?string => match ($key) {
+            'User-Agent' => 'PHPUnit Test Browser',
+            'Referer' => 'http://localhost/test',
+            default => null,
         });
-
         // Use reflection to inject the mock headers
         $reflection = new \ReflectionProperty(Request::class, 'headers');
-        $reflection->setAccessible(true);
         $reflection->setValue($request, $headers);
 
         return $request;

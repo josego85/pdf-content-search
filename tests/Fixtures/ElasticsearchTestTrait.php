@@ -103,11 +103,11 @@ trait ElasticsearchTestTrait
     ): void {
         $client->expects($this->once())
             ->method('search')
-            ->with($this->callback(static function ($params) {
+            ->with($this->callback(
                 // Verify the query structure
-                return isset($params['index'])
-                    && isset($params['body']);
-            }))
+                static fn ($params): bool => isset($params['index'])
+                && isset($params['body'])
+            ))
             ->willReturn($response);
     }
 
@@ -121,11 +121,9 @@ trait ElasticsearchTestTrait
     ): void {
         $client->expects($this->once())
             ->method('index')
-            ->with($this->callback(static function ($params) use ($expectedIndex) {
-                return $params['index'] === $expectedIndex
-                    && isset($params['id'])
-                    && isset($params['body']);
-            }))
+            ->with($this->callback(static fn ($params): bool => $params['index'] === $expectedIndex
+                && isset($params['id'])
+                && isset($params['body'])))
             ->willReturn($response);
     }
 

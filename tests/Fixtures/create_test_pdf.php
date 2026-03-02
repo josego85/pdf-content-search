@@ -16,7 +16,7 @@ function createTestPdf(string $filename, array $pages): void
     $nextObjId = 3;
 
     // Create content streams and page objects
-    foreach ($pages as $pageNum => $content) {
+    foreach ($pages as $content) {
         $contentObjectIds[] = $nextObjId;
         $contentStream = "BT\n/F1 12 Tf\n50 750 Td\n({$content}) Tj\nET";
         $streamLength = strlen($contentStream);
@@ -30,7 +30,7 @@ function createTestPdf(string $filename, array $pages): void
     }
 
     // Pages object
-    $pageRefs = implode(' ', array_map(static fn ($id) => "{$id} 0 R", $pageObjectIds));
+    $pageRefs = implode(' ', array_map(static fn (int $id): string => "{$id} 0 R", $pageObjectIds));
     $pageCount = count($pages);
     $pdf .= "2 0 obj\n<< /Type /Pages /Kids [{$pageRefs}] /Count {$pageCount} >>\nendobj\n";
 

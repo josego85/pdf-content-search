@@ -18,15 +18,15 @@ final class TranslationServiceTest extends TestCase
 {
     private TranslationService $service;
 
-    private EntityManagerInterface $entityManager;
+    private \PHPUnit\Framework\MockObject\MockObject $entityManager;
 
-    private CacheItemPoolInterface $cache;
+    private \PHPUnit\Framework\MockObject\MockObject $cache;
 
-    private OllamaService $ollamaService;
+    private \PHPUnit\Framework\MockObject\MockObject $ollamaService;
 
-    private LanguageDetector $languageDetector;
+    private \PHPUnit\Framework\MockObject\MockObject $languageDetector;
 
-    private EntityRepository $repository;
+    private \PHPUnit\Framework\MockObject\MockObject $repository;
 
     protected function setUp(): void
     {

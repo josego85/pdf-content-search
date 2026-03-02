@@ -14,8 +14,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class SafeCallerTraitTest extends TestCase
 {
-    private const ERROR_MESSAGE = 'Operation failed';
-    private const ELASTICSEARCH_ERROR = 'Elasticsearch connection error';
+    private const string ERROR_MESSAGE = 'Operation failed';
+    private const string ELASTICSEARCH_ERROR = 'Elasticsearch connection error';
 
     private SafeCallerTraitTestSubject $subject;
 
@@ -28,7 +28,7 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $expectedResult = 'success';
-        $callable = static fn () => $expectedResult;
+        $callable = static fn (): string => $expectedResult;
 
         // Act
         $result = $this->subject->executeSafeCall($callable, self::ERROR_MESSAGE);
@@ -41,7 +41,7 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $expectedResult = ['key' => 'value', 'number' => 42];
-        $callable = static fn () => $expectedResult;
+        $callable = static fn (): array => $expectedResult;
 
         // Act
         $result = $this->subject->executeSafeCall($callable, self::ERROR_MESSAGE);
@@ -53,7 +53,7 @@ final class SafeCallerTraitTest extends TestCase
     public function testSafeCallReturnsNullWhenCallableReturnsNull(): void
     {
         // Arrange
-        $callable = static fn () => null;
+        $callable = static fn (): null => null;
 
         // Act
         $result = $this->subject->executeSafeCall($callable, self::ERROR_MESSAGE);
@@ -66,7 +66,7 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $elasticsearchException = new TestElasticsearchException(self::ELASTICSEARCH_ERROR);
-        $callable = static function () use ($elasticsearchException) {
+        $callable = static function () use ($elasticsearchException): never {
             throw $elasticsearchException;
         };
 
@@ -81,7 +81,7 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $elasticsearchException = new TestElasticsearchException(self::ELASTICSEARCH_ERROR);
-        $callable = static function () use ($elasticsearchException) {
+        $callable = static function () use ($elasticsearchException): never {
             throw $elasticsearchException;
         };
 
@@ -100,7 +100,7 @@ final class SafeCallerTraitTest extends TestCase
         // Arrange
         $originalMessage = 'Index not found';
         $elasticsearchException = new TestElasticsearchException($originalMessage);
-        $callable = static function () use ($elasticsearchException) {
+        $callable = static function () use ($elasticsearchException): never {
             throw $elasticsearchException;
         };
 
@@ -118,7 +118,7 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $data = ['a' => 1, 'b' => 2, 'c' => 3];
-        $callable = static function () use ($data) {
+        $callable = static function () use ($data): int|float {
             $sum = array_sum($data);
 
             return $sum * 2;
@@ -134,7 +134,7 @@ final class SafeCallerTraitTest extends TestCase
     public function testSafeCallDoesNotCatchOtherExceptions(): void
     {
         // Arrange
-        $callable = static function () {
+        $callable = static function (): never {
             throw new \InvalidArgumentException('This is not an ElasticsearchException');
         };
 
@@ -151,7 +151,7 @@ final class SafeCallerTraitTest extends TestCase
     public function testSafeCallHandlesDifferentReturnTypes(mixed $expectedValue): void
     {
         // Arrange
-        $callable = static fn () => $expectedValue;
+        $callable = static fn (): mixed => $expectedValue;
 
         // Act
         $result = $this->subject->executeSafeCall($callable, self::ERROR_MESSAGE);
@@ -177,7 +177,7 @@ final class SafeCallerTraitTest extends TestCase
     {
         // Arrange
         $elasticsearchException = new TestElasticsearchException(self::ELASTICSEARCH_ERROR);
-        $callable = static function () use ($elasticsearchException) {
+        $callable = static function () use ($elasticsearchException): never {
             throw $elasticsearchException;
         };
 

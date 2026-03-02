@@ -10,9 +10,9 @@ final class PdfControllerTest extends WebTestCase
 {
     public function testViewerRendersTemplate(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
-        $client->request('GET', '/viewer', [
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/viewer', [
             'path' => 'test.pdf',
             'page' => 1,
         ]);
@@ -23,9 +23,9 @@ final class PdfControllerTest extends WebTestCase
 
     public function testViewerWithHighlightParameter(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
-        $client->request('GET', '/viewer', [
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/viewer', [
             'path' => 'document.pdf',
             'page' => 5,
             'highlight' => 'search term',
@@ -36,9 +36,9 @@ final class PdfControllerTest extends WebTestCase
 
     public function testViewerWithDefaultPage(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
-        $client->request('GET', '/viewer', [
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/viewer', [
             'path' => 'file.pdf',
         ]);
 
@@ -47,18 +47,18 @@ final class PdfControllerTest extends WebTestCase
 
     public function testViewerWithoutParameters(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
-        $client->request('GET', '/viewer');
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/viewer');
 
         self::assertResponseIsSuccessful();
     }
 
     public function testViewerWithAllParameters(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
 
-        $client->request('GET', '/viewer', [
+        $client->request(\Symfony\Component\HttpFoundation\Request::METHOD_GET, '/viewer', [
             'path' => 'sample.pdf',
             'page' => 10,
             'highlight' => 'test',

@@ -16,11 +16,11 @@ use Psr\Cache\CacheItemPoolInterface;
  * - More reliable (not dependent on serialization format)
  * - Automatically expires (using cache TTL)
  */
-final class QueueDuplicationChecker
+final readonly class QueueDuplicationChecker
 {
     public function __construct(
-        private readonly CacheItemPoolInterface $cache,
-        private readonly int $dedupTtl
+        private CacheItemPoolInterface $cache,
+        private int $dedupTtl
     ) {
     }
 

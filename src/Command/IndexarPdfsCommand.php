@@ -113,7 +113,7 @@ class IndexarPdfsCommand extends Command
             for ($page = 1; $page <= $totalPages; ++$page) {
                 $text = $this->pdfProcessor->extractTextFromPage($path, $page);
 
-                if (!empty($text)) {
+                if ($text !== '') {
                     try {
                         $pages[] = new PdfPageDocument(
                             id: $pdfId . '_page_' . $page,
@@ -123,9 +123,9 @@ class IndexarPdfsCommand extends Command
                             path: '/pdfs/' . $filename,
                             totalPages: $totalPages,
                             language: $this->languageDetector->detect($text)['language'],
-                            embedding: !$skipEmbeddings ? $this->embeddingService->embed($text) : null,
+                            embedding: $skipEmbeddings ? null : $this->embeddingService->embed($text),
                         );
-                    } catch (\Exception $e) {
+                    } catch (\Exception) {
                         ++$errorCount;
                     }
                 }
@@ -168,7 +168,7 @@ class IndexarPdfsCommand extends Command
      */
     private function flushPages(array $pages): array
     {
-        if (empty($pages)) {
+        if ($pages === []) {
             return [0, 0];
         }
 

@@ -19,15 +19,15 @@ final class TranslatePageMessageHandlerTest extends TestCase
 {
     private TranslatePageMessageHandler $handler;
 
-    private TranslationService $translationService;
+    private \PHPUnit\Framework\MockObject\MockObject $translationService;
 
     private QueueDuplicationChecker $queueChecker;
 
-    private EntityManagerInterface $entityManager;
+    private \PHPUnit\Framework\MockObject\MockObject $entityManager;
 
-    private TranslationJobRepository $jobRepository;
+    private \PHPUnit\Framework\MockObject\MockObject $jobRepository;
 
-    private LoggerInterface $logger;
+    private \PHPUnit\Framework\MockObject\MockObject $logger;
 
     protected function setUp(): void
     {
@@ -142,7 +142,7 @@ final class TranslatePageMessageHandlerTest extends TestCase
         $this->logger
             ->expects(self::atLeastOnce())
             ->method('info')
-            ->willReturnCallback(static function ($message, $context) {
+            ->willReturnCallback(static function ($message, array $context): void {
                 if ($message === 'Translation completed') {
                     self::assertSame('cache', $context['source']);
                     self::assertTrue($context['cached']);
@@ -231,9 +231,7 @@ final class TranslatePageMessageHandlerTest extends TestCase
         $this->logger
             ->expects(self::once())
             ->method('error')
-            ->with('Translation failed', self::callback(static function ($context) {
-                return $context['error'] === 'Translation service error';
-            }));
+            ->with('Translation failed', self::callback(static fn ($context): bool => $context['error'] === 'Translation service error'));
 
         $this->entityManager
             ->expects(self::exactly(2))
@@ -266,7 +264,7 @@ final class TranslatePageMessageHandlerTest extends TestCase
 
         try {
             ($this->handler)($message);
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             // Expected
         }
 
