@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CI/CD**: Bumped GitHub Actions dependencies
   - `actions/upload-artifact`: 6.0.0 → 7.0.0
   - Added `rector` job to CI pipeline — fails if unapplied Rector changes are detected on push/PR
+  - **Security Audit hardened**: `npm audit` now blocks on `high/critical` (removed `continue-on-error`); moderate kept as informational; `composer audit` runs before report generation with `--abandoned=report` flag
 
 ---
 
