@@ -10,9 +10,6 @@
   - Command: `app:cleanup-analytics` (cron: daily at 2am)
   - File: `src/Command/CleanupAnalyticsCommand.php`
 
-### Infrastructure
-- [ ] **Composer Security Audit** - Add `composer audit` to CI/CD pipeline
-
 ## 🟡 Medium Priority
 
 ### Analytics Enhancements

@@ -32,11 +32,17 @@ jobs:
       - name: Setup Node.js project
         uses: ./.github/actions/setup-node-project
 
-      - name: Run npm audit
+      # Blocks the pipeline — high/critical vulnerabilities must be fixed
+      - name: Run npm audit (high/critical — blocking)
+        run: npm audit --audit-level=high
+
+      # Informational only — moderate issues are reported but do not block
+      - name: Run npm audit (moderate — informational)
         run: npm audit --audit-level=moderate
         continue-on-error: true
 
       - name: Generate audit report
+        if: always()
         run: npm audit --json > npm-audit-report.json || true
 
       - name: Upload audit report
@@ -58,11 +64,13 @@ jobs:
       - name: Setup PHP project
         uses: ./.github/actions/setup-php-project
 
-      - name: Generate audit report
-        run: composer audit --format=json > composer-audit-report.json || true
+      # Blocks the pipeline — any CVE or abandoned package fails the job
+      - name: Run composer audit (blocking)
+        run: composer audit --abandoned=report
 
-      - name: Display audit results
-        run: composer audit
+      - name: Generate audit report
+        if: always()
+        run: composer audit --format=json --abandoned=report > composer-audit-report.json || true
 
       - name: Upload audit report
         if: always()
