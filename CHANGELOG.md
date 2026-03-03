@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Analytics CSV/JSON export**: Contextual export buttons (↓ CSV / ↓ JSON) per dashboard panel (Overview, Trends, Top Queries); non-blocking via native browser download; `GET /api/analytics/export?type=&format=&days=`
 - **`AnalyticsService`**: Extracted all data transformation logic from `AnalyticsController` — date range, metrics formatting, rate computation, and export row building; PHPStan array shapes on public methods
+- **`AnalyticsServiceTest`**: 11 unit tests covering all public methods — rate calculation, zero-division guard, date grouping, `DateTimeInterface` handling, export row types
 - **Rector 2.x**: Automated refactoring tooling (`rector.php`) targeting PHP 8.4, Symfony 7.4, and Doctrine ORM 3.x sets; scripts `composer rector` / `composer rector-dry` and `make rector` / `make rector-fix` targets added
 - **Top Search Queries UX**: Paginated table (10/page, 50 loaded from API), sortable columns (Searches ↑↓, Avg Results ↑↓, Click Rate ↑↓), rank medals (gold/silver/bronze) for top 3, mini search volume bars, color-coded click rate badges (0% → gray, ≥50% → green, ≥25% → yellow, <25% → red)
 
