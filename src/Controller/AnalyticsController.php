@@ -5,15 +5,19 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Repository\SearchAnalyticsRepository;
+use App\Service\AnalyticsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(name: 'api_analytics_')]
 final class AnalyticsController extends AbstractController
 {
     public function __construct(
+        private readonly AnalyticsService $analyticsService,
         private readonly SearchAnalyticsRepository $analyticsRepository
     ) {
     }
@@ -22,39 +26,10 @@ final class AnalyticsController extends AbstractController
     public function overview(Request $request): JsonResponse
     {
         $days = (int) $request->query->get('days', 7);
-        $endDate = new \DateTime();
-        $startDate = (clone $endDate)->modify("-{$days} days");
-
-        $metrics = $this->analyticsRepository->getOverviewMetrics($startDate, $endDate);
-
-        // Calculate derived metrics
-        $totalSearches = (int) $metrics['totalSearches'];
-        $clickedSearches = (int) $metrics['clickedSearches'];
-        $zeroResultSearches = (int) $metrics['zeroResultSearches'];
-
-        $clickThroughRate = $totalSearches > 0
-            ? round(($clickedSearches / $totalSearches) * 100, 2)
-            : 0;
-
-        $successRate = $totalSearches > 0
-            ? round((($totalSearches - $zeroResultSearches) / $totalSearches) * 100, 2)
-            : 0;
 
         return new JsonResponse([
             'status' => 'success',
-            'data' => [
-                'total_searches' => $totalSearches,
-                'unique_sessions' => (int) $metrics['uniqueSessions'],
-                'avg_response_time_ms' => round((float) $metrics['avgResponseTime']),
-                'zero_result_searches' => $zeroResultSearches,
-                'click_through_rate' => $clickThroughRate,
-                'success_rate' => $successRate,
-                'period' => [
-                    'start' => $startDate->format('Y-m-d'),
-                    'end' => $endDate->format('Y-m-d'),
-                    'days' => $days,
-                ],
-            ],
+            'data' => $this->analyticsService->getOverview($days),
         ]);
     }
 
@@ -64,30 +39,9 @@ final class AnalyticsController extends AbstractController
         $days = (int) $request->query->get('days', 7);
         $limit = (int) $request->query->get('limit', 20);
 
-        $endDate = new \DateTime();
-        $startDate = (clone $endDate)->modify("-{$days} days");
-
-        $queries = $this->analyticsRepository->getTopQueries($startDate, $endDate, $limit);
-
-        // Format results
-        $formatted = array_map(static function (array $item): array {
-            $searchCount = (int) $item['searchCount'];
-            $clicks = (int) $item['clicks'];
-
-            return [
-                'query' => $item['query'],
-                'search_count' => $searchCount,
-                'avg_results' => round((float) $item['avgResults'], 1),
-                'clicks' => $clicks,
-                'click_rate' => $searchCount > 0
-                    ? round(($clicks / $searchCount) * 100, 1)
-                    : 0,
-            ];
-        }, $queries);
-
         return new JsonResponse([
             'status' => 'success',
-            'data' => $formatted,
+            'data' => $this->analyticsService->getTopQueries($days, $limit),
         ]);
     }
 
@@ -95,37 +49,10 @@ final class AnalyticsController extends AbstractController
     public function trends(Request $request): JsonResponse
     {
         $days = (int) $request->query->get('days', 7);
-        $endDate = new \DateTime();
-        $startDate = (clone $endDate)->modify("-{$days} days");
-
-        $trends = $this->analyticsRepository->getSearchTrends($startDate, $endDate);
-
-        // Group by date and strategy
-        $grouped = [];
-        foreach ($trends as $item) {
-            $date = $item['date'];
-
-            if ($date instanceof \DateTimeInterface) {
-                $date = $date->format('Y-m-d');
-            }
-
-            $strategy = $item['searchStrategy'];
-
-            if (!isset($grouped[$date])) {
-                $grouped[$date] = [
-                    'date' => $date,
-                    'total' => 0,
-                    'by_strategy' => [],
-                ];
-            }
-
-            $grouped[$date]['by_strategy'][$strategy] = (int) $item['searchCount'];
-            $grouped[$date]['total'] += (int) $item['searchCount'];
-        }
 
         return new JsonResponse([
             'status' => 'success',
-            'data' => array_values($grouped),
+            'data' => $this->analyticsService->getTrends($days),
         ]);
     }
 
@@ -154,15 +81,53 @@ final class AnalyticsController extends AbstractController
     {
         $days = (int) $request->query->get('days', 7);
         $limit = (int) $request->query->get('limit', 20);
-
         $endDate = new \DateTime();
         $startDate = (clone $endDate)->modify("-{$days} days");
 
-        $queries = $this->analyticsRepository->getZeroResultQueries($startDate, $endDate, $limit);
-
         return new JsonResponse([
             'status' => 'success',
-            'data' => $queries,
+            'data' => $this->analyticsRepository->getZeroResultQueries($startDate, $endDate, $limit),
+        ]);
+    }
+
+    #[Route('/api/analytics/export', name: 'api_analytics_export', methods: ['GET'])]
+    public function export(Request $request): Response
+    {
+        $days = (int) $request->query->get('days', 7);
+        $type = $request->query->get('type', 'top-queries');
+        $format = $request->query->get('format', 'csv');
+
+        [$rows, $headers] = $this->analyticsService->buildExportRows($type, $days);
+
+        $filename = sprintf('analytics-%s-%dd-%s.%s', $type, $days, date('Y-m-d'), $format);
+
+        if ('json' === $format) {
+            $namedRows = array_map(
+                static fn (array $row): array => array_combine($headers, $row),
+                $rows
+            );
+
+            return new Response(
+                (string) json_encode($namedRows, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE),
+                Response::HTTP_OK,
+                [
+                    'Content-Type' => 'application/json',
+                    'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                ]
+            );
+        }
+
+        return new StreamedResponse(static function () use ($rows, $headers): void {
+            $output = fopen('php://output', 'w');
+            assert($output !== false);
+            fputcsv($output, $headers, escape: '\\');
+            foreach ($rows as $row) {
+                fputcsv($output, $row, escape: '\\');
+            }
+            fclose($output);
+        }, Response::HTTP_OK, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
     }
 
@@ -177,13 +142,8 @@ final class AnalyticsController extends AbstractController
         $pdfPath = $data['pdf_path'] ?? null;
         $page = isset($data['page']) ? (int) $data['page'] : null;
 
-        // Find the most recent search for this session and query
         $analytics = $this->analyticsRepository->findOneBy(
-            [
-                'sessionId' => $sessionId,
-                'query' => $query,
-                'clicked' => false,
-            ],
+            ['sessionId' => $sessionId, 'query' => $query, 'clicked' => false],
             ['createdAt' => 'DESC']
         );
 
@@ -198,15 +158,12 @@ final class AnalyticsController extends AbstractController
 
             $this->analyticsRepository->save($analytics);
 
-            return new JsonResponse([
-                'status' => 'success',
-                'message' => 'Click tracked',
-            ]);
+            return new JsonResponse(['status' => 'success', 'message' => 'Click tracked']);
         }
 
-        return new JsonResponse([
-            'status' => 'error',
-            'message' => 'Search not found',
-        ], \Symfony\Component\HttpFoundation\Response::HTTP_NOT_FOUND);
+        return new JsonResponse(
+            ['status' => 'error', 'message' => 'Search not found'],
+            Response::HTTP_NOT_FOUND
+        );
     }
 }

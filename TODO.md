@@ -19,7 +19,6 @@
   - File: `src/Command/AggregateAnalyticsCommand.php`
 - [ ] **Click Position Heatmap** - Add bar chart component (backend ready)
   - File: `assets/components/analytics/ClickPositionHeatmap.vue`
-- [ ] **Export Analytics Data** - CSV/JSON export for dashboard data
 - [ ] **Filter by Search Strategy** - API endpoint to filter analytics by strategy
 
 ### Performance Optimization
