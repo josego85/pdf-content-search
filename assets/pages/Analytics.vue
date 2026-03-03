@@ -29,7 +29,12 @@
       <!-- Dashboard Content -->
       <div v-else>
         <!-- KPI Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Overview</h2>
+          <ExportButtons type="overview" :days="selectedPeriod" />
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <KPICard
             title="Total Searches"
             :value="overview.total_searches"
@@ -53,16 +58,17 @@
             icon="👥"
           />
         </div>
+        </div>
 
         <!-- Charts Row 1 -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <TrendsChart :data="trends" />
+          <TrendsChart :data="trends" :days="selectedPeriod" />
           <StrategyDistribution :data="strategyDistribution" />
         </div>
 
         <!-- Charts Row 2 -->
         <div class="grid grid-cols-1 gap-6">
-          <TopQueriesChart :data="topQueries" />
+          <TopQueriesChart :data="topQueries" :days="selectedPeriod" />
         </div>
       </div>
     </div>
@@ -71,13 +77,10 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue"
-// biome-ignore lint/correctness/noUnusedImports: Components used in template
+import ExportButtons from "../components/analytics/ExportButtons.vue"
 import KPICard from "../components/analytics/KPICard.vue"
-// biome-ignore lint/correctness/noUnusedImports: Components used in template
 import StrategyDistribution from "../components/analytics/StrategyDistribution.vue"
-// biome-ignore lint/correctness/noUnusedImports: Components used in template
 import TopQueriesChart from "../components/analytics/TopQueriesChart.vue"
-// biome-ignore lint/correctness/noUnusedImports: Components used in template
 import TrendsChart from "../components/analytics/TrendsChart.vue"
 
 const isLoading = ref(false)

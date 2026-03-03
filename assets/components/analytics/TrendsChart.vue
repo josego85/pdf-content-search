@@ -1,6 +1,9 @@
 <template>
   <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">Search Volume Trends</h3>
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold text-gray-900">Search Volume Trends</h3>
+      <ExportButtons type="trends" :days="days" />
+    </div>
     <apexchart
       v-if="chartOptions"
       type="line"
@@ -16,9 +19,11 @@
 
 <script setup>
 import { computed } from "vue"
+import ExportButtons from "./ExportButtons.vue"
 
 const props = defineProps({
 	data: { type: Array, default: () => [] },
+	days: { type: [String, Number], default: 7 },
 })
 
 // biome-ignore lint/correctness/noUnusedVariables: Used in Vue template

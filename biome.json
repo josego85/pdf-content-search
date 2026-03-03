@@ -119,7 +119,7 @@
       }
     },
     {
-      "includes": ["*.vue"],
+      "includes": ["**/*.vue"],
       "linter": {
         "rules": {
           "style": {
@@ -127,6 +127,7 @@
             "useTemplate": "warn"
           },
           "correctness": {
+            "noUnusedImports": "off",
             "noUnusedVariables": "warn"
           }
         }

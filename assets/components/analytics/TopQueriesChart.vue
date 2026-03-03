@@ -1,6 +1,9 @@
 <template>
   <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Search Queries</h3>
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold text-gray-900">Top Search Queries</h3>
+      <ExportButtons type="top-queries" :days="days" />
+    </div>
 
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
@@ -122,11 +125,12 @@
 
 <script setup>
 import { computed, ref, watch } from "vue"
-// biome-ignore lint/correctness/noUnusedImports: Component used in template
 import Pagination from "../search/Pagination.vue"
+import ExportButtons from "./ExportButtons.vue"
 
 const props = defineProps({
 	data: { type: Array, default: () => [] },
+	days: { type: [String, Number], default: 7 },
 })
 
 const PAGE_SIZE = 10

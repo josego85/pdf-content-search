@@ -204,6 +204,61 @@ final class AnalyticsControllerTest extends WebTestCase
         $this->assertIsArray($data['data']);
     }
 
+    public function testExportReturnsCsvResponse(): void
+    {
+        $client = self::createClient();
+        $client->request(
+            \Symfony\Component\HttpFoundation\Request::METHOD_GET,
+            '/api/analytics/export',
+            ['type' => 'top-queries', 'format' => 'csv', 'days' => 7]
+        );
+
+        $response = $client->getResponse();
+        $this->skipIfDatabaseNotAvailable($response);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString('text/csv', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('attachment', $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('.csv', $response->headers->get('Content-Disposition'));
+    }
+
+    public function testExportReturnsJsonResponse(): void
+    {
+        $client = self::createClient();
+        $client->request(
+            \Symfony\Component\HttpFoundation\Request::METHOD_GET,
+            '/api/analytics/export',
+            ['type' => 'top-queries', 'format' => 'json', 'days' => 7]
+        );
+
+        $response = $client->getResponse();
+        $this->skipIfDatabaseNotAvailable($response);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString('application/json', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('.json', $response->headers->get('Content-Disposition'));
+        $this->assertJson($response->getContent());
+    }
+
+    public function testExportAcceptsAllTypes(): void
+    {
+        $client = self::createClient();
+
+        foreach (['overview', 'trends', 'top-queries'] as $type) {
+            $client->request(
+                \Symfony\Component\HttpFoundation\Request::METHOD_GET,
+                '/api/analytics/export',
+                ['type' => $type, 'format' => 'json', 'days' => 7]
+            );
+
+            $response = $client->getResponse();
+            $this->skipIfDatabaseNotAvailable($response);
+
+            $this->assertResponseIsSuccessful();
+            $this->assertStringContainsString($type, $response->headers->get('Content-Disposition'));
+        }
+    }
+
     /**
      * Test track-click endpoint with valid payload.
      */
