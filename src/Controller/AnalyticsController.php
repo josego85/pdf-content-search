@@ -60,19 +60,10 @@ final class AnalyticsController extends AbstractController
     public function clickPositions(Request $request): JsonResponse
     {
         $days = (int) $request->query->get('days', 7);
-        $endDate = new \DateTime();
-        $startDate = (clone $endDate)->modify("-{$days} days");
-
-        $positions = $this->analyticsRepository->getClickPositionDistribution($startDate, $endDate);
-
-        $formatted = array_map(static fn (array $item): array => [
-            'position' => (int) $item['position'],
-            'clicks' => (int) $item['clicks'],
-        ], $positions);
 
         return new JsonResponse([
             'status' => 'success',
-            'data' => $formatted,
+            'data' => $this->analyticsService->getClickPositions($days),
         ]);
     }
 

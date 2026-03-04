@@ -26,6 +26,7 @@ final readonly class LogSearchAnalyticsHandler
         $analytics->setQuery($data['query']);
         $analytics->setSearchStrategy($data['search_strategy'] ?? 'hybrid_ai');
         $analytics->setResultsCount($data['results_count']);
+        $analytics->setDisplayedResultsCount($data['displayed_results_count']);
         $analytics->setResponseTimeMs($data['response_time_ms']);
 
         if (isset($data['user_ip'])) {

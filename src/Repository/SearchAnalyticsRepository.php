@@ -145,6 +145,26 @@ class SearchAnalyticsRepository extends ServiceEntityRepository
     }
 
     /**
+     * Get displayedResultsCount for all searches in range (used to compute impressions per position).
+     *
+     * @return int[]
+     */
+    public function getResultCountsInRange(\DateTime $startDate, \DateTime $endDate): array
+    {
+        $rows = $this->createQueryBuilder('sa')
+            ->select('sa.displayedResultsCount as c')
+            ->where('sa.createdAt >= :startDate')
+            ->andWhere('sa.createdAt <= :endDate')
+            ->andWhere('sa.displayedResultsCount > 0')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($rows, 'c');
+    }
+
+    /**
      * Save search analytics entity.
      */
     public function save(SearchAnalytics $entity): void

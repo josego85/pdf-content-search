@@ -11,7 +11,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 final readonly class AnalyticsCollector
 {
     public function __construct(
-        private MessageBusInterface $messageBus
+        private MessageBusInterface $messageBus,
+        private int $searchPageSize,
     ) {
     }
 
@@ -40,6 +41,7 @@ final readonly class AnalyticsCollector
             'query' => $query,
             'search_strategy' => $searchStrategy,
             'results_count' => $resultsCount,
+            'displayed_results_count' => min($resultsCount, $this->searchPageSize),
             'response_time_ms' => $responseTimeMs,
             'user_ip' => $request->getClientIp(),
             'user_agent' => $request->headers->get('User-Agent'),

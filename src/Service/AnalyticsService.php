@@ -9,7 +9,7 @@ use App\Repository\SearchAnalyticsRepository;
 final readonly class AnalyticsService
 {
     public function __construct(
-        private SearchAnalyticsRepository $repository
+        private SearchAnalyticsRepository $repository,
     ) {
     }
 
@@ -89,6 +89,50 @@ final readonly class AnalyticsService
         }
 
         return array_values($grouped);
+    }
+
+    /**
+     * @return list<array{position: int, clicks: int, impressions: int, ctr: float}>
+     */
+    public function getClickPositions(int $days, int $maxPosition = 20): array
+    {
+        [$startDate, $endDate] = $this->dateRange($days);
+
+        $rawClicks = $this->repository->getClickPositionDistribution($startDate, $endDate);
+        $resultCounts = $this->repository->getResultCountsInRange($startDate, $endDate);
+
+        $clicksByPosition = [];
+        foreach ($rawClicks as $row) {
+            $clicksByPosition[(int) $row['position']] = (int) $row['clicks'];
+        }
+
+        // Impressions at position P = searches where displayed results >= P.
+        // displayedResultsCount is already capped to page size at collection time.
+        $impressions = array_fill(1, $maxPosition, 0);
+        foreach ($resultCounts as $count) {
+            $cap = min((int) $count, $maxPosition);
+            for ($pos = 1; $pos <= $cap; ++$pos) {
+                ++$impressions[$pos];
+            }
+        }
+
+        $result = [];
+        for ($pos = 1; $pos <= $maxPosition; ++$pos) {
+            $imp = $impressions[$pos];
+
+            if ($imp === 0) {
+                continue;
+            }
+            $clicks = $clicksByPosition[$pos] ?? 0;
+            $result[] = [
+                'position' => $pos,
+                'clicks' => $clicks,
+                'impressions' => $imp,
+                'ctr' => round(($clicks / $imp) * 100, 1),
+            ];
+        }
+
+        return $result;
     }
 
     /** @return array{array<array<int|float|string>>, string[]} */

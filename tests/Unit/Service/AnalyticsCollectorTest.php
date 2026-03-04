@@ -19,14 +19,14 @@ use Symfony\Component\Messenger\MessageBusInterface;
  */
 final class AnalyticsCollectorTest extends TestCase
 {
-    private \PHPUnit\Framework\MockObject\MockObject $messageBus;
+    private MessageBusInterface&\PHPUnit\Framework\MockObject\MockObject $messageBus;
 
     private AnalyticsCollector $analyticsCollector;
 
     protected function setUp(): void
     {
         $this->messageBus = $this->createMock(MessageBusInterface::class);
-        $this->analyticsCollector = new AnalyticsCollector($this->messageBus);
+        $this->analyticsCollector = new AnalyticsCollector($this->messageBus, 10);
     }
 
     public function testLogSearchDispatchesMessageForValidQuery(): void
@@ -292,6 +292,62 @@ final class AnalyticsCollectorTest extends TestCase
             42,
             250
         );
+    }
+
+    public function testDisplayedResultsCountCappedToPageSize(): void
+    {
+        // resultsCount (50) > pageSize (10) → displayed = 10
+        $request = $this->createMockRequest();
+
+        $this->messageBus
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(static fn (LogSearchAnalyticsMessage $message): bool => $message->getData()['displayed_results_count'] === 10))
+            ->willReturn(new Envelope(new \stdClass()));
+
+        $this->analyticsCollector->logSearch($request, 'test', 'hybrid_ai', 50, 100);
+    }
+
+    public function testDisplayedResultsCountEqualsResultsCountWhenBelowPageSize(): void
+    {
+        // resultsCount (3) < pageSize (10) → displayed = 3
+        $request = $this->createMockRequest();
+
+        $this->messageBus
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(static fn (LogSearchAnalyticsMessage $message): bool => $message->getData()['displayed_results_count'] === 3))
+            ->willReturn(new Envelope(new \stdClass()));
+
+        $this->analyticsCollector->logSearch($request, 'test', 'hybrid_ai', 3, 100);
+    }
+
+    public function testDisplayedResultsCountIsZeroWhenNoResults(): void
+    {
+        $request = $this->createMockRequest();
+
+        $this->messageBus
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(static fn (LogSearchAnalyticsMessage $message): bool => $message->getData()['displayed_results_count'] === 0))
+            ->willReturn(new Envelope(new \stdClass()));
+
+        $this->analyticsCollector->logSearch($request, 'test', 'hybrid_ai', 0, 100);
+    }
+
+    public function testDisplayedResultsCountRespectsCustomPageSize(): void
+    {
+        // pageSize = 20, resultsCount = 15 → displayed = 15
+        $collector = new AnalyticsCollector($this->messageBus, 20);
+        $request = $this->createMockRequest();
+
+        $this->messageBus
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(static fn (LogSearchAnalyticsMessage $message): bool => $message->getData()['displayed_results_count'] === 15))
+            ->willReturn(new Envelope(new \stdClass()));
+
+        $collector->logSearch($request, 'test', 'hybrid_ai', 15, 100);
     }
 
     /**
