@@ -38,6 +38,7 @@ postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_P
 |----------|-------------|--------------|-------------|
 | `ELASTICSEARCH_HOST` | `http://elasticsearch:9200` | `http://elastic:${ELASTIC_PASSWORD}@elasticsearch:9200` | Elasticsearch URL |
 | `ELASTICSEARCH_INDEX_PDFS` | `pdf_pages` | `pdf_pages` | Index name |
+| `ELASTICSEARCH_MAX_RESULTS` | `100` | `100` | Max results returned per search query |
 | `ELASTIC_PASSWORD` | `ignored_in_dev` | Auto-generated | ES password (prod only) |
 
 **Index settings:**
@@ -59,6 +60,12 @@ postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_P
 - Embeddings: `mxbai-embed-large` (669M dimensions, slower)
 
 **Auto-download:** Models download automatically via healthcheck during `make dev`.
+
+### Analytics
+
+| Variable | Dev Default | Prod Default | Description |
+|----------|-------------|--------------|-------------|
+| `SEARCH_PAGE_SIZE` | `10` | `10` | UI results per page; used by `AnalyticsCollector` to persist `displayed_results_count` (impressions) accurately |
 
 ### Symfony Messenger
 

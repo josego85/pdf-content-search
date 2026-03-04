@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`AnalyticsServiceTest`**: 11 unit tests covering all public methods — rate calculation, zero-division guard, date grouping, `DateTimeInterface` handling, export row types
 - **Rector 2.x**: Automated refactoring tooling (`rector.php`) targeting PHP 8.4, Symfony 7.4, and Doctrine ORM 3.x sets; scripts `composer rector` / `composer rector-dry` and `make rector` / `make rector-fix` targets added
 - **Top Search Queries UX**: Paginated table (10/page, 50 loaded from API), sortable columns (Searches ↑↓, Avg Results ↑↓, Click Rate ↑↓), rank medals (gold/silver/bronze) for top 3, mini search volume bars, color-coded click rate badges (0% → gray, ≥50% → green, ≥25% → yellow, <25% → red)
+- **Docs**: `analytics.md` — Click Position Distribution chart, Data Export section, Top Queries pagination, Data Accuracy (impressions vs total results), IPv6 anonymization; `configuration.md` — `ELASTICSEARCH_MAX_RESULTS` y `SEARCH_PAGE_SIZE`; `README.md` — coverage badge 87% → 93%, analytics feature description actualizada; `TODO.md` — eliminado Click Position Heatmap (implementado)
 
 ### Changed
 - **`biome.json`**: Fixed glob `*.vue` → `**/*.vue` (no matcheaba subdirectorios); `noUnusedImports: off` para archivos Vue — elimina la necesidad de `biome-ignore` por import

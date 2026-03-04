@@ -17,8 +17,6 @@
   - Command: `app:aggregate-analytics` (cron: daily at 1am)
   - Table: `daily_analytics`
   - File: `src/Command/AggregateAnalyticsCommand.php`
-- [ ] **Click Position Heatmap** - Add bar chart component (backend ready)
-  - File: `assets/components/analytics/ClickPositionHeatmap.vue`
 - [ ] **Filter by Search Strategy** - API endpoint to filter analytics by strategy
 
 ### Performance Optimization

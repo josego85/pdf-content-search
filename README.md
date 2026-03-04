@@ -7,7 +7,7 @@
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
 [![Ollama](https://img.shields.io/badge/Ollama-AI-000000?logo=ai&logoColor=white)](https://ollama.ai/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![Tests](https://img.shields.io/badge/Coverage-87%25-success?logo=phpunit&logoColor=white)](tests/)
+[![Tests](https://img.shields.io/badge/Coverage-93%25-success?logo=phpunit&logoColor=white)](tests/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 AI-powered PDF search with hybrid semantic capabilities using Elasticsearch 9.3 vector search and Ollama embeddings.
@@ -19,7 +19,7 @@ AI-powered PDF search with hybrid semantic capabilities using Elasticsearch 9.3 
 - 🔍 Multiple search modes: Hybrid AI, Exact match, Prefix match
 - 🌍 AI-powered PDF translation (Ollama qwen2.5)
 - 🔄 Async job processing with Symfony Messenger
-- 📊 **Analytics Dashboard** - Real-time search metrics with Vue.js + ApexCharts
+- 📊 **Analytics Dashboard** - Real-time search metrics: trends, click position distribution, CTR, CSV/JSON export
 - 📝 **OCR for scanned PDFs** - Automatic text layer via `ocrmypdf` (enables search & highlighting)
 - 📱 Responsive Vue.js frontend with in-PDF highlighting
 
@@ -56,7 +56,7 @@ make prod          # Start production (http://localhost:8080)
 make down          # Stop environment
 make logs          # View logs (add SERVICE=php for specific service)
 make shell         # Open shell in PHP container
-make test          # Run PHPUnit tests (87% coverage)
+make test          # Run PHPUnit tests (93% coverage)
 make status        # Show all environments status
 
 # Translation monitoring (helper scripts)
