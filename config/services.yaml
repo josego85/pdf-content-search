@@ -7,6 +7,7 @@ parameters:
     elasticsearch.index_pdfs: '%env(ELASTICSEARCH_INDEX_PDFS)%'
     elasticsearch.max_results: '%env(int:ELASTICSEARCH_MAX_RESULTS)%'
     elasticsearch.semantic_similarity_threshold: 0.7
+    app.search.page_size: '%env(int:SEARCH_PAGE_SIZE)%'
 
 services:
     # default configuration for services in *this* file
@@ -88,6 +89,10 @@ services:
     # Rank fusion service for hybrid search
     App\Service\ReciprocalRankFusionService: ~
     App\Contract\RankFusionServiceInterface: '@App\Service\ReciprocalRankFusionService'
+
+    App\Service\AnalyticsCollector:
+        arguments:
+            $searchPageSize: '%app.search.page_size%'
 
     # PDF text extraction with OCR fallback
     App\Service\PdfProcessor:

@@ -33,6 +33,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
             'query' => 'artificial intelligence',
             'search_strategy' => 'hybrid_ai',
             'results_count' => 15,
+            'displayed_results_count' => 10,
             'response_time_ms' => 120,
             'user_ip' => '192.168.1.100',
             'user_agent' => 'Mozilla/5.0',
@@ -67,6 +68,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
             'query' => 'test query',
             'search_strategy' => 'exact',
             'results_count' => 5,
+            'displayed_results_count' => 5,
             'response_time_ms' => 80,
         ];
 
@@ -97,6 +99,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
             'session_id' => 'session-789',
             'query' => 'default strategy',
             'results_count' => 10,
+            'displayed_results_count' => 10,
             'response_time_ms' => 100,
         ];
 
@@ -119,6 +122,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
             'query' => 'test',
             'search_strategy' => 'hybrid_ai',
             'results_count' => 1,
+            'displayed_results_count' => 1,
             'response_time_ms' => 50,
             'user_ip' => '192.168.1.100',
         ];
@@ -153,6 +157,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
                 'query' => 'test',
                 'search_strategy' => 'hybrid_ai',
                 'results_count' => 1,
+                'displayed_results_count' => 1,
                 'response_time_ms' => 50,
                 'user_ip' => $originalIp,
             ];
@@ -181,6 +186,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
             'query' => 'test',
             'search_strategy' => 'hybrid_ai',
             'results_count' => 1,
+            'displayed_results_count' => 1,
             'response_time_ms' => 50,
             'user_ip' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
         ];
@@ -207,6 +213,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
             'query' => 'test',
             'search_strategy' => 'hybrid_ai',
             'results_count' => 1,
+            'displayed_results_count' => 1,
             'response_time_ms' => 50,
             'user_ip' => 'invalid-ip-address',
         ];
@@ -233,6 +240,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
             'query' => 'java*',
             'search_strategy' => 'prefix',
             'results_count' => 8,
+            'displayed_results_count' => 8,
             'response_time_ms' => 95,
         ];
 
@@ -256,6 +264,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
             'query' => '"artificial intelligence"',
             'search_strategy' => 'exact',
             'results_count' => 3,
+            'displayed_results_count' => 3,
             'response_time_ms' => 110,
         ];
 
@@ -279,6 +288,7 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
             'query' => 'nonexistent term',
             'search_strategy' => 'hybrid_ai',
             'results_count' => 0,
+            'displayed_results_count' => 0,
             'response_time_ms' => 45,
         ];
 

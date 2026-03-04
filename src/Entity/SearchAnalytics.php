@@ -32,6 +32,9 @@ class SearchAnalytics
     #[ORM\Column]
     private int $resultsCount;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $displayedResultsCount = null;
+
     #[ORM\Column]
     private int $responseTimeMs;
 
@@ -116,6 +119,18 @@ class SearchAnalytics
     public function setResultsCount(int $resultsCount): static
     {
         $this->resultsCount = $resultsCount;
+
+        return $this;
+    }
+
+    public function getDisplayedResultsCount(): ?int
+    {
+        return $this->displayedResultsCount;
+    }
+
+    public function setDisplayedResultsCount(int $displayedResultsCount): static
+    {
+        $this->displayedResultsCount = $displayedResultsCount;
 
         return $this;
     }

@@ -67,6 +67,11 @@
         </div>
 
         <!-- Charts Row 2 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <ClickPositionChart :data="clickPositions" />
+        </div>
+
+        <!-- Charts Row 3 -->
         <div class="grid grid-cols-1 gap-6">
           <TopQueriesChart :data="topQueries" :days="selectedPeriod" />
         </div>
@@ -77,6 +82,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue"
+import ClickPositionChart from "../components/analytics/ClickPositionChart.vue"
 import ExportButtons from "../components/analytics/ExportButtons.vue"
 import KPICard from "../components/analytics/KPICard.vue"
 import StrategyDistribution from "../components/analytics/StrategyDistribution.vue"
@@ -96,6 +102,7 @@ const overview = ref({
 
 const trends = ref([])
 const topQueries = ref([])
+const clickPositions = ref([])
 
 // biome-ignore lint/correctness/noUnusedVariables: Used in Vue template
 const strategyDistribution = computed(() => {
@@ -118,21 +125,24 @@ const loadData = async () => {
 		const days = selectedPeriod.value
 
 		// Load all data in parallel
-		const [overviewRes, trendsRes, queriesRes] = await Promise.all([
+		const [overviewRes, trendsRes, queriesRes, clickPositionsRes] = await Promise.all([
 			fetch(`/api/analytics/overview?days=${days}`),
 			fetch(`/api/analytics/trends?days=${days}`),
 			fetch(`/api/analytics/top-queries?days=${days}&limit=50`),
+			fetch(`/api/analytics/click-positions?days=${days}`),
 		])
 
-		const [overviewData, trendsData, queriesData] = await Promise.all([
+		const [overviewData, trendsData, queriesData, clickPositionsData] = await Promise.all([
 			overviewRes.json(),
 			trendsRes.json(),
 			queriesRes.json(),
+			clickPositionsRes.json(),
 		])
 
 		overview.value = overviewData.data
 		trends.value = trendsData.data
 		topQueries.value = queriesData.data
+		clickPositions.value = clickPositionsData.data
 	} catch (error) {
 		console.error("Failed to load analytics:", error)
 	} finally {

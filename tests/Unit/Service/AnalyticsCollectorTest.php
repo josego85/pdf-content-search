@@ -26,7 +26,7 @@ final class AnalyticsCollectorTest extends TestCase
     protected function setUp(): void
     {
         $this->messageBus = $this->createMock(MessageBusInterface::class);
-        $this->analyticsCollector = new AnalyticsCollector($this->messageBus);
+        $this->analyticsCollector = new AnalyticsCollector($this->messageBus, 10);
     }
 
     public function testLogSearchDispatchesMessageForValidQuery(): void
