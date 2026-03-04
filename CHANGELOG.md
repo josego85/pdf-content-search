@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.14.0] - 2026-03-04
 
 ### Added
 - **Click Position Distribution chart**: new Analytics Dashboard panel with CTR% per result position, insights (Position #1 CTR, Top 3 capture rate) and tooltip showing clicks/impressions
