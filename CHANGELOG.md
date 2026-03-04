@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Click Position Distribution chart**: nuevo panel en Analytics Dashboard con CTR% por posición, insights (Position #1 CTR, Top 3 capture) y tooltip con clicks/impresiones
 - **`displayed_results_count`** en `SearchAnalytics`: persiste cuántos resultados se mostraron al usuario (`min(total, pageSize)`) en el momento de la búsqueda — base correcta para calcular impresiones por posición sin depender de configuración futura; incluye migración de schema + data backfill idempotente con `IrreversibleMigration` en `down()`
 - **`SEARCH_PAGE_SIZE`** env var: configura el page size de la UI, inyectado en `AnalyticsCollector` via `services.yaml`
+- **`AnalyticsCollectorTest`**: 4 nuevos tests cubriendo el cálculo de `displayed_results_count` — cap al pageSize, below pageSize, zero results, custom pageSize; mock property tipado con intersection type `MessageBusInterface&MockObject`
 - **Analytics CSV/JSON export**: Contextual export buttons (↓ CSV / ↓ JSON) per dashboard panel (Overview, Trends, Top Queries); non-blocking via native browser download; `GET /api/analytics/export?type=&format=&days=`
 - **`AnalyticsService`**: Extracted all data transformation logic from `AnalyticsController` — date range, metrics formatting, rate computation, and export row building; PHPStan array shapes on public methods
 - **`AnalyticsServiceTest`**: 11 unit tests covering all public methods — rate calculation, zero-division guard, date grouping, `DateTimeInterface` handling, export row types
