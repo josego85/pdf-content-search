@@ -10,19 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Click Position Distribution chart**: nuevo panel en Analytics Dashboard con CTR% por posición, insights (Position #1 CTR, Top 3 capture) y tooltip con clicks/impresiones
-- **`displayed_results_count`** en `SearchAnalytics`: persiste cuántos resultados se mostraron al usuario (`min(total, pageSize)`) en el momento de la búsqueda — base correcta para calcular impresiones por posición sin depender de configuración futura; incluye migración de schema + data backfill idempotente con `IrreversibleMigration` en `down()`
-- **`SEARCH_PAGE_SIZE`** env var: configura el page size de la UI, inyectado en `AnalyticsCollector` via `services.yaml`
-- **`AnalyticsCollectorTest`**: 4 nuevos tests cubriendo el cálculo de `displayed_results_count` — cap al pageSize, below pageSize, zero results, custom pageSize; mock property tipado con intersection type `MessageBusInterface&MockObject`
-- **Analytics CSV/JSON export**: Contextual export buttons (↓ CSV / ↓ JSON) per dashboard panel (Overview, Trends, Top Queries); non-blocking via native browser download; `GET /api/analytics/export?type=&format=&days=`
-- **`AnalyticsService`**: Extracted all data transformation logic from `AnalyticsController` — date range, metrics formatting, rate computation, and export row building; PHPStan array shapes on public methods
+- **Click Position Distribution chart**: new Analytics Dashboard panel with CTR% per result position, insights (Position #1 CTR, Top 3 capture rate) and tooltip showing clicks/impressions
+- **`displayed_results_count`** in `SearchAnalytics`: persists how many results were shown to the user (`min(total, pageSize)`) at search time — correct basis for impression-based CTR without depending on future config changes; includes schema migration + idempotent data backfill with `IrreversibleMigration` in `down()`
+- **`SEARCH_PAGE_SIZE`** env var: configures UI page size, injected into `AnalyticsCollector` via `services.yaml`
+- **`AnalyticsCollectorTest`**: 4 new tests covering `displayed_results_count` calculation — capped to pageSize, below pageSize, zero results, custom pageSize; mock property typed with intersection type `MessageBusInterface&MockObject`
+- **Analytics CSV/JSON export**: contextual export buttons (↓ CSV / ↓ JSON) per dashboard panel (Overview, Trends, Top Queries); non-blocking via native browser download; `GET /api/analytics/export?type=&format=&days=`
+- **`AnalyticsService`**: extracted all data transformation logic from `AnalyticsController` — date range, metrics formatting, rate computation, and export row building; PHPStan array shapes on public methods
 - **`AnalyticsServiceTest`**: 11 unit tests covering all public methods — rate calculation, zero-division guard, date grouping, `DateTimeInterface` handling, export row types
-- **Rector 2.x**: Automated refactoring tooling (`rector.php`) targeting PHP 8.4, Symfony 7.4, and Doctrine ORM 3.x sets; scripts `composer rector` / `composer rector-dry` and `make rector` / `make rector-fix` targets added
-- **Top Search Queries UX**: Paginated table (10/page, 50 loaded from API), sortable columns (Searches ↑↓, Avg Results ↑↓, Click Rate ↑↓), rank medals (gold/silver/bronze) for top 3, mini search volume bars, color-coded click rate badges (0% → gray, ≥50% → green, ≥25% → yellow, <25% → red)
-- **Docs**: `analytics.md` — Click Position Distribution chart, Data Export section, Top Queries pagination, Data Accuracy (impressions vs total results), IPv6 anonymization; `configuration.md` — `ELASTICSEARCH_MAX_RESULTS` y `SEARCH_PAGE_SIZE`; `README.md` — coverage badge 87% → 93%, analytics feature description actualizada; `TODO.md` — eliminado Click Position Heatmap (implementado)
+- **Rector 2.x**: automated refactoring tooling (`rector.php`) targeting PHP 8.4, Symfony 7.4, and Doctrine ORM 3.x sets; scripts `composer rector` / `composer rector-dry` and `make rector` / `make rector-fix` targets added
+- **Top Search Queries UX**: paginated table (10/page, 50 loaded from API), sortable columns (Searches ↑↓, Avg Results ↑↓, Click Rate ↑↓), rank medals (gold/silver/bronze) for top 3, mini search volume bars, color-coded click rate badges (0% → gray, ≥50% → green, ≥25% → yellow, <25% → red)
+- **Docs**: `analytics.md` — Click Position Distribution chart, Data Export section, Top Queries pagination, Data Accuracy (impressions vs total results), IPv6 anonymization; `configuration.md` — `ELASTICSEARCH_MAX_RESULTS` and `SEARCH_PAGE_SIZE`; `README.md` — coverage badge 87% → 93%, updated analytics feature description; `TODO.md` — removed Click Position Heatmap (implemented)
 
 ### Changed
-- **`biome.json`**: Fixed glob `*.vue` → `**/*.vue` (no matcheaba subdirectorios); `noUnusedImports: off` para archivos Vue — elimina la necesidad de `biome-ignore` por import
+- **`biome.json`**: fixed glob `*.vue` → `**/*.vue` (was not matching subdirectories); `noUnusedImports: off` for Vue files — removes the need for `biome-ignore` comments on imports
 - **Rector applied across `src/` and `tests/`**:
   - `empty()` replaced with explicit comparisons (`=== []`, `!== ''`) — eliminates hidden `"0"` edge case
   - `readonly` lifted to class level where all properties are readonly (`LogSearchAnalyticsMessage`, `TranslatePageMessage`, others)
