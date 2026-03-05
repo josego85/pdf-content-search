@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.14.1] - 2026-03-05
+
+### Security
+- **`immutable`** (5.0.0–5.1.4): fixed Prototype Pollution vulnerability ([GHSA-wf6x-7x77-mvgw](https://github.com/advisories/GHSA-wf6x-7x77-mvgw)) — severity: high
+- **`svgo`** (4.0.0): fixed DoS via entity expansion in DOCTYPE (Billion Laughs attack) ([GHSA-xpqw-6gx7-v673](https://github.com/advisories/GHSA-xpqw-6gx7-v673)) — severity: high
+
+---
+
 ## [1.14.0] - 2026-03-04
 
 ### Added
