@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- **`CLAUDE.md`**: authoritative AI assistant guide for this repository — covers architecture patterns, coding standards (PHPStan Level 8, strict types, interface-first DI), search pipeline, security non-negotiables, testing strategy, Docker composition model, CI/CD gates, environment variables reference, and prioritized backlog; intended to give Claude Code full context on every task without manual re-explanation
+
+### Security
+- **`github/codeql-action`** (4.32.4 → 4.32.6): patched CodeQL SAST action — applies upstream security and reliability fixes to the static analysis workflow
+- **`actions/dependency-review-action`** (4.8.3 → 4.9.0): updated dependency review action — improved vulnerability detection coverage for PR dependency diffs
+
+---
+
 ## [1.14.1] - 2026-03-05
 
 ### Security
