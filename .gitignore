@@ -45,3 +45,5 @@ yarn-error.log
 ###> phpstan/phpstan ###
 phpstan.cache/
 ###< phpstan/phpstan ###
+
+/docs/tasks

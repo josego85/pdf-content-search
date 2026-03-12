@@ -194,8 +194,6 @@ _init: ## Internal: Initialize environment
 	fi
 	@echo "$(BLUE)📊 Creating Elasticsearch index...$(NC)"
 	@$(COMPOSE) exec -T php php bin/console app:create-pdf-index 2>/dev/null || echo "$(YELLOW)Index already exists$(NC)"
-	@echo "$(BLUE)🤖 Checking Ollama models...$(NC)"
-	@$(COMPOSE) exec -T ollama /usr/local/bin/download-models.sh 2>/dev/null || true
 ifeq ($(ENV),dev)
 	@echo "$(BLUE)📦 Building frontend assets...$(NC)"
 	@$(COMPOSE) exec -T php npm run build 2>/dev/null || true

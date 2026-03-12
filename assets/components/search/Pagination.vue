@@ -8,7 +8,7 @@
     <button
       @click="$emit('update:currentPage', currentPage - 1)"
       :disabled="currentPage === 1"
-      class="p-2 sm:p-2.5 rounded-lg transition-colors touch-manipulation"
+      class="p-3 rounded-lg transition-colors touch-manipulation min-w-[48px] min-h-[48px] flex items-center justify-center"
       :class="currentPage === 1
         ? 'text-gray-300 cursor-not-allowed'
         : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'"
@@ -28,7 +28,7 @@
       <button
         v-else
         @click="$emit('update:currentPage', page)"
-        class="min-w-[36px] sm:min-w-[40px] h-9 sm:h-10 rounded-lg text-sm font-medium transition-colors touch-manipulation"
+        class="min-w-[48px] h-12 rounded-lg text-sm font-medium transition-colors touch-manipulation"
         :class="page === currentPage
           ? 'bg-blue-600 text-white shadow-sm'
           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'"
@@ -43,7 +43,7 @@
     <button
       @click="$emit('update:currentPage', currentPage + 1)"
       :disabled="currentPage === totalPages"
-      class="p-2 sm:p-2.5 rounded-lg transition-colors touch-manipulation"
+      class="p-3 rounded-lg transition-colors touch-manipulation min-w-[48px] min-h-[48px] flex items-center justify-center"
       :class="currentPage === totalPages
         ? 'text-gray-300 cursor-not-allowed'
         : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'"

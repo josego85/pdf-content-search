@@ -136,16 +136,19 @@ services:
     restart: unless-stopped
 
   ollama:
-    image: ollama/ollama:latest
+    build:
+      context: .
+      dockerfile: .docker/ollama/Dockerfile
     volumes:
       - ollama_data:/root/.ollama
     networks:
       - app_network
     healthcheck:
-      test: ["CMD", "ollama", "list"]
+      test: ["CMD-SHELL", "ollama list | grep -q 'nomic-embed-text' || exit 1"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 5
+      start_period: 300s
     restart: unless-stopped
 
 volumes:
