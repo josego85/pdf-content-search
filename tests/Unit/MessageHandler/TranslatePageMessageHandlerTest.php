@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\MessageHandler;
 
+use App\Contract\TranslationServiceInterface;
 use App\Entity\TranslationJob;
 use App\Message\TranslatePageMessage;
 use App\MessageHandler\TranslatePageMessageHandler;
 use App\Repository\TranslationJobRepository;
 use App\Service\QueueDuplicationChecker;
-use App\Service\TranslationService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -31,7 +31,7 @@ final class TranslatePageMessageHandlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->translationService = $this->createMock(TranslationService::class);
+        $this->translationService = $this->createMock(TranslationServiceInterface::class);
         $this->queueChecker = new QueueDuplicationChecker(new ArrayAdapter(), 300);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->jobRepository = $this->createMock(TranslationJobRepository::class);

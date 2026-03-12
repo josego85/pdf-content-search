@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Contract\LanguageDetectorInterface;
+use App\Contract\TranslationServiceInterface;
 use App\Entity\PdfPageTranslation;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -13,14 +15,14 @@ use Psr\Cache\CacheItemPoolInterface;
  * Single Responsibility: Translation retrieval/storage coordination.
  * Strategy: Cache → Database → AI Translation (lazy loading).
  */
-class TranslationService
+final readonly class TranslationService implements TranslationServiceInterface
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly CacheItemPoolInterface $cache,
-        private readonly OllamaService $ollama,
-        private readonly LanguageDetector $languageDetector,
-        private readonly int $translationCacheTtl
+        private EntityManagerInterface $entityManager,
+        private CacheItemPoolInterface $cache,
+        private OllamaService $ollama,
+        private LanguageDetectorInterface $languageDetector,
+        private int $translationCacheTtl
     ) {
     }
 
@@ -36,53 +38,12 @@ class TranslationService
         string $originalText,
         string $targetLanguage
     ): ?array {
-        // Detect source language
-        $sourceLanguage = $this->languageDetector->detect($originalText)['language'];
-
-        // If already in target language, return original
-        if ($sourceLanguage === $targetLanguage) {
-            return [
-                'text' => $originalText,
-                'source' => 'original',
-                'source_language' => $sourceLanguage,
-                'cached' => false,
-            ];
-        }
-
-        // Try cache first (fastest)
-        $cacheKey = $this->buildCacheKey($pdfFilename, $pageNumber, $targetLanguage);
-        $cachedItem = $this->cache->getItem($cacheKey);
-
-        if ($cachedItem->isHit()) {
-            return [
-                'text' => $cachedItem->get(),
-                'source' => 'cache',
-                'source_language' => $sourceLanguage,
-                'cached' => true,
-            ];
-        }
-
-        // Try database (second fastest)
-        $translation = $this->findTranslationInDatabase(
+        return $this->findCachedOrStoredTranslation(
             $pdfFilename,
             $pageNumber,
+            $originalText,
             $targetLanguage
         );
-
-        if ($translation instanceof PdfPageTranslation) {
-            // Store in cache for next time
-            $this->storeInCache($cacheKey, $translation->getTranslatedText());
-
-            return [
-                'text' => $translation->getTranslatedText(),
-                'source' => 'database',
-                'source_language' => $sourceLanguage,
-                'cached' => false,
-            ];
-        }
-
-        // No existing translation found
-        return null;
     }
 
     /**
@@ -96,10 +57,45 @@ class TranslationService
         string $originalText,
         string $targetLanguage
     ): array {
-        // Detect source language
+        $existing = $this->findCachedOrStoredTranslation(
+            $pdfFilename,
+            $pageNumber,
+            $originalText,
+            $targetLanguage
+        );
+
+        if ($existing !== null) {
+            return $existing;
+        }
+
+        // Generate new translation (slowest path)
+        $sourceLanguage = $this->languageDetector->detect($originalText)['language'];
+        $cacheKey = $this->buildCacheKey($pdfFilename, $pageNumber, $targetLanguage);
+
+        return $this->translateAndStore(
+            $pdfFilename,
+            $pageNumber,
+            $originalText,
+            $sourceLanguage,
+            $targetLanguage,
+            $cacheKey
+        );
+    }
+
+    /**
+     * Shared lookup: detects language, checks cache, then database.
+     * Returns a result array on hit, or null if no translation exists yet.
+     *
+     * @return array{text: string, source: string, source_language: string, cached: bool}|null
+     */
+    private function findCachedOrStoredTranslation(
+        string $pdfFilename,
+        int $pageNumber,
+        string $originalText,
+        string $targetLanguage
+    ): ?array {
         $sourceLanguage = $this->languageDetector->detect($originalText)['language'];
 
-        // If already in target language, return original
         if ($sourceLanguage === $targetLanguage) {
             return [
                 'text' => $originalText,
@@ -109,7 +105,6 @@ class TranslationService
             ];
         }
 
-        // Try cache first (fastest)
         $cacheKey = $this->buildCacheKey($pdfFilename, $pageNumber, $targetLanguage);
         $cachedItem = $this->cache->getItem($cacheKey);
 
@@ -122,15 +117,9 @@ class TranslationService
             ];
         }
 
-        // Try database (second fastest)
-        $translation = $this->findTranslationInDatabase(
-            $pdfFilename,
-            $pageNumber,
-            $targetLanguage
-        );
+        $translation = $this->findTranslationInDatabase($pdfFilename, $pageNumber, $targetLanguage);
 
         if ($translation instanceof PdfPageTranslation) {
-            // Store in cache for next time
             $this->storeInCache($cacheKey, $translation->getTranslatedText());
 
             return [
@@ -141,20 +130,9 @@ class TranslationService
             ];
         }
 
-        // Generate new translation (slowest)
-        return $this->translateAndStore(
-            $pdfFilename,
-            $pageNumber,
-            $originalText,
-            $sourceLanguage,
-            $targetLanguage,
-            $cacheKey
-        );
+        return null;
     }
 
-    /**
-     * Finds existing translation in database.
-     */
     private function findTranslationInDatabase(
         string $pdfFilename,
         int $pageNumber,
@@ -170,8 +148,6 @@ class TranslationService
     }
 
     /**
-     * Translates text, stores in database and cache.
-     *
      * @return array{text: string, source: string, source_language: string, cached: bool}
      */
     private function translateAndStore(
@@ -182,10 +158,8 @@ class TranslationService
         string $targetLanguage,
         string $cacheKey
     ): array {
-        // Translate using AI
         $translatedText = $this->ollama->translate($originalText, $targetLanguage);
 
-        // Store in database
         $translation = new PdfPageTranslation();
         $translation->setPdfFilename($pdfFilename);
         $translation->setPageNumber($pageNumber);
@@ -197,7 +171,6 @@ class TranslationService
         $this->entityManager->persist($translation);
         $this->entityManager->flush();
 
-        // Store in cache
         $this->storeInCache($cacheKey, $translatedText);
 
         return [
@@ -208,9 +181,6 @@ class TranslationService
         ];
     }
 
-    /**
-     * Stores translation in cache.
-     */
     private function storeInCache(string $cacheKey, string $text): void
     {
         $cachedItem = $this->cache->getItem($cacheKey);
@@ -219,9 +189,6 @@ class TranslationService
         $this->cache->save($cachedItem);
     }
 
-    /**
-     * Builds consistent cache key.
-     */
     private function buildCacheKey(string $pdfFilename, int $pageNumber, string $targetLanguage): string
     {
         return sprintf(

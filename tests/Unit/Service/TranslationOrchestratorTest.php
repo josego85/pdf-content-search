@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Contract\PdfProcessorInterface;
+use App\Contract\TranslationServiceInterface;
 use App\Entity\TranslationJob;
 use App\Message\TranslatePageMessage;
 use App\Repository\TranslationJobRepository;
-use App\Service\PdfProcessor;
 use App\Service\QueueDuplicationChecker;
 use App\Service\TranslationOrchestrator;
 use App\Service\TranslationRequestValidator;
-use App\Service\TranslationService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -44,8 +44,8 @@ final class TranslationOrchestratorTest extends TestCase
         $this->testPdfsDirectory = sys_get_temp_dir() . '/test_pdfs_' . uniqid();
         mkdir($this->testPdfsDirectory);
 
-        $this->pdfProcessor = $this->createMock(PdfProcessor::class);
-        $this->translationService = $this->createMock(TranslationService::class);
+        $this->pdfProcessor = $this->createMock(PdfProcessorInterface::class);
+        $this->translationService = $this->createMock(TranslationServiceInterface::class);
         $this->validator = new TranslationRequestValidator($this->testPdfsDirectory);
         $this->queueChecker = new QueueDuplicationChecker(new ArrayAdapter(), 300);
         $this->messageBus = $this->createMock(MessageBusInterface::class);

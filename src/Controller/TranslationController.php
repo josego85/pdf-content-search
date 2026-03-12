@@ -32,10 +32,18 @@ final class TranslationController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
 
+            if (!is_array($data)) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Invalid JSON body'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $filename = isset($data['filename']) && is_string($data['filename']) ? $data['filename'] : null;
+            $page = isset($data['page']) && is_numeric($data['page']) ? (int) $data['page'] : null;
+            $targetLanguage = isset($data['target_language']) && is_string($data['target_language']) ? $data['target_language'] : 'es';
+
             $result = $this->orchestrator->requestTranslation(
-                $data['filename'] ?? null,
-                $data['page'] ?? null,
-                $data['target_language'] ?? 'es'
+                $filename,
+                $page,
+                $targetLanguage
             );
 
             return new JsonResponse($result['data'], $result['status_code']);
@@ -58,10 +66,18 @@ final class TranslationController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
 
+            if (!is_array($data)) {
+                return new JsonResponse(['status' => 'error', 'message' => 'Invalid JSON body'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $filename = isset($data['filename']) && is_string($data['filename']) ? $data['filename'] : null;
+            $page = isset($data['page']) && is_numeric($data['page']) ? (int) $data['page'] : null;
+            $targetLanguage = isset($data['target_language']) && is_string($data['target_language']) ? $data['target_language'] : 'es';
+
             $result = $this->orchestrator->checkTranslationStatus(
-                $data['filename'] ?? null,
-                $data['page'] ?? null,
-                $data['target_language'] ?? 'es'
+                $filename,
+                $page,
+                $targetLanguage
             );
 
             return new JsonResponse($result['data'], $result['status_code']);

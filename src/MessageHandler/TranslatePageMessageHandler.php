@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\Contract\TranslationServiceInterface;
 use App\Entity\TranslationJob;
 use App\Message\TranslatePageMessage;
 use App\Repository\TranslationJobRepository;
 use App\Service\QueueDuplicationChecker;
-use App\Service\TranslationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -21,7 +21,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 final readonly class TranslatePageMessageHandler
 {
     public function __construct(
-        private TranslationService $translationService,
+        private TranslationServiceInterface $translationService,
         private QueueDuplicationChecker $queueChecker,
         private EntityManagerInterface $entityManager,
         private TranslationJobRepository $jobRepository,

@@ -101,15 +101,17 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $this->service->embed($text);
     }
 
-    public function testEmbedRetriesOnFailure(): void
+    public function testEmbedRetriesOnTransientFailure(): void
     {
         $text = 'test query';
         $expectedEmbedding = array_fill(0, self::DIMENSIONS, 0.1);
 
         $failureResponse = $this->createMock(ResponseInterface::class);
+        // Use \Exception (not \RuntimeException) to simulate a transient network error.
+        // \RuntimeException is treated as a permanent failure and is not retried.
         $failureResponse
             ->method('toArray')
-            ->willThrowException(new \RuntimeException('Connection timeout'));
+            ->willThrowException(new \Exception('Connection timeout'));
 
         $successResponse = $this->createMock(ResponseInterface::class);
         $successResponse
@@ -131,9 +133,10 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $text = 'test query';
 
         $response = $this->createMock(ResponseInterface::class);
+        // Use \Exception for transient failures to exercise the retry path.
         $response
             ->method('toArray')
-            ->willThrowException(new \RuntimeException('Connection failed'));
+            ->willThrowException(new \Exception('Connection failed'));
 
         $this->httpClient
             ->expects($this->exactly(3)) // MAX_RETRIES = 3
@@ -142,6 +145,27 @@ final class OllamaEmbeddingServiceTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Failed to generate embedding after 3 attempts');
+
+        $this->service->embed($text);
+    }
+
+    public function testEmbedDoesNotRetryOnPermanentRuntimeException(): void
+    {
+        $text = 'test query';
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response
+            ->method('toArray')
+            ->willThrowException(new \RuntimeException('Permanent validation failure'));
+
+        // Only 1 attempt — RuntimeException must not be retried.
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($response);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Permanent validation failure');
 
         $this->service->embed($text);
     }

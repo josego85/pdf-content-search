@@ -58,10 +58,16 @@ final readonly class LogSearchAnalyticsHandler
         }
 
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-            // IPv6: Keep first 4 groups, zero the rest
-            $parts = explode(':', $ip);
+            // IPv6: Zero last 80 bits (10 bytes), keep first 48 bits (6 bytes) — GDPR requirement.
+            // Use inet_pton/inet_ntop to handle compressed addresses correctly.
+            $binary = inet_pton($ip);
 
-            return implode(':', array_slice($parts, 0, 4)) . '::';
+            if ($binary === false) {
+                return '::';
+            }
+            $anonymized = substr($binary, 0, 6) . str_repeat("\x00", 10);
+
+            return inet_ntop($anonymized) ?: '::';
         }
 
         return '0.0.0.0';

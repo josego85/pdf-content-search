@@ -25,8 +25,12 @@ class ElasticsearchService implements PdfIndexerInterface, SearchEngineInterface
         private readonly string $pdfPagesIndex
     ) {
         $parsedUrl = parse_url($host);
+
+        if (!is_array($parsedUrl) || empty($parsedUrl['host'])) {
+            throw new \InvalidArgumentException(sprintf('Invalid Elasticsearch host URL: "%s"', $host));
+        }
         $cleanHost = ($parsedUrl['scheme'] ?? 'http') . '://' .
-                     ($parsedUrl['host'] ?? 'localhost') .
+                     $parsedUrl['host'] .
                      (isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '');
 
         $clientBuilder = ClientBuilder::create()

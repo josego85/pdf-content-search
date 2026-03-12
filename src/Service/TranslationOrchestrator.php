@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Contract\PdfProcessorInterface;
+use App\Contract\TranslationServiceInterface;
 use App\Entity\TranslationJob;
 use App\Message\TranslatePageMessage;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,8 +26,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 final readonly class TranslationOrchestrator
 {
     public function __construct(
-        private PdfProcessor $pdfProcessor,
-        private TranslationService $translationService,
+        private PdfProcessorInterface $pdfProcessor,
+        private TranslationServiceInterface $translationService,
         private TranslationRequestValidator $validator,
         private QueueDuplicationChecker $queueChecker,
         private MessageBusInterface $messageBus,
