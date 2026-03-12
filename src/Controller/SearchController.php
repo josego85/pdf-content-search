@@ -44,7 +44,7 @@ final class SearchController extends AbstractController
             }
 
             // Auto-detect search strategy based on query pattern
-            $strategyParam = $request->query->get('strategy', 'hybrid_ai');
+            $strategyParam = $request->query->get('strategy', SearchStrategy::HYBRID_AI->value);
             $strategy = $this->detectSearchStrategy($query, $strategyParam);
 
             // Check if we should log analytics (only when user presses ENTER)
@@ -71,7 +71,7 @@ final class SearchController extends AbstractController
                     $this->analyticsCollector->logSearch(
                         $request,
                         $query,
-                        'hybrid_ai',
+                        SearchStrategy::HYBRID_AI->value,
                         count($mergedHits),
                         $duration
                     );
@@ -82,7 +82,7 @@ final class SearchController extends AbstractController
                     'data' => [
                         'hits' => $mergedHits,
                         'total' => count($mergedHits),
-                        'strategy' => 'hybrid_ai',
+                        'strategy' => SearchStrategy::HYBRID_AI->value,
                         'duration_ms' => $duration,
                     ],
                 ]);

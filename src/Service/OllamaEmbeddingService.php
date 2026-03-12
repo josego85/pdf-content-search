@@ -54,7 +54,11 @@ final readonly class OllamaEmbeddingService implements EmbeddingServiceInterface
                 }
 
                 return $embedding;
+            } catch (\RuntimeException $e) {
+                // Permanent failure (invalid response shape, wrong dimensions) — do not retry.
+                throw $e;
             } catch (\Throwable $e) {
+                // Transient failure (network, timeout) — retry with backoff.
                 $lastException = $e;
                 ++$attempt;
 

@@ -4,20 +4,24 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Contract\LanguageDetectorInterface;
 use LanguageDetection\Language;
 
 /**
  * Detects language from text using ngram-based analysis.
  * Single Responsibility: Language detection only.
  */
-class LanguageDetector
+final readonly class LanguageDetector implements LanguageDetectorInterface
 {
-    private readonly Language $detector;
+    private Language $detector;
 
-    public function __construct()
+    /**
+     * @param array<int, string> $supportedLanguages ISO 639-1 codes, e.g. ['es', 'en', 'de']
+     */
+    public function __construct(array $supportedLanguages)
     {
         // Aligned with frontend supported languages (assets/constants/languages.js)
-        $this->detector = new Language(['es', 'en', 'de']);
+        $this->detector = new Language($supportedLanguages);
     }
 
     /**

@@ -8,6 +8,7 @@ parameters:
     elasticsearch.max_results: '%env(int:ELASTICSEARCH_MAX_RESULTS)%'
     elasticsearch.semantic_similarity_threshold: 0.7
     app.search.page_size: '%env(int:SEARCH_PAGE_SIZE)%'
+    app.supported_languages: ['es', 'en', 'de']
 
 services:
     # default configuration for services in *this* file
@@ -63,6 +64,7 @@ services:
     App\Service\TranslationService:
         arguments:
             $translationCacheTtl: '%translation.cache_ttl%'
+    App\Contract\TranslationServiceInterface: '@App\Service\TranslationService'
 
     App\Service\QueueDuplicationChecker:
         arguments:
@@ -99,3 +101,10 @@ services:
         arguments:
             $ocrLanguages: '%pdf.ocr_languages%'
             $minTextLength: '%pdf.min_text_length%'
+    App\Contract\PdfProcessorInterface: '@App\Service\PdfProcessor'
+    App\Contract\ExportFormatterInterface: '@App\Service\ExportFormatterService'
+
+    App\Service\LanguageDetector:
+        arguments:
+            $supportedLanguages: '%app.supported_languages%'
+    App\Contract\LanguageDetectorInterface: '@App\Service\LanguageDetector'

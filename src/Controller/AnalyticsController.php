@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Contract\ExportFormatterInterface;
 use App\Repository\SearchAnalyticsRepository;
 use App\Service\AnalyticsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(name: 'api_analytics_')]
@@ -18,7 +18,8 @@ final class AnalyticsController extends AbstractController
 {
     public function __construct(
         private readonly AnalyticsService $analyticsService,
-        private readonly SearchAnalyticsRepository $analyticsRepository
+        private readonly SearchAnalyticsRepository $analyticsRepository,
+        private readonly ExportFormatterInterface $exportFormatter
     ) {
     }
 
@@ -90,36 +91,7 @@ final class AnalyticsController extends AbstractController
 
         [$rows, $headers] = $this->analyticsService->buildExportRows($type, $days);
 
-        $filename = sprintf('analytics-%s-%dd-%s.%s', $type, $days, date('Y-m-d'), $format);
-
-        if ('json' === $format) {
-            $namedRows = array_map(
-                static fn (array $row): array => array_combine($headers, $row),
-                $rows
-            );
-
-            return new Response(
-                (string) json_encode($namedRows, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE),
-                Response::HTTP_OK,
-                [
-                    'Content-Type' => 'application/json',
-                    'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-                ]
-            );
-        }
-
-        return new StreamedResponse(static function () use ($rows, $headers): void {
-            $output = fopen('php://output', 'w');
-            assert($output !== false);
-            fputcsv($output, $headers, escape: '\\');
-            foreach ($rows as $row) {
-                fputcsv($output, $row, escape: '\\');
-            }
-            fclose($output);
-        }, Response::HTTP_OK, [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ]);
+        return $this->exportFormatter->buildResponse($format, $rows, $headers, $type, $days);
     }
 
     #[Route('/api/analytics/track-click', name: 'api_analytics_track_click', methods: ['POST'])]

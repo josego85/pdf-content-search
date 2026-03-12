@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **`CLAUDE.md`**: authoritative AI assistant guide for this repository — covers architecture patterns, coding standards (PHPStan Level 8, strict types, interface-first DI), search pipeline, security non-negotiables, testing strategy, Docker composition model, CI/CD gates, environment variables reference, and prioritized backlog; intended to give Claude Code full context on every task without manual re-explanation
+- **New contracts** (`src/Contract/`): `LanguageDetectorInterface`, `PdfProcessorInterface`, `TranslationServiceInterface`, `ExportFormatterInterface` — all orchestrators and handlers now depend on abstractions; concrete classes wired in `services.yaml`
+- **`ExportFormatterService`**: extracted CSV/JSON export formatting out of `AnalyticsController` — implements `ExportFormatterInterface`; controller reduced to pure HTTP routing
+
+### Changed
+- **`PdfProcessor`**: replaced `exec()`/`shell_exec()` with `Symfony\Component\Process\Process` — args passed as array (no shell interpolation, eliminates injection surface), explicit 300 s timeout on `ocrmypdf`, clean `isSuccessful()` / `getExitCode()` checks, stderr no longer silently discarded
+- **`TranslationService`**: extracted private `lookupExistingTranslation()` — `findExistingTranslation()` and `getTranslation()` now share a single lookup chain (same-language → cache → DB), removing ~60 lines of duplication; `translateAndStore()` computes `sourceLanguage` and `cacheKey` internally
+- **`LanguageDetector`**: marked `final`, implements `LanguageDetectorInterface`, accepts `$supportedLanguages` via constructor injection instead of hardcoded array
+- **`ElasticsearchService`**: date field now stored as ISO 8601 (`DateTimeInterface::ATOM`) instead of `'Y-m-d H:i:s'`; constructor validates host URL and throws `\InvalidArgumentException` on empty host
+
+### Fixed
+- **`AnalyticsController::trackClick()`**: corrected `time_to_click_ms` calculation — was `microtime(true)*1000 - getTimestamp()*1000` (wrong units); now `(microtime(true) - getTimestamp()) * 1000`; corrupted all stored click-latency values
+- **`TranslationController`**: JSON body guard — returns `400 Bad Request` when `json_decode` produces a non-array instead of silently passing `null` fields to the orchestrator
 
 ### Security
 - **`github/codeql-action`** (4.32.4 → 4.32.6): patched CodeQL SAST action — applies upstream security and reliability fixes to the static analysis workflow

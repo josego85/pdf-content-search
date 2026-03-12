@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Contract\LanguageDetectorInterface;
 use App\Entity\PdfPageTranslation;
-use App\Service\LanguageDetector;
 use App\Service\OllamaService;
 use App\Service\TranslationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,7 +33,7 @@ final class TranslationServiceTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->cache = $this->createMock(CacheItemPoolInterface::class);
         $this->ollamaService = $this->createMock(OllamaService::class);
-        $this->languageDetector = $this->createMock(LanguageDetector::class);
+        $this->languageDetector = $this->createMock(LanguageDetectorInterface::class);
         $this->repository = $this->createMock(EntityRepository::class);
 
         $this->entityManager

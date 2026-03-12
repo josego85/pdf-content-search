@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Contract\EmbeddingServiceInterface;
+use App\Contract\LanguageDetectorInterface;
 use App\Contract\PdfIndexerInterface;
+use App\Contract\PdfProcessorInterface;
 use App\DTO\PdfPageDocument;
-use App\Service\LanguageDetector;
-use App\Service\PdfProcessor;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -29,8 +29,8 @@ class IndexarPdfsCommand extends Command
 
     public function __construct(
         private readonly PdfIndexerInterface $indexer,
-        private readonly PdfProcessor $pdfProcessor,
-        private readonly LanguageDetector $languageDetector,
+        private readonly PdfProcessorInterface $pdfProcessor,
+        private readonly LanguageDetectorInterface $languageDetector,
         private readonly EmbeddingServiceInterface $embeddingService
     ) {
         parent::__construct();

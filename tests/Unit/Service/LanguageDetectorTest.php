@@ -13,7 +13,7 @@ final class LanguageDetectorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->detector = new LanguageDetector();
+        $this->detector = new LanguageDetector(['es', 'en', 'de']);
     }
 
     public function testDetectSpanishText(): void

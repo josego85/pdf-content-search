@@ -4,23 +4,27 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-class PdfProcessor
+use App\Contract\PdfProcessorInterface;
+use Symfony\Component\Process\Process;
+
+final readonly class PdfProcessor implements PdfProcessorInterface
 {
     public function __construct(
-        private readonly string $ocrLanguages,
-        private readonly int $minTextLength,
+        private string $ocrLanguages,
+        private int $minTextLength,
     ) {
     }
 
     public function extractPageCount(string $filePath): int
     {
-        $pageCountOutput = shell_exec('pdfinfo ' . escapeshellarg($filePath) . ' 2>/dev/null');
+        $process = new Process(['pdfinfo', $filePath]);
+        $process->run();
 
-        if (!is_string($pageCountOutput)) {
+        if (!$process->isSuccessful()) {
             return 0;
         }
 
-        preg_match('/Pages:\\s+(\\d+)/i', $pageCountOutput, $matches);
+        preg_match('/Pages:\\s+(\\d+)/i', $process->getOutput(), $matches);
 
         return isset($matches[1]) ? (int) $matches[1] : 0;
     }
@@ -38,15 +42,18 @@ class PdfProcessor
         }
 
         $tmpOutput = $filePath . '.ocr.pdf';
-        $exitCode = 0;
-        exec(sprintf(
-            'ocrmypdf --skip-text -l %s %s %s 2>&1',
-            escapeshellarg($this->ocrLanguages),
-            escapeshellarg($filePath),
-            escapeshellarg($tmpOutput)
-        ), $output, $exitCode);
 
-        if ($exitCode === 0 && file_exists($tmpOutput)) {
+        $process = new Process([
+            'ocrmypdf',
+            '--skip-text',
+            '-l', $this->ocrLanguages,
+            $filePath,
+            $tmpOutput,
+        ]);
+        $process->setTimeout(300);
+        $process->run();
+
+        if ($process->getExitCode() === 0 && file_exists($tmpOutput)) {
             rename($tmpOutput, $filePath);
 
             return true;
@@ -66,13 +73,16 @@ class PdfProcessor
 
     private function extractWithPdftotext(string $filePath, int $page): string
     {
-        $text = shell_exec(sprintf(
-            'pdftotext -layout -f %d -l %d %s - 2>/dev/null',
-            $page,
-            $page,
-            escapeshellarg($filePath)
-        ));
+        $process = new Process([
+            'pdftotext',
+            '-layout',
+            '-f', (string) $page,
+            '-l', (string) $page,
+            $filePath,
+            '-',
+        ]);
+        $process->run();
 
-        return is_string($text) ? trim($text) : '';
+        return $process->isSuccessful() ? trim($process->getOutput()) : '';
     }
 }

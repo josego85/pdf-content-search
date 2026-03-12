@@ -37,7 +37,6 @@
 - [ ] A/B testing framework
 
 ### Codebase Quality
-- [ ] Refactor entire project for better architecture
 - [ ] Add more comprehensive integration tests
 
 ---

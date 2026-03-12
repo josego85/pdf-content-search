@@ -197,8 +197,37 @@ final class LogSearchAnalyticsHandlerTest extends TestCase
             ->expects($this->once())
             ->method('persist')
             ->with($this->callback(
-                // IPv6 anonymization: keep first 4 groups
-                static fn (SearchAnalytics $analytics): bool => $analytics->getUserIp() === '2001:0db8:85a3:0000::'
+                // IPv6 anonymization: keep first 48 bits (6 bytes), zero last 80 bits.
+                // inet_ntop canonical form removes leading zeros: 2001:db8:85a3::
+                static fn (SearchAnalytics $analytics): bool => $analytics->getUserIp() === '2001:db8:85a3::'
+            ));
+
+        $this->entityManager->expects($this->once())->method('flush');
+
+        ($this->handler)($message);
+    }
+
+    public function testAnonymizeCompressedIpv6(): void
+    {
+        $data = [
+            'session_id' => 'session-ipv6-compressed',
+            'query' => 'test',
+            'search_strategy' => 'hybrid_ai',
+            'results_count' => 1,
+            'displayed_results_count' => 1,
+            'response_time_ms' => 50,
+            'user_ip' => 'fe80::1',
+        ];
+
+        $message = new LogSearchAnalyticsMessage($data);
+
+        $this->entityManager
+            ->expects($this->once())
+            ->method('persist')
+            ->with($this->callback(
+                // fe80::1 full = fe80:0000:0000:0000:0000:0000:0000:0001
+                // Keep first 48 bits: fe80:0000:0000 → canonical: fe80::
+                static fn (SearchAnalytics $analytics): bool => $analytics->getUserIp() === 'fe80::'
             ));
 
         $this->entityManager->expects($this->once())->method('flush');
