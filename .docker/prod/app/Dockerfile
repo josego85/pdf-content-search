@@ -114,6 +114,10 @@ COPY --from=node-builder --chown=www-data:www-data /build/public/build ./public/
 # Copy Supervisor configuration
 COPY .docker/prod/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Copy and configure entrypoint
+COPY .docker/prod/app/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Generate optimized autoloader
 RUN composer dump-autoload --optimize --classmap-authoritative --no-dev
 
@@ -130,5 +134,5 @@ RUN mkdir -p var/cache var/log var/sessions public/pdfs /var/log/supervisor \
 
 EXPOSE 9000
 
-# Start Supervisor (manages PHP-FPM + Messenger Workers)
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Entrypoint runs migrations + messenger setup, then starts Supervisor
+ENTRYPOINT ["/entrypoint.sh"]

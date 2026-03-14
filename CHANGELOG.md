@@ -16,7 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`.docker/ollama/`**: custom Ollama image with `Dockerfile` and `entrypoint.sh` — on container start pulls `qwen2.5:7b` and `nomic-embed-text` automatically; idempotent (skips if models already exist in `ollama_data` volume); healthcheck verifies `nomic-embed-text` presence (`start_period: 300s`)
 - **`SitemapController`**: dynamic `/robots.txt` and `/sitemap.xml` with absolute URLs via `$request->getSchemeAndHttpHost()` — replaces invalid static files; functional tests included
 - **SEO meta layer** (`base.html.twig`): `<title>`, `<meta description>`, `<meta robots>`, `<link rel="canonical">` (Symfony router), Open Graph tags, JSON-LD `WebSite + SearchAction` structured data — all overridable per page
-- **Accessibility**: skip-to-content link with `translate-y` transition; `<main id="main-content">` landmark; ARIA combobox pattern on search input (`role`, `aria-expanded`, `aria-haspopup`, `aria-controls`, `aria-activedescendant`)
+- **Accessibility**: skip-to-content link (`sr-only` + `focus:not-sr-only` pattern); `<main id="main-content">` landmark; ARIA combobox pattern on search input (`role`, `aria-expanded`, `aria-haspopup`, `aria-controls`, `aria-activedescendant`)
+- **`prod entrypoint`** (`.docker/prod/app/entrypoint.sh`): runs DB migrations, sets up Messenger transport, and warms Symfony cache automatically on every container start — idempotent; no manual post-deploy steps required
 
 ### Changed
 - **`PdfProcessor`**: replaced `exec()`/`shell_exec()` with `Symfony\Component\Process\Process` — args passed as array (no shell interpolation, eliminates injection surface), explicit 300 s timeout on `ocrmypdf`, clean `isSuccessful()` / `getExitCode()` checks, stderr no longer silently discarded
@@ -28,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`analytics/index.html.twig`**, **`pdf/viewer.html.twig`**: `noindex, nofollow`; viewer adds `<label>` for language select and `aria-live` on translation status badge
 
 ### Fixed
+- **Skip link URL pollution**: replaced `-translate-y-full` with `sr-only`/`focus:not-sr-only` — prevents `#main-content` from appearing in the address bar on accidental click; element is now fully clipped from the DOM until keyboard focus
 - **`AnalyticsController::trackClick()`**: corrected `time_to_click_ms` calculation — was `microtime(true)*1000 - getTimestamp()*1000` (wrong units); now `(microtime(true) - getTimestamp()) * 1000`; corrupted all stored click-latency values
 - **`TranslationController`**: JSON body guard — returns `400 Bad Request` when `json_decode` produces a non-array instead of silently passing `null` fields to the orchestrator
 

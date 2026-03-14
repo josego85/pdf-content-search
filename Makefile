@@ -91,7 +91,7 @@ dev: ## Start development environment
 up: ## Start environment without rebuilding (ENV=dev|prod, default: dev)
 	@echo "$(BLUE)▶️  Starting $(shell echo $(ENV) | tr '[:lower:]' '[:upper:]') environment (no rebuild)...$(NC)"
 	@if [ "$(ENV)" = "prod" ]; then \
-		$(COMPOSE_PROD) up -d; \
+		$(COMPOSE_PROD) up -d --build; \
 	else \
 		$(COMPOSE_DEV) up -d; \
 	fi

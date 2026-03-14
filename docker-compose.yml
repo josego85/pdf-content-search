@@ -94,8 +94,10 @@ services:
       # Routing
       - DEFAULT_URI=${DEFAULT_URI:-http://localhost}
     depends_on:
-      - database
-      - elasticsearch
+      database:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     networks:
       - app_network
     expose:
