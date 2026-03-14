@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`analytics/index.html.twig`**, **`pdf/viewer.html.twig`**: `noindex, nofollow`; viewer adds `<label>` for language select and `aria-live` on translation status badge
 
 ### Fixed
+- **`.husky/pre-commit`**: removed deprecated Husky v9 shebang lines (will fail in v10); hook now targets dev stack explicitly (`-f docker-compose.dev.yml`); containers not running → warns and exits 0 instead of blocking commit — CI is the real quality gate; Biome lint runs locally (no container needed)
 - **Skip link URL pollution**: replaced `-translate-y-full` with `sr-only`/`focus:not-sr-only` — prevents `#main-content` from appearing in the address bar on accidental click; element is now fully clipped from the DOM until keyboard focus
 - **`AnalyticsController::trackClick()`**: corrected `time_to_click_ms` calculation — was `microtime(true)*1000 - getTimestamp()*1000` (wrong units); now `(microtime(true) - getTimestamp()) * 1000`; corrupted all stored click-latency values
 - **`TranslationController`**: JSON body guard — returns `400 Bad Request` when `json_decode` produces a non-array instead of silently passing `null` fields to the orchestrator
