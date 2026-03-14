@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics Dashboard</title>
+    <title>Analytics Dashboard — PDF Content Search</title>
+    <meta name="description" content="Search analytics dashboard showing query trends, click positions, and strategy distribution.">
+    <meta name="robots" content="noindex, nofollow">
     {{ encore_entry_link_tags('analytics') }}
 </head>
 <body>
-    <div id="app"></div>
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white">Skip to main content</a>
+    <main id="main-content">
+        <div id="app"></div>
+    </main>
     {{ encore_entry_script_tags('analytics') }}
 </body>
 </html>

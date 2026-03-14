@@ -1,54 +1,41 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
 
-# Check if Docker containers are running
-if ! docker compose ps | grep -q "Up"; then
-  echo "⚠️  Docker containers are not running. Start them with: docker compose up -d"
-  exit 1
+# Pre-commit: run quality checks if dev containers are up.
+# If containers are not running, skip gracefully — CI is the real gate.
+
+DEV_PHP_RUNNING=$(docker compose -f docker-compose.yml -f docker-compose.dev.yml ps --status running --services 2>/dev/null | grep -c "^php$" || true)
+
+if [ "$DEV_PHP_RUNNING" -eq 0 ]; then
+  echo "⚠  Dev containers not running — skipping local checks (CI will enforce quality gates)."
+  exit 0
 fi
 
 echo "🔍 Running PHP-CS-Fixer check..."
-docker compose exec -T php composer cs-check
-
-if [ $? -ne 0 ]; then
-  echo "❌ Code style violations detected. Please fix them before committing."
+if ! docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T php composer cs-check; then
+  echo "❌ Code style violations detected. Run: make cs-fix"
   exit 1
 fi
-
 echo "✅ PHP code style is clean."
-echo ""
 
-echo "🔬 Running PHPStan static analysis..."
-docker compose exec -T php composer phpstan
-
-if [ $? -ne 0 ]; then
-  echo "❌ PHPStan found errors. Please fix them before committing."
+echo "🔬 Running PHPStan..."
+if ! docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T php composer phpstan; then
+  echo "❌ PHPStan found errors. Fix them before committing."
   exit 1
 fi
+echo "✅ PHPStan passed."
 
-echo "✅ PHPStan analysis passed."
-echo ""
-
-echo "🧪 Running PHP tests..."
-docker compose exec -T php bash -c "XDEBUG_MODE=coverage php bin/phpunit"
-
-if [ $? -ne 0 ]; then
-  echo "❌ Tests failed. Please fix them before committing."
+echo "🧪 Running tests..."
+if ! docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T php bash -c "XDEBUG_MODE=coverage php bin/phpunit"; then
+  echo "❌ Tests failed. Fix them before committing."
   exit 1
 fi
+echo "✅ Tests passed."
 
-echo "✅ PHP tests passed."
-echo ""
-
-echo "🎨 Running JavaScript/Vue linter..."
-docker compose exec -T php npm run lint
-
-if [ $? -ne 0 ]; then
-  echo "❌ Linting errors detected. Please fix them before committing."
+echo "🎨 Running Biome lint..."
+if ! npm run lint --silent; then
+  echo "❌ Linting errors detected. Run: npm run lint"
   exit 1
 fi
+echo "✅ JS/Vue clean."
 
-echo "✅ JavaScript/Vue code is clean."
-echo ""
-
-echo "✨ All checks passed. Proceeding with commit."
+echo "✨ All checks passed."

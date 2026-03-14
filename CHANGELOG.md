@@ -13,16 +13,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`CLAUDE.md`**: authoritative AI assistant guide for this repository — covers architecture patterns, coding standards (PHPStan Level 8, strict types, interface-first DI), search pipeline, security non-negotiables, testing strategy, Docker composition model, CI/CD gates, environment variables reference, and prioritized backlog; intended to give Claude Code full context on every task without manual re-explanation
 - **New contracts** (`src/Contract/`): `LanguageDetectorInterface`, `PdfProcessorInterface`, `TranslationServiceInterface`, `ExportFormatterInterface` — all orchestrators and handlers now depend on abstractions; concrete classes wired in `services.yaml`
 - **`ExportFormatterService`**: extracted CSV/JSON export formatting out of `AnalyticsController` — implements `ExportFormatterInterface`; controller reduced to pure HTTP routing
+- **`.docker/ollama/`**: custom Ollama image with `Dockerfile` and `entrypoint.sh` — on container start pulls `qwen2.5:7b` and `nomic-embed-text` automatically; idempotent (skips if models already exist in `ollama_data` volume); healthcheck verifies `nomic-embed-text` presence (`start_period: 300s`)
+- **`SitemapController`**: dynamic `/robots.txt` and `/sitemap.xml` with absolute URLs via `$request->getSchemeAndHttpHost()` — replaces invalid static files; functional tests included
+- **SEO meta layer** (`base.html.twig`): `<title>`, `<meta description>`, `<meta robots>`, `<link rel="canonical">` (Symfony router), Open Graph tags, JSON-LD `WebSite + SearchAction` structured data — all overridable per page
+- **Accessibility**: skip-to-content link (`sr-only` + `focus:not-sr-only` pattern); `<main id="main-content">` landmark; ARIA combobox pattern on search input (`role`, `aria-expanded`, `aria-haspopup`, `aria-controls`, `aria-activedescendant`)
+- **`prod entrypoint`** (`.docker/prod/app/entrypoint.sh`): runs DB migrations, sets up Messenger transport, and warms Symfony cache automatically on every container start — idempotent; no manual post-deploy steps required
 
 ### Changed
 - **`PdfProcessor`**: replaced `exec()`/`shell_exec()` with `Symfony\Component\Process\Process` — args passed as array (no shell interpolation, eliminates injection surface), explicit 300 s timeout on `ocrmypdf`, clean `isSuccessful()` / `getExitCode()` checks, stderr no longer silently discarded
 - **`TranslationService`**: extracted private `lookupExistingTranslation()` — `findExistingTranslation()` and `getTranslation()` now share a single lookup chain (same-language → cache → DB), removing ~60 lines of duplication; `translateAndStore()` computes `sourceLanguage` and `cacheKey` internally
 - **`LanguageDetector`**: marked `final`, implements `LanguageDetectorInterface`, accepts `$supportedLanguages` via constructor injection instead of hardcoded array
 - **`ElasticsearchService`**: date field now stored as ISO 8601 (`DateTimeInterface::ATOM`) instead of `'Y-m-d H:i:s'`; constructor validates host URL and throws `\InvalidArgumentException` on empty host
+- **All decorative SVGs** (`Bar.vue`, `Hero.vue`, `ResultCard.vue`, `Suggestions.vue`, `Controls.vue`, `Initial.vue`, `Empty.vue`, `Error.vue`): `aria-hidden="true" focusable="false"` — prevents screen reader false positives on icon-only elements
+- **Tap targets**: minimum 48×48 px on pagination, grid/list controls, search clear button, and "View PDF" link (WCAG 2.5.5)
+- **`analytics/index.html.twig`**, **`pdf/viewer.html.twig`**: `noindex, nofollow`; viewer adds `<label>` for language select and `aria-live` on translation status badge
 
 ### Fixed
+- **`.husky/pre-commit`**: removed deprecated Husky v9 shebang lines (will fail in v10); hook now targets dev stack explicitly (`-f docker-compose.dev.yml`); containers not running → warns and exits 0 instead of blocking commit — CI is the real quality gate; Biome lint runs locally (no container needed)
+- **Skip link URL pollution**: replaced `-translate-y-full` with `sr-only`/`focus:not-sr-only` — prevents `#main-content` from appearing in the address bar on accidental click; element is now fully clipped from the DOM until keyboard focus
 - **`AnalyticsController::trackClick()`**: corrected `time_to_click_ms` calculation — was `microtime(true)*1000 - getTimestamp()*1000` (wrong units); now `(microtime(true) - getTimestamp()) * 1000`; corrupted all stored click-latency values
 - **`TranslationController`**: JSON body guard — returns `400 Bad Request` when `json_decode` produces a non-array instead of silently passing `null` fields to the orchestrator
+
+### Removed
+- **`bin/download-models.sh`**: deleted — model provisioning moved into the container entrypoint; `make dev`/`make prod` no longer require a separate download step
+- **`public/robots.txt`**, **`public/sitemap.xml`**: static files deleted — now served dynamically by `SitemapController` to guarantee absolute URLs on any host
 
 ### Security
 - **`github/codeql-action`** (4.32.4 → 4.32.6): patched CodeQL SAST action — applies upstream security and reliability fixes to the static analysis workflow

@@ -16,7 +16,7 @@
         <button
           @click="$emit('update:viewMode', 'grid')"
           :class="viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'"
-          class="p-2 sm:p-2.5 rounded-lg transition-colors touch-manipulation"
+          class="p-3 rounded-lg transition-colors touch-manipulation min-w-[48px] min-h-[48px] flex items-center justify-center"
           title="Grid view"
           aria-label="Grid view"
         >
@@ -27,7 +27,7 @@
         <button
           @click="$emit('update:viewMode', 'list')"
           :class="viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'"
-          class="p-2 sm:p-2.5 rounded-lg transition-colors touch-manipulation"
+          class="p-3 rounded-lg transition-colors touch-manipulation min-w-[48px] min-h-[48px] flex items-center justify-center"
           title="List view"
           aria-label="List view"
         >

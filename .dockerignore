@@ -14,6 +14,7 @@ docker-compose*.yml
 .docker/prod
 !.docker/prod/apache/
 !.docker/prod/supervisor/supervisord.conf
+!.docker/prod/app/entrypoint.sh
 .docker/apache
 .docker/php.ini
 

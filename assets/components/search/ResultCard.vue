@@ -12,7 +12,7 @@
       </h3>
       <div class="flex items-center flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm">
         <span class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-medium">
-          <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           PDF
@@ -21,19 +21,19 @@
           Page {{ result._source?.page }}/{{ result._source?.total_pages }}
         </span>
         <span v-if="result._source?.language" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-green-50 text-green-700 font-medium">
-          <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
           </svg>
           {{ getLanguageLabel(result._source?.language) }}
         </span>
         <span v-if="result._rrf_score" class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-gradient-to-r from-purple-50 to-blue-50 text-purple-700 font-medium border border-purple-200">
-          <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
             <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
           </svg>
           RRF: {{ formatScore(result._rrf_score) }}
         </span>
         <span v-else class="inline-flex items-center px-2 sm:px-3 py-1 rounded-full bg-purple-50 text-purple-700 font-medium">
-          <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-0.5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
           </svg>
           Score: {{ formatScore(result._score) }}
@@ -49,7 +49,7 @@
     <!-- Footer -->
     <div class="flex items-center justify-between pt-3 sm:pt-4 border-t border-gray-100 gap-2">
       <div class="flex items-center text-xs sm:text-sm text-gray-500 min-w-0">
-        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
         <span class="truncate">{{ formatDate(result._source?.date) }}</span>
@@ -59,16 +59,16 @@
         target="_blank"
         rel="noopener"
         @click.stop="handleClick"
-        class="inline-flex items-center px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-medium rounded-lg
+        class="inline-flex items-center px-4 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-medium rounded-lg
                transition-all duration-200 shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30
-               group-hover:scale-105 touch-manipulation flex-shrink-0"
-        aria-label="View PDF"
+               group-hover:scale-105 touch-manipulation flex-shrink-0 min-h-[48px]"
+        :aria-label="`View PDF: ${result._source?.title}`"
       >
-        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-2" :class="{'mr-0': true, 'sm:mr-2': true}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-3.5 h-3.5 mr-1.5 sm:w-4 sm:h-4 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
         </svg>
-        <span class="hidden sm:inline">View PDF</span>
+        <span>View PDF</span>
       </a>
     </div>
   </article>

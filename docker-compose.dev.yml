@@ -63,13 +63,4 @@ services:
   ollama:
     ports:
       - "11435:11434"
-    volumes:
-      - ./bin/download-models.sh:/usr/local/bin/download-models.sh:ro
-      - ollama_data:/root/.ollama
-    healthcheck:
-      test: ["CMD-SHELL", "/usr/local/bin/download-models.sh"]
-      interval: 30s
-      timeout: 120s
-      retries: 3
-      start_period: 60s
     restart: "no"

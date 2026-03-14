@@ -29,7 +29,7 @@ pdf-content-search/
 │   └── components/
 │       ├── search/    # Search UI components (Search.vue, Bar.vue, Results.vue, etc.)
 │       └── analytics/ # Analytics dashboard components (KPICard, charts, export)
-├── bin/               # Shell scripts (download-models.sh, monitor-jobs.sh, etc.)
+├── bin/               # Shell scripts (monitor-jobs.sh, worker-logs.sh, etc.)
 ├── config/            # Symfony config (services.yaml, routes, packages/)
 ├── docs/              # Architecture, features, setup guides
 ├── migrations/        # Doctrine database migrations
@@ -170,6 +170,75 @@ docker compose exec php php bin/phpunit tests/Unit
 
 ---
 
+## SEO Architecture
+
+### Meta Layer (`templates/base.html.twig`)
+Every page inherits these blocks — override per template as needed:
+
+| Twig block | Purpose | Default |
+|---|---|---|
+| `title` | `<title>` tag | "PDF Content Search — AI-Powered Document Search" |
+| `meta_description` | `<meta name="description">` | Generic description |
+| `meta_robots` | `<meta name="robots">` | `index, follow` |
+| `canonical` | `<link rel="canonical">` | `{{ url('home') }}` |
+| `og_title` / `og_description` / `og_type` | Open Graph | Inherits title/description |
+| `structured_data` | JSON-LD `<script>` block | WebSite + SearchAction |
+
+**Rules:**
+- Always use `{{ url('route_name') }}` for canonical — never string concatenation (`schemeAndHttpHost ~ pathInfo` has trailing slash issues and exposes query strings)
+- Non-public pages (`/analytics`, `/viewer`, `/api/*`) must set `{% block meta_robots %}noindex, nofollow{% endblock %}`
+- `APP_ENV=dev` injects `X-Robots-Tag: noindex` via Symfony WebProfiler — Lighthouse SEO scores are only meaningful in `APP_ENV=prod`
+
+### robots.txt + sitemap.xml
+Served dynamically by `SitemapController` — **never use static files in `public/`** for these:
+- Static files cannot generate absolute URLs; the `Sitemap:` directive requires an absolute URL
+- A robots.txt with a relative `Sitemap:` is syntactically invalid and scores worse than no robots.txt
+- `SitemapController` uses `$request->getSchemeAndHttpHost()` to build absolute URLs at runtime
+
+### Indexability by Route
+| Route | Indexable | Reason |
+|---|---|---|
+| `/` | ✅ `index, follow` | Main entry point |
+| `/sitemap.xml` | ✅ technical | Served by `SitemapController` |
+| `/robots.txt` | ✅ technical | Served by `SitemapController` |
+| `/viewer` | ❌ `noindex` | Dynamic, user-specific content |
+| `/analytics` | ❌ `noindex` | Internal dashboard |
+| `/api/*` | ❌ `Disallow` | REST endpoints, not HTML pages |
+
+---
+
+## Accessibility Standards
+
+### ARIA Patterns in Use
+- **Search input** (`Bar.vue`): full combobox pattern — `role="combobox"`, `aria-expanded`, `aria-haspopup="listbox"`, `aria-controls`, `aria-activedescendant`
+- **Suggestions list** (`Suggestions.vue`): `role="listbox"` with `role="option"` items and `id="suggestion-{index}"` for `aria-activedescendant` linking
+- **Skip link** (`base.html.twig`): `href="#main-content"`, visually hidden with `-translate-y-full`, appears on focus via `focus:translate-y-0`
+- **Page landmark**: `<main id="main-content">` wraps all page content in every template
+
+### Decorative SVGs — Required Pattern
+All decorative SVGs (icon-only, visual) **must** have:
+```html
+<svg aria-hidden="true" focusable="false" ...>
+```
+- `aria-hidden="true"` — removes from accessibility tree; the parent button/link label describes the action
+- `focusable="false"` — required for IE11/Edge legacy (SVGs were focusable by default)
+- **Never use `replace_all` to add these attributes** — it strips the closing `>` from the tag; always use individual targeted edits
+
+### Tap Targets (WCAG 2.5.5)
+All interactive elements must meet **48×48 CSS pixels minimum**:
+```html
+class="min-w-[48px] min-h-[48px] flex items-center justify-center"
+```
+Affected components: `Pagination.vue`, `Controls.vue`, `Bar.vue` (clear button), `ResultCard.vue` (View PDF link).
+
+### `sr-only` vs `aria-hidden` — When to Use Each
+| Technique | Effect | Use when |
+|---|---|---|
+| `class="sr-only"` | Visually hidden, read by screen reader | Adding semantic context without changing visual design (labels, descriptions) |
+| `aria-hidden="true"` | Hidden from screen reader, visible on screen | Decorative elements already described by adjacent text or parent label |
+
+---
+
 ## Search Architecture
 
 ### Flow
@@ -293,7 +362,7 @@ make prod
 | `apache` | httpd:2.4.66-alpine | Reverse proxy to FPM |
 | `database` | postgres:16-alpine | PostgreSQL |
 | `elasticsearch` | elasticsearch:9.3.0 | Search + vectors |
-| `ollama` | ollama/ollama:latest | AI models |
+| `ollama` | Custom (`.docker/ollama/Dockerfile`) | AI models — entrypoint auto-pulls models on start |
 
 ### Docker Composition Pattern
 - `docker-compose.yml` — base (production defaults, no port exposure)
@@ -380,6 +449,23 @@ npm run format      # Biome format check
 
 ---
 
+## Ollama Models
+
+Models are **automatically downloaded on container startup** via `.docker/ollama/entrypoint.sh`.
+No manual step is required on first deploy or after `make clean`.
+
+- On start: `ollama serve` launches, then the entrypoint pulls missing models
+- Idempotent: skips download if models already exist in the `ollama_data` volume
+- Healthcheck verifies `nomic-embed-text` is present (`start_period: 300s` for first pull)
+
+Models pulled:
+| Model | Size | Purpose |
+|---|---|---|
+| `qwen2.5:7b` | ~4.7 GB | Translation |
+| `nomic-embed-text` | ~274 MB | Embeddings (768d) |
+
+---
+
 ## PDF Indexing
 
 ```bash
@@ -452,6 +538,9 @@ Analytics must be auto-deleted after 90 days. This is not yet implemented (see T
 11. **Using `exec()`/`shell_exec()` for system commands** — always use `Symfony\Component\Process\Process` with args as array; prevents shell injection and allows timeout control
 12. **Mocking concrete classes in tests** — mock the interface (`LanguageDetectorInterface`, `PdfProcessorInterface`, `TranslationServiceInterface`); tight coupling to concrete classes hides architectural problems
 13. **Storing dates as `Y-m-d H:i:s` strings in Elasticsearch** — use `DateTimeInterface::ATOM` (ISO 8601) to enable date math, `date_histogram`, and proper timezone handling
+14. **Using `replace_all` on SVG attribute strings ending with `>`** — strips the closing `>` from the tag, corrupting HTML silently and breaking the Webpack build; always use individual targeted edits for SVG attributes
+15. **Serving `robots.txt`/`sitemap.xml` as static files in `public/`** — static files cannot generate absolute URLs; use `SitemapController` with `$request->getSchemeAndHttpHost()`
+16. **Running Lighthouse SEO in `APP_ENV=dev`** — Symfony WebProfiler injects `X-Robots-Tag: noindex` on all responses; SEO scores are only accurate in `APP_ENV=prod`
 
 ---
 
@@ -472,6 +561,7 @@ Analytics must be auto-deleted after 90 days. This is not yet implemented (see T
 | `src/Service/LanguageDetector.php` | Language detection; `final`, implements `LanguageDetectorInterface` |
 | `src/Controller/SearchController.php` | Search HTTP API |
 | `src/Controller/AnalyticsController.php` | Analytics REST API |
+| `src/Controller/SitemapController.php` | Dynamic `robots.txt` + `sitemap.xml` with absolute URLs |
 | `src/Controller/TranslationController.php` | Translation HTTP API |
 | `src/Search/SearchStrategy.php` | Search strategy enum (HYBRID/LEXICAL/PREFIX) |
 | `src/DTO/SearchResult.php` | Typed search result DTO |
@@ -481,6 +571,8 @@ Analytics must be auto-deleted after 90 days. This is not yet implemented (see T
 | `Makefile` | All common operations |
 | `TODO.md` | Prioritized backlog |
 | `docs/refactor-contract-first-process-hardening/` | Refactoring session docs (findings, plan, progress log) |
+| `docs/tasks/seo-accessibility-lighthouse/` | SEO + a11y audit session docs (findings, plan, progress log) |
+| `templates/base.html.twig` | Master template — SEO meta, canonical, OG, JSON-LD, skip link, `<main>` |
 
 ---
 
