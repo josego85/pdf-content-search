@@ -25,6 +25,7 @@ const props = defineProps({
 
 const exportingFormat = ref(null)
 
+// biome-ignore lint/correctness/noUnusedVariables: used in template via @click
 const doExport = (format) => {
 	exportingFormat.value = format
 	const a = document.createElement("a")

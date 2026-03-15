@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **SEO meta layer** (`base.html.twig`): `<title>`, `<meta description>`, `<meta robots>`, `<link rel="canonical">` (Symfony router), Open Graph tags, JSON-LD `WebSite + SearchAction` structured data — all overridable per page
 - **Accessibility**: skip-to-content link (`sr-only` + `focus:not-sr-only` pattern); `<main id="main-content">` landmark; ARIA combobox pattern on search input (`role`, `aria-expanded`, `aria-haspopup`, `aria-controls`, `aria-activedescendant`)
 - **`prod entrypoint`** (`.docker/prod/app/entrypoint.sh`): runs DB migrations, sets up Messenger transport, and warms Symfony cache automatically on every container start — idempotent; no manual post-deploy steps required
+- **Claude Code hooks** (`.claude/hooks/`): `protect-secret-files.sh` blocks reading gitignored `.env*` files via `Read`/`Grep`; `auto-format.sh` runs PHP-CS-Fixer or Biome after every edit; `validate-service-interface.sh` warns when a new service has no contract; `validate-strict-types.sh` warns when `declare(strict_types=1)` is missing; `validate-test-exists.sh` warns when a new service has no unit test
+- **Claude Code slash commands** (`.claude/commands/`): `/new-service` guides interface + service + DI binding + unit test creation; `/quality-check` runs PHPStan, PHP-CS-Fixer, Rector and Biome in sequence; `/security-audit` runs `composer audit` and `npm audit`
 
 ### Changed
 - **`PdfProcessor`**: replaced `exec()`/`shell_exec()` with `Symfony\Component\Process\Process` — args passed as array (no shell interpolation, eliminates injection surface), explicit 300 s timeout on `ocrmypdf`, clean `isSuccessful()` / `getExitCode()` checks, stderr no longer silently discarded
@@ -33,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Skip link URL pollution**: replaced `-translate-y-full` with `sr-only`/`focus:not-sr-only` — prevents `#main-content` from appearing in the address bar on accidental click; element is now fully clipped from the DOM until keyboard focus
 - **`AnalyticsController::trackClick()`**: corrected `time_to_click_ms` calculation — was `microtime(true)*1000 - getTimestamp()*1000` (wrong units); now `(microtime(true) - getTimestamp()) * 1000`; corrupted all stored click-latency values
 - **`TranslationController`**: JSON body guard — returns `400 Bad Request` when `json_decode` produces a non-array instead of silently passing `null` fields to the orchestrator
+- **`biome.json`**: excluded `.claude/**` from Biome scope to prevent false formatter errors on local settings files
 
 ### Removed
 - **`bin/download-models.sh`**: deleted — model provisioning moved into the container entrypoint; `make dev`/`make prod` no longer require a separate download step

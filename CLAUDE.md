@@ -523,6 +523,49 @@ Analytics must be auto-deleted after 90 days. This is not yet implemented (see T
 
 ---
 
+## Claude Code Hooks
+
+Hooks in `.claude/hooks/` run automatically on every Claude Code session. Do not work around them — they enforce project standards.
+
+### Active Hooks
+
+| Hook | Event | Trigger | Purpose |
+|---|---|---|---|
+| `protect-secret-files.sh` | `PreToolUse` Read\|Grep | Any `.env*` file that is gitignored | Blocks reading files that may contain real secrets — ask the user for the specific values needed instead |
+| `auto-format.sh` | `PostToolUse` Edit\|Write | Any `.php`, `.vue`, `.js`, `.ts` file | Runs `php-cs-fixer` (via Docker) or `biome format` automatically |
+| `validate-service-interface.sh` | `PostToolUse` Write | New file in `src/Service/` | Warns if a concrete class does not `implement` a contract from `src/Contract/` |
+| `validate-strict-types.sh` | `PostToolUse` Write | Any new `.php` file | Warns if `declare(strict_types=1)` is missing |
+| `validate-test-exists.sh` | `PostToolUse` Write | New file in `src/Service/` | Warns if no corresponding `tests/Unit/Service/*Test.php` exists |
+
+### Hook Output
+
+- Hooks that output to **stdout** inject feedback directly into Claude's context — Claude will self-correct without user intervention.
+- Hooks that exit with code **2** block the operation entirely (`protect-secret-files.sh`).
+- All validation hooks exit **0** — they warn but never block.
+
+### Secret File Protection
+
+Never attempt to read `.env.local`, `.env.prod`, `.env.prod.local`, or any other gitignored env file. The hook will block the read and instruct you to ask the user for the specific variable values needed.
+
+---
+
+## Slash Commands
+
+Custom slash commands in `.claude/commands/`. Invoke them by typing `/command-name` in Claude Code.
+
+| Command | File | Purpose |
+|---|---|---|
+| `/new-service` | `new-service.md` | Creates interface + service + DI binding + unit test in one guided flow |
+| `/quality-check` | `quality-check.md` | Runs PHPStan → PHP-CS-Fixer → Rector → Biome in sequence; stops on first failure |
+| `/security-audit` | `security-audit.md` | Runs `composer audit` + `npm audit`; reports vulnerabilities by severity |
+
+### Usage Notes
+- `/new-service` accepts arguments: `/new-service ReportExporter - exports analytics as PDF`
+- `/quality-check` and `/security-audit` require the Docker stack to be running (`make dev`)
+- Both PHP tools run inside the `php` container; Biome also runs inside the container via `npm run lint`
+
+---
+
 ## Common Pitfalls to Avoid
 
 1. **Adding new services without interfaces** — all services must implement a contract in `src/Contract/`
