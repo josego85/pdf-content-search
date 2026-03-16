@@ -6,7 +6,7 @@
 # ============================================
 # Stage 1: Base Image
 # ============================================
-FROM php:8.4.18-fpm-alpine AS base
+FROM php:8.4.19-fpm-alpine@sha256:38c3275e8d8fe1b395dd81dccdbdbec6b0fa1fa318e2391c4ad98eae3b6dc0e3 AS base
 
 # Install runtime dependencies only
 RUN apk add --no-cache \
@@ -49,7 +49,7 @@ WORKDIR /var/www/html
 # ============================================
 # Stage 2: Node Builder - Compile assets
 # ============================================
-FROM node:24-alpine AS node-builder
+FROM node:24-alpine@sha256:7fddd9ddeae8196abf4a3ef2de34e11f7b1a722119f91f28ddf1e99dcafdf114 AS node-builder
 
 WORKDIR /build
 
@@ -66,7 +66,7 @@ RUN npm run build
 # ============================================
 # Stage 3: Composer Builder - PHP dependencies
 # ============================================
-FROM composer:latest AS composer-builder
+FROM composer:latest@sha256:743aebe48ca67097c36819040633ea77e44a561eca135e4fc84c002e63a1ba07 AS composer-builder
 
 WORKDIR /build
 
