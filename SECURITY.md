@@ -32,7 +32,7 @@ You will receive an acknowledgement within **72 hours**. If the issue is confirm
 
 | Check | Tool | Frequency |
 |-------|------|-----------|
-| SAST (PHP + JS/TS) | CodeQL | Every push, weekly |
+| SAST (JS/TS) | CodeQL | Every push, weekly |
 | PHP static analysis | PHPStan Level 8 | Every push |
 | PHP dependency CVEs | `composer audit` | Every push + daily |
 | JS dependency CVEs | `npm audit --audit-level=high` | Every push + daily |

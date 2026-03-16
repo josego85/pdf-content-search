@@ -30,8 +30,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['javascript-typescript', 'php']
-        # CodeQL supports: c-cpp, csharp, go, java-kotlin, javascript-typescript, php, python, ruby, swift
+        language: ['javascript-typescript']
+        # CodeQL supports: c-cpp, csharp, go, java-kotlin, javascript-typescript, python, ruby, swift
         # Learn more: https://aka.ms/codeql-docs/language-support
 
     steps:
