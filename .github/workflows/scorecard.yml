@@ -31,7 +31,7 @@ jobs:
       - name: Run OpenSSF Scorecard
         # Pin to SHA once the exact digest for v2.4.2 is verified:
         # https://github.com/ossf/scorecard-action/releases/tag/v2.4.2
-        uses: ossf/scorecard-action@v2.4.2
+        uses: ossf/scorecard-action@05b42c624433fc40578a4040d5cf5e36ddca8cde # v2.4.2
         with:
           results_file: scorecard-results.sarif
           results_format: sarif
