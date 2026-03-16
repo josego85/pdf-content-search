@@ -4,7 +4,7 @@
 # ============================================
 
 # Stage 1: Build PHP extensions (cached indefinitely)
-FROM php:8.4.18-fpm-alpine AS php-extensions
+FROM php:8.4.19-fpm-alpine@sha256:38c3275e8d8fe1b395dd81dccdbdbec6b0fa1fa318e2391c4ad98eae3b6dc0e3 AS php-extensions
 
 # Install build + runtime deps in single layer
 RUN apk add --no-cache \
@@ -49,7 +49,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-enable pcov
 
 # Stage 2: Final development image
-FROM php:8.4.18-fpm-alpine
+FROM php:8.4.19-fpm-alpine@sha256:38c3275e8d8fe1b395dd81dccdbdbec6b0fa1fa318e2391c4ad98eae3b6dc0e3
 
 # Copy compiled extensions from stage 1 (instant!)
 COPY --from=php-extensions /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/

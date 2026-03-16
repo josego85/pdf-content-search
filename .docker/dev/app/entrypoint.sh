@@ -15,7 +15,7 @@ fi
 # Install Node dependencies if missing or outdated
 if [ ! -d "node_modules" ] || [ "package-lock.json" -nt "node_modules/.package-lock.json" ]; then
     echo "Installing npm dependencies..."
-    npm install --ignore-scripts
+    npm ci --ignore-scripts
 fi
 
 # Create necessary directories
