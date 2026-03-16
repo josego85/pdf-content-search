@@ -1,0 +1,53 @@
+name: OpenSSF Scorecard
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    # Run every Monday at 5:00 AM UTC (offset from CodeQL at 6:00 AM)
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+# Default to read-only; individual jobs request only what they need
+permissions: read-all
+
+jobs:
+  scorecard:
+    name: Scorecard Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write # Upload SARIF to GitHub Security tab
+      id-token: write        # Publish score to scorecard.dev via OIDC
+      contents: read
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Run OpenSSF Scorecard
+        # Pin to SHA once the exact digest for v2.4.2 is verified:
+        # https://github.com/ossf/scorecard-action/releases/tag/v2.4.2
+        uses: ossf/scorecard-action@v2.4.2
+        with:
+          results_file: scorecard-results.sarif
+          results_format: sarif
+          # Publishes the score badge to scorecard.dev — requires a public repository.
+          # Set to false for private repos.
+          publish_results: true
+
+      - name: Upload SARIF artifact
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: scorecard-results
+          path: scorecard-results.sarif
+          retention-days: 5
+
+      - name: Upload results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@0d579ffd059c29b07949a3cce3983f0780820c98 # v4.32.6
+        with:
+          sarif_file: scorecard-results.sarif
+          category: scorecard
