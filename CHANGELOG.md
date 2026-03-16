@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`public/robots.txt`**, **`public/sitemap.xml`**: static files deleted — now served dynamically by `SitemapController` to guarantee absolute URLs on any host
 
 ### Security
+- **OpenSSF Scorecard** (`scorecard.yml`): added GitHub Actions workflow — runs on push to `main` and weekly; publishes score to scorecard.dev; uploads SARIF findings to the GitHub Security tab; scoped to `main` only to avoid exposing `id-token: write` on fork PRs
 - **`github/codeql-action`** (4.32.4 → 4.32.6): patched CodeQL SAST action — applies upstream security and reliability fixes to the static analysis workflow
 - **`actions/dependency-review-action`** (4.8.3 → 4.9.0): updated dependency review action — improved vulnerability detection coverage for PR dependency diffs
 
