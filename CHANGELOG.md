@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.15.0] - 2026-03-18
 
 ### Added
 - **`CLAUDE.md`**: authoritative AI assistant guide for this repository — covers architecture patterns, coding standards (PHPStan Level 8, strict types, interface-first DI), search pipeline, security non-negotiables, testing strategy, Docker composition model, CI/CD gates, environment variables reference, and prioritized backlog; intended to give Claude Code full context on every task without manual re-explanation
