@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.15.1] - 2026-03-27
+
+### Security
+- **`picomatch` upgraded** (npm): resolved high-severity vulnerabilities GHSA-3v7f-55p6-f55p (Method Injection in POSIX Character Classes — incorrect glob matching) and GHSA-c2c7-rcm5-vvqj (ReDoS via extglob quantifiers) — 4 packages updated via `npm audit fix` (`picomatch`, `anymatch`, `micromatch`, `tailwindcss` subdependencies); `package-lock.json` updated to lock fixed versions
+
+---
+
 ## [1.15.0] - 2026-03-18
 
 ### Added
