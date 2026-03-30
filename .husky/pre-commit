@@ -24,8 +24,15 @@ if ! docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T php 
 fi
 echo "✅ PHPStan passed."
 
+echo "🏛 Running Rector check..."
+if ! docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T php composer rector-check; then
+  echo "❌ Rector found pending changes. Run: make rector-fix"
+  exit 1
+fi
+echo "✅ Rector clean."
+
 echo "🧪 Running tests..."
-if ! docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T php bash -c "XDEBUG_MODE=coverage php bin/phpunit"; then
+if ! docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T php composer test; then
   echo "❌ Tests failed. Fix them before committing."
   exit 1
 fi

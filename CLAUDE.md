@@ -384,7 +384,7 @@ Always use `make` for common tasks. Check `Makefile` before running raw docker/c
 | `make down` | Stop all services |
 | `make test` | Run PHPUnit test suite |
 | `make phpstan` | Run PHPStan Level 8 static analysis |
-| `make rector` | Run Rector in dry-run mode |
+| `make rector` | Run Rector in check mode (no writes) |
 | `make rector-fix` | Apply Rector refactoring |
 | `make shell` | Open bash in PHP container |
 | `make logs` | Tail all container logs |
@@ -415,10 +415,38 @@ Do not merge pull requests with CI failures.
 
 ---
 
+## Husky Pre-commit Hook
+
+`.husky/pre-commit` runs automatically on every `git commit` when the dev containers are up.
+
+### Design Rules
+- **Graceful skip** — if the `php` container is not running, the hook exits 0 and warns; CI is the real quality gate
+- **No coverage in pre-commit** — `XDEBUG_MODE=coverage` is intentionally absent; coverage instrumentation makes the suite 5–10x slower and belongs in CI only (`--coverage-clover coverage.xml`)
+- **Mirrors `composer ci`** — checks run in the same order and use the same composer scripts for consistency
+
+### Checks (in order)
+| Step | Command | Fail action |
+|---|---|---|
+| PHP-CS-Fixer | `composer cs-check` | `Run: make cs-fix` |
+| PHPStan | `composer phpstan` | Fix errors before committing |
+| Rector | `composer rector-check` | `Run: make rector-fix` |
+| PHPUnit | `composer test` | Fix failing tests |
+| Biome | `npm run lint --silent` | `Run: npm run lint` |
+
+### Why Keep Husky Separate from `composer ci`
+- `composer ci` is PHP-only — cannot include Biome (Node.js)
+- Husky provides per-check actionable error messages and graceful skip logic
+- `composer ci` is the local convenience script; Husky is the automated gate
+
+---
+
 ## Code Quality Tools
 
 ### PHP Static Analysis
 ```bash
+# Run all checks in sequence (local CI equivalent)
+docker compose exec php composer ci
+
 # PHPStan
 docker compose exec php composer phpstan
 # or: make phpstan
@@ -429,13 +457,17 @@ docker compose exec php composer cs-check
 # PHP-CS-Fixer (fix)
 docker compose exec php composer cs-fix
 
-# Rector (dry-run — see what would change)
-docker compose exec php composer rector-dry
+# Rector (check — see what would change, no writes)
+docker compose exec php composer rector-check
 # or: make rector
 
 # Rector (apply)
 docker compose exec php composer rector
 # or: make rector-fix
+
+# Run tests
+docker compose exec php composer test
+# or: make test
 ```
 
 ### Frontend Linting

@@ -16,8 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`phpstan.neon`**: added `reportUnmatchedIgnoredErrors: true` — PHPStan now fails if a baseline entry no longer matches any real error, preventing stale suppression rules from accumulating
 - **`rector/rector` upgraded** (`2.3.8` → `2.3.9`): patch release — bug fixes in PHP 8.4 rules and Symfony 7.4 rector set
 - **`friendsofphp/php-cs-fixer` upgraded** (`3.94.0` → `3.94.2`): patch release — fixer rule corrections and false-positive reductions
+- **`composer.json` — `rector-dry` renamed to `rector-check`**: aligns naming with `cs-check` — both scripts verify without modifying; updated in `Makefile`, `ci.yml`, and `.claude/commands/quality-check.md`
 - **`composer.json` — new `test` script**: alias for `vendor/bin/phpunit`; accepts pass-through arguments via `--`
-- **`composer.json` — new `ci` script**: chains `cs-check` → `phpstan` → `rector-dry` → `test` in a single local command; mirrors the checks enforced by GitHub Actions CI
+- **`composer.json` — new `ci` script**: chains `cs-check` → `phpstan` → `rector-check` → `test` in a single local command; mirrors the checks enforced by GitHub Actions CI
 - **`ci.yml` — `php-tests` job**: test step now calls `composer test -- ...` instead of `vendor/bin/phpunit` directly, ensuring the CI pipeline is consistent with the local `composer test` script
 
 ### Fixed
