@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.15.2] - 2026-03-30
+
+### Security
+- **`serialize-javascript` override bumped** (npm `7.0.3` → `7.0.5`): resolved GHSA-qj8w-gfj5-8c6v (CPU Exhaustion DoS via crafted array-like objects) across all dependents (`css-minimizer-webpack-plugin`, `terser-webpack-plugin`, `@symfony/webpack-encore 5.x`); fixed via npm `overrides` entry — avoids a breaking upgrade to `@symfony/webpack-encore` v6; `package-lock.json` updated with pinned resolved version
+
+---
+
 ## [1.15.1] - 2026-03-27
 
 ### Security
