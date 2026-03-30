@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`phpstan/phpstan-doctrine` upgraded** (`2.0.16` → `2.0.20`): improved Doctrine 3.x entity and repository type analysis
 - **`phpstan/phpstan-symfony` upgraded** (`2.0.14` → `2.0.15`): improved Symfony 7.4 service and event type analysis
 - **`phpstan.neon`**: added `reportUnmatchedIgnoredErrors: true` — PHPStan now fails if a baseline entry no longer matches any real error, preventing stale suppression rules from accumulating
+- **`rector/rector` upgraded** (`2.3.8` → `2.3.9`): patch release — bug fixes in PHP 8.4 rules and Symfony 7.4 rector set
+- **`friendsofphp/php-cs-fixer` upgraded** (`3.94.0` → `3.94.2`): patch release — fixer rule corrections and false-positive reductions
+- **`composer.json` — new `test` script**: alias for `vendor/bin/phpunit`; accepts pass-through arguments via `--`
+- **`composer.json` — new `ci` script**: chains `cs-check` → `phpstan` → `rector-dry` → `test` in a single local command; mirrors the checks enforced by GitHub Actions CI
+- **`ci.yml` — `php-tests` job**: test step now calls `composer test -- ...` instead of `vendor/bin/phpunit` directly, ensuring the CI pipeline is consistent with the local `composer test` script
 
 ### Fixed
 - **`LanguageDetector::detect()`**: added explicit `(string)` cast on `array_key_first()` return value — `array_key_first` returns `int|string`; cast guarantees the `language` key always satisfies the declared `array{language: string, …}` return type; removes one entry from `phpstan-baseline.neon`

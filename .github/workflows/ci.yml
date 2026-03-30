@@ -66,7 +66,7 @@ jobs:
           timeout 60 bash -c 'until curl -s http://localhost:9200/_cluster/health | grep -q "green\|yellow"; do sleep 1; done'
 
       - name: Run All Tests with Coverage
-        run: vendor/bin/phpunit --coverage-clover coverage.xml --testdox
+        run: composer test -- --coverage-clover coverage.xml --testdox
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
