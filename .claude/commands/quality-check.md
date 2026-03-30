@@ -19,7 +19,7 @@ If it fails: run `composer cs-fix` to fix automatically, then show what changed.
 ## Step 3 — Rector (modernization)
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T php composer rector-dry
+docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T php composer rector-check
 ```
 
 If it finds changes: show them and ask the user whether to apply with `composer rector`.

@@ -82,7 +82,9 @@
     "cs-fix": "php-cs-fixer fix --config=.php-cs-fixer.dist.php",
     "phpstan": "phpstan analyse",
     "rector": "rector process",
-    "rector-dry": "rector process --dry-run",
+    "rector-check": "rector process --dry-run",
+    "test": "vendor/bin/phpunit",
+    "ci": ["@cs-check", "@phpstan", "@rector-check", "@test"],
     "auto-scripts": {
       "cache:clear": "symfony-cmd",
       "assets:install %PUBLIC_DIR%": "symfony-cmd",
@@ -101,12 +103,12 @@
     }
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "3.94.0",
+    "friendsofphp/php-cs-fixer": "3.94.2",
     "phpstan/phpstan": "2.1.45",
     "phpstan/phpstan-doctrine": "2.0.20",
     "phpstan/phpstan-symfony": "2.0.15",
     "phpunit/phpunit": "9.6.34",
-    "rector/rector": "2.3.8",
+    "rector/rector": "2.3.9",
     "symfony/browser-kit": ">=7.4.0",
     "symfony/css-selector": ">=7.4.0",
     "symfony/debug-bundle": "7.4.0",

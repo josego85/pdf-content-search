@@ -5,7 +5,7 @@
 # ============================================
 
 .DEFAULT_GOAL := help
-.PHONY: help dev prod up down restart logs shell test phpstan rector rector-dry clean rebuild status
+.PHONY: help dev prod up down restart logs shell test phpstan rector rector-check clean rebuild status
 
 # Colors for output
 BLUE := \033[0;34m
@@ -156,8 +156,8 @@ test: ## Run tests in development environment
 phpstan: ## Run PHPStan static analysis
 	@$(COMPOSE_DEV) exec php composer phpstan
 
-rector: ## Run Rector in dry-run mode (preview changes, no writes)
-	@$(COMPOSE_DEV) exec php composer rector-dry
+rector: ## Run Rector in check mode (preview changes, no writes)
+	@$(COMPOSE_DEV) exec php composer rector-check
 
 rector-fix: ## Run Rector and apply changes (always run rector first!)
 	@$(COMPOSE_DEV) exec php composer rector
