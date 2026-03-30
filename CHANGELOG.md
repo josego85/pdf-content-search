@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.15.2] - 2026-03-30
 
+### Changed
+- **PHPStan upgraded** (`2.1.39` → `2.1.45`): patch release — false positive fixes and improved type inference for PHP 8.4 features
+- **`phpstan/phpstan-doctrine` upgraded** (`2.0.16` → `2.0.20`): improved Doctrine 3.x entity and repository type analysis
+- **`phpstan/phpstan-symfony` upgraded** (`2.0.14` → `2.0.15`): improved Symfony 7.4 service and event type analysis
+- **`phpstan.neon`**: added `reportUnmatchedIgnoredErrors: true` — PHPStan now fails if a baseline entry no longer matches any real error, preventing stale suppression rules from accumulating
+
+### Fixed
+- **`LanguageDetector::detect()`**: added explicit `(string)` cast on `array_key_first()` return value — `array_key_first` returns `int|string`; cast guarantees the `language` key always satisfies the declared `array{language: string, …}` return type; removes one entry from `phpstan-baseline.neon`
+
 ### Security
 - **`serialize-javascript` override bumped** (npm `7.0.3` → `7.0.5`): resolved GHSA-qj8w-gfj5-8c6v (CPU Exhaustion DoS via crafted array-like objects) across all dependents (`css-minimizer-webpack-plugin`, `terser-webpack-plugin`, `@symfony/webpack-encore 5.x`); fixed via npm `overrides` entry — avoids a breaking upgrade to `@symfony/webpack-encore` v6; `package-lock.json` updated with pinned resolved version
 

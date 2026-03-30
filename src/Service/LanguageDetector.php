@@ -37,7 +37,7 @@ final readonly class LanguageDetector implements LanguageDetectorInterface
         $results = $this->detector->detect($sample)->bestResults()->close();
 
         return [
-            'language' => array_key_first($results) ?? 'unknown',
+            'language' => (string) (array_key_first($results) ?? 'unknown'),
             'confidence' => reset($results) ?: 0.0,
             'all' => $results,
         ];

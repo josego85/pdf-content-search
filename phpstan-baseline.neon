@@ -17,9 +17,3 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: src/Service/ElasticsearchService.php
-
-		-
-			message: '#^Method App\\Service\\LanguageDetector\:\:detect\(\) should return array\{language\: string, confidence\: float, all\: array\<string, float\>\} but returns array\{language\: int\|string, confidence\: mixed, all\: array\}\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Service/LanguageDetector.php
