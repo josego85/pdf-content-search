@@ -84,23 +84,14 @@
     "rector": "rector process",
     "rector-check": "rector process --dry-run",
     "test": "vendor/bin/phpunit",
-    "ci": [
-      "@cs-check",
-      "@phpstan",
-      "@rector-check",
-      "@test"
-    ],
+    "ci": ["@cs-check", "@phpstan", "@rector-check", "@test"],
     "auto-scripts": {
       "cache:clear": "symfony-cmd",
       "assets:install %PUBLIC_DIR%": "symfony-cmd",
       "importmap:install": "symfony-cmd"
     },
-    "post-install-cmd": [
-      "@auto-scripts"
-    ],
-    "post-update-cmd": [
-      "@auto-scripts"
-    ]
+    "post-install-cmd": ["@auto-scripts"],
+    "post-update-cmd": ["@auto-scripts"]
   },
   "conflict": {
     "symfony/symfony": "*"

@@ -399,7 +399,10 @@ Always use `make` for common tasks. Check `Makefile` before running raw docker/c
 |---|---|---|
 | `ci.yml` | push / PR | PHPUnit (85% coverage), PHPStan, PHP-CS-Fixer, Rector, Biome, Webpack build |
 | `security-audit.yml` | push / PR / daily 2am UTC | npm audit, composer audit, dependency-review |
-| `codeql.yml` | push / PR | SAST (PHP vulnerability scanning) |
+| `codeql.yml` | push / PR / weekly Monday 6am UTC | SAST (PHP vulnerability scanning) |
+
+### Push Trigger Branches (all three workflows)
+`main`, `develop`, `feature/**`, `fix/**`, `chore/**`, `claude/**`
 
 ### CI Requirements (All Must Pass)
 1. PHPUnit — ≥85% line coverage
