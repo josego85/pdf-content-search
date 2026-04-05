@@ -63,16 +63,3 @@ services:
         reservations:
           memory: 1G
 
-  # ==========================================
-  # Ollama - Production Settings
-  # ==========================================
-  ollama:
-    # ✅ Resource limits (AI needs more resources)
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 4G
-        reservations:
-          cpus: '1.0'
-          memory: 2G

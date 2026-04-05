@@ -1,15 +1,46 @@
 parameters:
     # Ollama API configuration
     ollama.host: '%env(OLLAMA_HOST)%'
-    ollama.model: 'qwen2.5:7b'
-    ollama.timeout: 300  # seconds (qwen2.5:7b needs 3-5min for translations on CPU)
+    # qwen2.5:3b — 1.9GB, ~3-4x faster than 7b on CPU, quality sufficient for page-level translation
+    ollama.model: 'qwen2.5:3b'
+    # Timeout adjusted for 3b: ~60s/page typical on Core Ultra 7 155U (was 300s for 7b)
+    ollama.timeout: 120
 
     # Embedding model configuration for semantic search
     ollama.embedding_model: 'nomic-embed-text'  # 768 dimensions, ~50-100ms per embedding
 
+    # Maximum characters of page text sent to the embedding model.
+    # nomic-embed-text scales almost linearly with token count on CPU.
+    # 500 chars ≈ 100 tokens ≈ 3-4 sentences — sufficient to encode the page topic.
+    # The full text is stored in Elasticsearch for BM25 lexical search (no quality loss).
+    # Benchmarks (Core Ultra 7 155U):
+    #   2000 chars → 770ms/page → ~809s total
+    #   500 chars  → ~190ms/page → ~200s total (estimated)
+    # Raise to 1000-2000 if semantic precision on long technical content matters more than speed.
+    ollama.embed_max_chars: 500
+
+    # Number of concurrent /api/embed requests fired simultaneously.
+    # Ollama's /api/embed serialises requests — extra concurrent calls return HTTP 400.
+    # Keep at 1 (sequential batches of EMBED_BATCH_SIZE texts per round-trip).
+    ollama.embed_concurrency: 1
+
     # Model generation options
     ollama.temperature: 0.3  # Lower = more deterministic translations
-    ollama.max_tokens: 4096  # Maximum output tokens
+    ollama.max_tokens: 2048  # 3b generates at ~30 tokens/s; 2048 covers any full page translation
+
+    # CPU thread count for LLM inference.
+    # Core Ultra 7 155U: 6 P-cores + 2 E-cores + 2 LP-cores = 14 logical threads.
+    # Using 12 saturates P+E cores and leaves threads free for the OS and other services.
+    ollama.num_threads: 12
+
+    # Keep models loaded indefinitely between requests.
+    # -1 as a JSON integer → Ollama interprets any negative float64 as MaxInt64 (keep forever).
+    # Must NOT be a string: time.ParseDuration("-1") fails in Go → 400 Bad Request.
+    ollama.keep_alive: -1
+
+    # Context window. 4096 tokens covers any realistic PDF page.
+    # Smaller than the default (32768 on 3b) → less KV-cache RAM → faster prefill.
+    ollama.num_ctx: 4096
 
     # Translation cache configuration
     translation.cache_ttl: 604800  # 7 days in seconds (1 week)

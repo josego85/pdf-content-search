@@ -77,6 +77,9 @@ services:
             $ollamaTimeout: '%ollama.timeout%'
             $ollamaTemperature: '%ollama.temperature%'
             $ollamaMaxTokens: '%ollama.max_tokens%'
+            $ollamaNumThreads: '%ollama.num_threads%'
+            $ollamaKeepAlive: '%ollama.keep_alive%'
+            $ollamaNumCtx: '%ollama.num_ctx%'
 
     # Embedding service for semantic search
     App\Service\OllamaEmbeddingService:
@@ -84,6 +87,7 @@ services:
             $ollamaHost: '%ollama.host%'
             $embeddingModel: '%ollama.embedding_model%'
             $dimensions: 768
+            $keepAlive: '%ollama.keep_alive%'
 
     # Bind interface to implementation for embeddings
     App\Contract\EmbeddingServiceInterface: '@App\Service\OllamaEmbeddingService'
@@ -108,3 +112,8 @@ services:
         arguments:
             $supportedLanguages: '%app.supported_languages%'
     App\Contract\LanguageDetectorInterface: '@App\Service\LanguageDetector'
+
+    App\Command\IndexarPdfsCommand:
+        arguments:
+            $embedMaxChars: '%ollama.embed_max_chars%'
+            $embedConcurrency: '%ollama.embed_concurrency%'

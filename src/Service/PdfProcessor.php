@@ -71,6 +71,42 @@ final readonly class PdfProcessor implements PdfProcessorInterface
         return $this->extractWithPdftotext($filePath, $page);
     }
 
+    /**
+     * Extracts all pages in one pdftotext call and splits by form-feed (\f).
+     * ~20x faster than one call per page for large PDFs.
+     *
+     * {@inheritDoc}
+     */
+    public function extractAllPages(string $filePath): array
+    {
+        $process = new Process([
+            'pdftotext',
+            '-layout',
+            $filePath,
+            '-',
+        ]);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            return [];
+        }
+
+        $pages = [];
+        // pdftotext separates pages with \f (form feed, ASCII 12)
+        $rawPages = explode("\f", $process->getOutput());
+
+        foreach ($rawPages as $index => $raw) {
+            $text = trim($raw);
+
+            // 1-based page numbers; pdftotext appends a trailing \f so the last element is empty
+            if ($text !== '') {
+                $pages[$index + 1] = $text;
+            }
+        }
+
+        return $pages;
+    }
+
     private function extractWithPdftotext(string $filePath, int $page): string
     {
         $process = new Process([

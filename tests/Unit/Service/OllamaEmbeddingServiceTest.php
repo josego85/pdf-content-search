@@ -19,7 +19,7 @@ final class OllamaEmbeddingServiceTest extends TestCase
     private const string EMBEDDING_MODEL = 'nomic-embed-text';
     private const int DIMENSIONS = 768;
 
-    private \PHPUnit\Framework\MockObject\MockObject $httpClient;
+    private HttpClientInterface&\PHPUnit\Framework\MockObject\MockObject $httpClient;
 
     private OllamaEmbeddingService $service;
 
@@ -30,9 +30,14 @@ final class OllamaEmbeddingServiceTest extends TestCase
             $this->httpClient,
             self::OLLAMA_HOST,
             self::EMBEDDING_MODEL,
-            self::DIMENSIONS
+            self::DIMENSIONS,
+            -1,
         );
     }
+
+    // -------------------------------------------------------------------------
+    // embed() — single text, sends input as plain string
+    // -------------------------------------------------------------------------
 
     public function testEmbedSuccessfully(): void
     {
@@ -52,7 +57,8 @@ final class OllamaEmbeddingServiceTest extends TestCase
                 'POST',
                 self::OLLAMA_HOST . '/api/embed',
                 $this->callback(static fn ($options): bool => $options['json']['model'] === self::EMBEDDING_MODEL
-                    && $options['json']['input'] === $text
+                    && $options['json']['input'] === $text  // plain string, not array
+                    && $options['json']['keep_alive'] === -1
                     && $options['timeout'] === 30)
             )
             ->willReturn($response);
@@ -62,10 +68,40 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $this->assertSame($expectedEmbedding, $result);
     }
 
+    public function testEmbedSendsInputAsString(): void
+    {
+        $text = 'test query';
+        $embedding = array_fill(0, self::DIMENSIONS, 0.1);
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response
+            ->method('toArray')
+            ->willReturn(['embeddings' => [$embedding]]);
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->with(
+                'POST',
+                self::OLLAMA_HOST . '/api/embed',
+                [
+                    'json' => [
+                        'model' => self::EMBEDDING_MODEL,
+                        'input' => $text,       // string, not [$text]
+                        'keep_alive' => -1,
+                    ],
+                    'timeout' => 30,
+                ]
+            )
+            ->willReturn($response);
+
+        $this->service->embed($text);
+    }
+
     public function testEmbedThrowsExceptionForInvalidDimensions(): void
     {
         $text = 'test query';
-        $wrongDimensionEmbedding = array_fill(0, 512, 0.1); // Wrong dimensions
+        $wrongDimensionEmbedding = array_fill(0, 512, 0.1);
 
         $response = $this->createMock(ResponseInterface::class);
         $response
@@ -89,7 +125,7 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response
             ->method('toArray')
-            ->willReturn(['error' => 'Model not found']); // Missing 'embeddings' field
+            ->willReturn(['error' => 'Model not found']);
 
         $this->httpClient
             ->method('request')
@@ -107,8 +143,7 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $expectedEmbedding = array_fill(0, self::DIMENSIONS, 0.1);
 
         $failureResponse = $this->createMock(ResponseInterface::class);
-        // Use \Exception (not \RuntimeException) to simulate a transient network error.
-        // \RuntimeException is treated as a permanent failure and is not retried.
+        // \Exception (not \RuntimeException) simulates a transient network error — retried.
         $failureResponse
             ->method('toArray')
             ->willThrowException(new \Exception('Connection timeout'));
@@ -133,7 +168,6 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $text = 'test query';
 
         $response = $this->createMock(ResponseInterface::class);
-        // Use \Exception for transient failures to exercise the retry path.
         $response
             ->method('toArray')
             ->willThrowException(new \Exception('Connection failed'));
@@ -158,7 +192,6 @@ final class OllamaEmbeddingServiceTest extends TestCase
             ->method('toArray')
             ->willThrowException(new \RuntimeException('Permanent validation failure'));
 
-        // Only 1 attempt — RuntimeException must not be retried.
         $this->httpClient
             ->expects($this->once())
             ->method('request')
@@ -170,38 +203,6 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $this->service->embed($text);
     }
 
-    public function testEmbedBatchProcessesMultipleTexts(): void
-    {
-        $texts = [
-            'renewable energy',
-            'solar power',
-            'wind turbines',
-        ];
-        $embedding = array_fill(0, self::DIMENSIONS, 0.1);
-
-        $response = $this->createMock(ResponseInterface::class);
-        $response
-            ->method('toArray')
-            ->willReturn(['embeddings' => [$embedding]]);
-
-        $this->httpClient
-            ->expects($this->exactly(3))
-            ->method('request')
-            ->willReturn($response);
-
-        $results = $this->service->embedBatch($texts);
-
-        $this->assertCount(3, $results);
-        $this->assertSame($embedding, $results[0]);
-        $this->assertSame($embedding, $results[1]);
-        $this->assertSame($embedding, $results[2]);
-    }
-
-    public function testGetDimensions(): void
-    {
-        $this->assertSame(self::DIMENSIONS, $this->service->getDimensions());
-    }
-
     public function testEmbedThrowsExceptionForInvalidEmbeddingType(): void
     {
         $text = 'test query';
@@ -209,7 +210,7 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $response
             ->method('toArray')
-            ->willReturn(['embeddings' => 'not_an_array']); // Invalid type
+            ->willReturn(['embeddings' => 'not_an_array']);
 
         $this->httpClient
             ->method('request')
@@ -221,16 +222,54 @@ final class OllamaEmbeddingServiceTest extends TestCase
         $this->service->embed($text);
     }
 
-    public function testEmbedBatchWithEmptyArray(): void
+    // -------------------------------------------------------------------------
+    // embedConcurrentBatches() — fires all HTTP requests before blocking
+    // -------------------------------------------------------------------------
+
+    public function testEmbedConcurrentBatchesFiresAllRequestsBeforeBlocking(): void
     {
-        $results = $this->service->embedBatch([]);
+        $batch0 = ['text0a', 'text0b'];
+        $batch1 = ['text1a', 'text1b'];
+        $embedding = array_fill(0, self::DIMENSIONS, 0.1);
+
+        $response0 = $this->createMock(ResponseInterface::class);
+        $response0
+            ->method('toArray')
+            ->willReturn(['embeddings' => [$embedding, $embedding]]);
+
+        $response1 = $this->createMock(ResponseInterface::class);
+        $response1
+            ->method('toArray')
+            ->willReturn(['embeddings' => [$embedding, $embedding]]);
+
+        // Both requests are fired before either toArray() is called.
+        $this->httpClient
+            ->expects($this->exactly(2))
+            ->method('request')
+            ->willReturnOnConsecutiveCalls($response0, $response1);
+
+        $results = $this->service->embedConcurrentBatches([0 => $batch0, 1 => $batch1]);
+
+        $this->assertArrayHasKey(0, $results);
+        $this->assertArrayHasKey(1, $results);
+        $this->assertCount(2, $results[0]);
+        $this->assertCount(2, $results[1]);
+        $this->assertSame($embedding, $results[0][0]);
+        $this->assertSame($embedding, $results[1][0]);
+    }
+
+    public function testEmbedConcurrentBatchesWithEmptyArray(): void
+    {
+        $this->httpClient->expects($this->never())->method('request');
+
+        $results = $this->service->embedConcurrentBatches([]);
 
         $this->assertSame([], $results);
     }
 
-    public function testEmbedBatchWithSingleText(): void
+    public function testEmbedConcurrentBatchesSkipsEmptyBatches(): void
     {
-        $texts = ['single text'];
+        $batch0 = ['text0'];
         $embedding = array_fill(0, self::DIMENSIONS, 0.1);
 
         $response = $this->createMock(ResponseInterface::class);
@@ -238,43 +277,64 @@ final class OllamaEmbeddingServiceTest extends TestCase
             ->method('toArray')
             ->willReturn(['embeddings' => [$embedding]]);
 
+        // Empty batch at index 1 is skipped — only one request fired.
         $this->httpClient
             ->expects($this->once())
             ->method('request')
             ->willReturn($response);
 
-        $results = $this->service->embedBatch($texts);
+        $results = $this->service->embedConcurrentBatches([0 => $batch0, 1 => []]);
 
-        $this->assertCount(1, $results);
-        $this->assertSame($embedding, $results[0]);
+        $this->assertArrayHasKey(0, $results);
+        $this->assertArrayNotHasKey(1, $results);
+        $this->assertCount(1, $results[0]);
     }
 
-    public function testEmbedSendsCorrectRequestParameters(): void
+    public function testEmbedConcurrentBatchesThrowsOnInvalidDimensions(): void
     {
-        $text = 'test query';
-        $embedding = array_fill(0, self::DIMENSIONS, 0.1);
+        $batch0 = ['text0'];
+        $badEmbedding = array_fill(0, 512, 0.1);
 
         $response = $this->createMock(ResponseInterface::class);
         $response
             ->method('toArray')
-            ->willReturn(['embeddings' => [$embedding]]);
+            ->willReturn(['embeddings' => [$badEmbedding]]);
 
         $this->httpClient
-            ->expects($this->once())
             ->method('request')
-            ->with(
-                'POST',
-                self::OLLAMA_HOST . '/api/embed',
-                [
-                    'json' => [
-                        'model' => self::EMBEDDING_MODEL,
-                        'input' => $text,
-                    ],
-                    'timeout' => 30,
-                ]
-            )
             ->willReturn($response);
 
-        $this->service->embed($text);
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Concurrent batch 0: expected 768 dimensions at index 0, got 512');
+
+        $this->service->embedConcurrentBatches([0 => $batch0]);
+    }
+
+    public function testEmbedConcurrentBatchesThrowsOnMissingEmbeddings(): void
+    {
+        $batch0 = ['text0'];
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response
+            ->method('toArray')
+            ->willReturn(['error' => 'model not found']);
+
+        $this->httpClient
+            ->method('request')
+            ->willReturn($response);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Concurrent batch 0: invalid response from Ollama');
+
+        $this->service->embedConcurrentBatches([0 => $batch0]);
+    }
+
+    // -------------------------------------------------------------------------
+    // getDimensions()
+    // -------------------------------------------------------------------------
+
+    public function testGetDimensions(): void
+    {
+        $this->assertSame(self::DIMENSIONS, $this->service->getDimensions());
     }
 }

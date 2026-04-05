@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- **`extractAllPages()` in `PdfProcessor`/`PdfProcessorInterface`**: single `pdftotext` call for the entire PDF, splitting pages by form-feed `\f` — ~20x faster than one call per page
+- **`embedConcurrentBatches()` in `OllamaEmbeddingService`/`EmbeddingServiceInterface`**: fires all HTTP requests to Ollama before blocking on any response (curl_multi); infrastructure for future parallel embedding when `OLLAMA_NUM_PARALLEL` is supported on the embed endpoint
+- **`ollama.embed_max_chars`** config param: caps text sent to the embedding model (500 chars ≈ 100 tokens); full text preserved in Elasticsearch for BM25
+- **`ollama.embed_concurrency`** config param: number of concurrent `/api/embed` requests (currently 1 — Ollama serialises embed requests; raise when upstream support lands)
+- **`OllamaService`**: added `keep_alive`, `num_thread`, `num_ctx` request options for deterministic, faster LLM inference
+
+### Changed
+- **Ollama moved to native host**: removed Docker service (`.docker/ollama/`) from all compose files; PHP container reaches Ollama via `host.docker.internal` (`extra_hosts: host-gateway`)
+- **`IndexarPdfsCommand`**: two-stage pipeline — embed queue (50 texts/batch via `embedConcurrentBatches`) → ES bulk buffer (500 pages); phase timing breakdown printed on completion
+- **`ollama.model`**: switched from `qwen2.5:7b` to `qwen2.5:3b` — translation 3 min → ~52 s on Core Ultra 7 155U
+- **`keep_alive`**: corrected type from string `'-1'` to integer `-1`; Go's `time.ParseDuration` rejects the string form, causing HTTP 400 on every embed and generate request
+- **`embed_max_chars`**: set to 500 (was 2000) — embedding time 809 s → 191 s with no measurable quality loss for page-level semantic search
+
+### Removed
+- **`embedBatch()` from `EmbeddingServiceInterface` and `OllamaEmbeddingService`**: superseded by `embedConcurrentBatches()`; `requestBatch()` private method removed with it
+- **`.docker/ollama/Dockerfile` and `.docker/ollama/entrypoint.sh`**: Ollama runs natively on the host
+
+### Performance
+- PDF indexing: **1190 s → ~200 s** (1036 pages, Core Ultra 7 155U, CPU-only)
+  - pdftotext: 2.4 s | embeddings: 193 s | Elasticsearch: 1 s
+- Translation: **3+ min → ~52 s** per page (qwen2.5:3b + keep_alive + num_thread)
+
+---
+
 ## [1.15.2] - 2026-03-30
 
 ### Changed
