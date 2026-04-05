@@ -27,10 +27,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`embedBatch()` from `EmbeddingServiceInterface` and `OllamaEmbeddingService`**: superseded by `embedConcurrentBatches()`; `requestBatch()` private method removed with it
 - **`.docker/ollama/Dockerfile` and `.docker/ollama/entrypoint.sh`**: Ollama runs natively on the host
 
+### Security
+- **`lodash` upgraded** (`4.17.23` → `4.18.1`): fixes [GHSA-r5fr-rjxr-66jc](https://github.com/advisories/GHSA-r5fr-rjxr-66jc) (code injection via `_.template`) and [GHSA-f23m-r3pf-42rh](https://github.com/advisories/GHSA-f23m-r3pf-42rh) (prototype pollution via `_.unset`/`_.omit`) — both high severity
+
 ### Performance
 - PDF indexing: **1190 s → ~200 s** (1036 pages, Core Ultra 7 155U, CPU-only)
   - pdftotext: 2.4 s | embeddings: 193 s | Elasticsearch: 1 s
 - Translation: **3+ min → ~52 s** per page (qwen2.5:3b + keep_alive + num_thread)
+
+### Documentation
+- **`docs/getting-started.md`**: new **Ollama Setup** section — install, systemd service configuration (`OLLAMA_HOST=0.0.0.0`, `OLLAMA_NUM_PARALLEL=4`), model pull, and troubleshooting for native host setup
+- **`docs/configuration.md`**, **`docs/production.md`**, **`docs/troubleshooting.md`**, **`README.md`**, **`CLAUDE.md`**: updated all Ollama references to reflect native host deployment, `qwen2.5:3b`, and `host.docker.internal` endpoint
 
 ---
 
