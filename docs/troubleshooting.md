@@ -222,15 +222,20 @@ Common issues and solutions for PDF Content Search.
 
 **Solutions:**
 
-1. **Verify Ollama is running:**
+1. **Verify Ollama is running on the host:**
    ```bash
-   docker compose ps ollama
+   systemctl status ollama
    curl http://localhost:11434/api/tags
    ```
 
-2. **Check if embeddings model is installed:**
+2. **Verify Docker can reach Ollama:**
    ```bash
-   docker compose exec ollama ollama list | grep nomic-embed-text
+   docker compose exec php curl http://host.docker.internal:11434/api/tags
+   ```
+
+3. **Check if embeddings model is installed:**
+   ```bash
+   ollama list | grep nomic-embed-text
    ```
 
 3. **Re-index with embeddings:**
@@ -271,20 +276,20 @@ Common issues and solutions for PDF Content Search.
 
 **Solutions:**
 
-1. **Verify qwen2.5 model is installed:**
+1. **Verify qwen2.5:3b is installed on the host:**
    ```bash
-   docker compose exec ollama ollama list | grep qwen2.5
+   ollama list | grep qwen2.5
    ```
 
-2. **Download the model:**
+2. **Pull the model if missing:**
    ```bash
-   docker compose exec ollama ollama pull qwen2.5:7b
+   ollama pull qwen2.5:3b
    ```
 
 3. **Test Ollama directly:**
    ```bash
    curl http://localhost:11434/api/generate -d '{
-     "model": "qwen2.5:7b",
+     "model": "qwen2.5:3b",
      "prompt": "Hello",
      "stream": false
    }'
@@ -521,7 +526,7 @@ If the issue persists:
    ```bash
    docker compose logs --tail=100 php
    docker compose logs --tail=100 elasticsearch
-   docker compose logs --tail=100 ollama
+   journalctl -u ollama -n 100 --no-pager
    ```
 
 2. **Enable debug mode:**

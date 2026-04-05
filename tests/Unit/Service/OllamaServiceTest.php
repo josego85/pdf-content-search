@@ -19,6 +19,31 @@ final class OllamaServiceTest extends TestCase
         $this->languageMapper = new LanguageMapper();
     }
 
+    private function makeService(
+        MockHttpClient $httpClient,
+        string $host = 'http://localhost:11434',
+        string $model = 'llama2',
+        int $timeout = 30,
+        float $temperature = 0.7,
+        int $maxTokens = 2000,
+        int $numThreads = 12,
+        int $keepAlive = -1,
+        int $numCtx = 4096,
+    ): OllamaService {
+        return new OllamaService(
+            $httpClient,
+            $this->languageMapper,
+            $host,
+            $model,
+            $timeout,
+            $temperature,
+            $maxTokens,
+            $numThreads,
+            $keepAlive,
+            $numCtx,
+        );
+    }
+
     public function testTranslateReturnsTranslatedText(): void
     {
         $mockResponse = new MockResponse(json_encode([
@@ -27,16 +52,7 @@ final class OllamaServiceTest extends TestCase
         ]));
 
         $httpClient = new MockHttpClient($mockResponse);
-
-        $service = new OllamaService(
-            $httpClient,
-            $this->languageMapper,
-            'http://localhost:11434',
-            'llama2',
-            30,
-            0.7,
-            2000
-        );
+        $service = $this->makeService($httpClient);
 
         $result = $service->translate('Original text', 'es');
 
@@ -51,16 +67,7 @@ final class OllamaServiceTest extends TestCase
         ]));
 
         $httpClient = new MockHttpClient($mockResponse);
-
-        $service = new OllamaService(
-            $httpClient,
-            $this->languageMapper,
-            'http://localhost:11434',
-            'llama2',
-            30,
-            0.7,
-            2000
-        );
+        $service = $this->makeService($httpClient);
 
         $result = $service->translate('Text', 'es');
 
@@ -75,20 +82,10 @@ final class OllamaServiceTest extends TestCase
         ]));
 
         $httpClient = new MockHttpClient($mockResponse);
-
-        $service = new OllamaService(
-            $httpClient,
-            $this->languageMapper,
-            'http://localhost:11434',
-            'llama2',
-            30,
-            0.7,
-            2000
-        );
+        $service = $this->makeService($httpClient);
 
         $result = $service->translate('Text to translate', 'fr');
 
-        // Verify the request was made
         self::assertNotEmpty($result);
     }
 
@@ -100,16 +97,7 @@ final class OllamaServiceTest extends TestCase
         ]));
 
         $httpClient = new MockHttpClient($mockResponse);
-
-        $service = new OllamaService(
-            $httpClient,
-            $this->languageMapper,
-            'http://localhost:11434',
-            'llama2',
-            30,
-            0.7,
-            2000
-        );
+        $service = $this->makeService($httpClient);
 
         $result = $service->translate('Test', 'es');
 
@@ -124,16 +112,7 @@ final class OllamaServiceTest extends TestCase
         ]));
 
         $httpClient = new MockHttpClient($mockResponse);
-
-        $service = new OllamaService(
-            $httpClient,
-            $this->languageMapper,
-            'http://localhost:11434',
-            'llama2',
-            30,
-            0.7,
-            2000
-        );
+        $service = $this->makeService($httpClient);
 
         $result = $service->translate('Text', 'es');
 
@@ -147,16 +126,7 @@ final class OllamaServiceTest extends TestCase
         ]));
 
         $httpClient = new MockHttpClient($mockResponse);
-
-        $service = new OllamaService(
-            $httpClient,
-            $this->languageMapper,
-            'http://localhost:11434',
-            'llama2',
-            30,
-            0.7,
-            2000
-        );
+        $service = $this->makeService($httpClient);
 
         $result = $service->translate('Text', 'es');
 
@@ -171,15 +141,16 @@ final class OllamaServiceTest extends TestCase
         ]));
 
         $httpClient = new MockHttpClient($mockResponse);
-
-        $service = new OllamaService(
+        $service = $this->makeService(
             $httpClient,
-            $this->languageMapper,
-            'http://custom-host:8080',
-            'custom-model',
-            60,
-            0.9,
-            4000
+            host: 'http://custom-host:8080',
+            model: 'custom-model',
+            timeout: 60,
+            temperature: 0.9,
+            maxTokens: 4000,
+            numThreads: 8,
+            keepAlive: 300,
+            numCtx: 2048,
         );
 
         $result = $service->translate('Test', 'es');

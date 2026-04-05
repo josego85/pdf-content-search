@@ -19,7 +19,10 @@ class OllamaService
         private readonly string $ollamaModel,
         private readonly int $ollamaTimeout,
         private readonly float $ollamaTemperature,
-        private readonly int $ollamaMaxTokens
+        private readonly int $ollamaMaxTokens,
+        private readonly int $ollamaNumThreads,
+        private readonly int $ollamaKeepAlive,
+        private readonly int $ollamaNumCtx,
     ) {
     }
 
@@ -41,9 +44,12 @@ class OllamaService
                 'model' => $this->ollamaModel,
                 'prompt' => $prompt,
                 'stream' => false,
+                'keep_alive' => $this->ollamaKeepAlive,
                 'options' => [
                     'temperature' => $this->ollamaTemperature,
                     'num_predict' => $this->ollamaMaxTokens,
+                    'num_thread' => $this->ollamaNumThreads,
+                    'num_ctx' => $this->ollamaNumCtx,
                 ],
             ],
             'timeout' => $this->ollamaTimeout,

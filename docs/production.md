@@ -70,9 +70,9 @@ Elasticsearch 9.3
   ├─ 512MB JVM heap
   └─ Vector search (768 dimensions)
 
-Ollama
-  ├─ qwen2.5:7b (translation)
-  └─ nomic-embed-text (embeddings)
+Ollama (native host)
+  ├─ qwen2.5:3b (translation, ~52s/page)
+  └─ nomic-embed-text (embeddings, 768d)
 ```
 
 ## Environment Configuration
@@ -512,11 +512,14 @@ make rebuild-prod
 ### Slow Translations
 
 ```bash
-# Check Ollama CPU usage
-docker stats pdf-content-search-prod-ollama-1
+# Check Ollama CPU usage on the host
+top -p $(pgrep ollama)
 
-# Consider smaller model
-# Edit .env.prod.local
+# Check active Ollama requests
+curl http://localhost:11434/api/ps
+
+# Consider smaller model — pull on host first, then set in .env.prod.local
+ollama pull llama3.2:1b
 OLLAMA_MODEL=llama3.2:1b  # Faster, less accurate
 ```
 

@@ -17,7 +17,7 @@ AI-powered PDF search with hybrid semantic capabilities using Elasticsearch 9.3 
 - 🧠 **AI Hybrid Search** - Combines keyword matching with semantic understanding (RRF algorithm)
 - 📄 Page-level PDF search with Elasticsearch 9.3 vector search
 - 🔍 Multiple search modes: Hybrid AI, Exact match, Prefix match
-- 🌍 AI-powered PDF translation (Ollama qwen2.5)
+- 🌍 AI-powered PDF translation (Ollama qwen2.5:3b, ~52s/page on CPU)
 - 🔄 Async job processing with Symfony Messenger
 - 📊 **Analytics Dashboard** - Real-time search metrics: trends, click position distribution, CTR, CSV/JSON export
 - 📝 **OCR for scanned PDFs** - Automatic text layer via `ocrmypdf` (enables search & highlighting)
@@ -42,9 +42,10 @@ docker compose -p pdf-content-search exec php php bin/console app:index-pdfs
 - ✅ Installs dependencies (Composer + NPM)
 - ✅ Runs database migrations
 - ✅ Creates Elasticsearch index structure
-- ✅ Downloads Ollama models (qwen2.5:7b + nomic-embed-text)
 - ✅ Builds frontend assets
 
+> **Prerequisites:** Ollama must be installed and running natively on the host before `make dev`. See [Getting Started](docs/getting-started.md) for setup.
+>
 > **Note:** `.env` is committed with safe defaults (Symfony standard).
 
 ## Common Commands
@@ -74,7 +75,7 @@ docker compose -p pdf-content-search exec php php bin/console app:translation:mo
 - **Backend:** PHP 8.4, Symfony 7.4, PostgreSQL 16
 - **Search:** Elasticsearch 9.3 (vector search, HNSW)
 - **Frontend:** Vue.js 3.5, Tailwind CSS 3.4, PDF.js 5.4, ApexCharts
-- **AI:** Ollama (qwen2.5 translations, nomic-embed-text embeddings)
+- **AI:** Ollama native (qwen2.5:3b translations, nomic-embed-text embeddings)
 - **Queue:** Symfony Messenger (3 workers)
 - **Analytics:** PostgreSQL 16 (metrics storage), Vue.js dashboard
 

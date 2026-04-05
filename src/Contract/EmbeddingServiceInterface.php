@@ -22,16 +22,17 @@ interface EmbeddingServiceInterface
     public function embed(string $text): array;
 
     /**
-     * Generate embedding vectors for multiple texts in batch.
-     * More efficient than calling embed() multiple times.
+     * Sends multiple batches to the embedding API concurrently.
+     * Symfony HttpClient fires all HTTP requests before blocking on any response,
+     * so Ollama (with OLLAMA_NUM_PARALLEL ≥ count($batches)) processes them in parallel.
      *
-     * @param array<string> $texts Array of texts to embed
+     * @param array<int, string[]> $batches Each element is one batch of texts to embed
      *
-     * @throws \RuntimeException If batch embedding generation fails
+     * @throws \RuntimeException If any batch fails
      *
-     * @return array<array<float>> Array of embedding vectors
+     * @return array<int, float[][]> Per-batch embeddings, indexed same as $batches
      */
-    public function embedBatch(array $texts): array;
+    public function embedConcurrentBatches(array $batches): array;
 
     /**
      * Get the dimensionality of the embedding vectors.

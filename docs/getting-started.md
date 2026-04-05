@@ -6,30 +6,81 @@ Complete guide to get PDF Content Search running in 5 minutes.
 
 - **Docker** & **Docker Compose** installed
 - **Make** (pre-installed on Linux/macOS)
-- **8GB RAM** minimum
-- **10GB disk space** for Docker images + Ollama models
+- **8GB RAM** minimum (16GB recommended)
+- **Ollama** installed natively on the host — see [Ollama Setup](#ollama-setup) below
+
+## Ollama Setup
+
+Ollama runs **natively on the host** (not in Docker). The PHP container reaches it via `host.docker.internal`.
+
+### 1. Install Ollama
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+### 2. Configure the systemd service
+
+```bash
+sudo systemctl edit ollama
+```
+
+Add the following and save:
+
+```ini
+[Service]
+Environment="OLLAMA_HOST=0.0.0.0"
+Environment="OLLAMA_NUM_PARALLEL=4"
+```
+
+Then reload and restart:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+```
+
+Verify the variables are active:
+
+```bash
+systemctl show ollama --property=Environment
+```
+
+**Why these settings?**
+- `OLLAMA_HOST=0.0.0.0` — Ollama listens on all interfaces so Docker containers can reach it
+- `OLLAMA_NUM_PARALLEL=4` — allows 4 simultaneous LLM generation requests (improves translation throughput when multiple workers are active)
+
+### 3. Pull the required models
+
+```bash
+ollama pull qwen2.5:3b        # Translation model (~1.9 GB)
+ollama pull nomic-embed-text  # Embedding model (~274 MB)
+```
+
+> **Note:** `qwen2.5:3b` translates a full PDF page in ~52s on a Core Ultra 7 155U (CPU-only). `nomic-embed-text` generates 768-dimensional embeddings in ~190ms per batch on the same hardware.
+
+---
 
 ## Development Setup
 
-### Quick Start (2 commands)
+### Quick Start
 
 ```bash
 # 1. Clone repository
 git clone https://github.com/josego85/pdf-content-search.git
 cd pdf-content-search
 
-# 2. Start everything
+# 2. Start everything (Ollama must already be running natively)
 make dev
 ```
 
 **Access:** http://localhost
 
-That's it! The `make dev` command automatically:
+The `make dev` command automatically:
 - ✅ Builds Docker images
 - ✅ Installs dependencies (Composer + NPM)
 - ✅ Runs database migrations
 - ✅ Creates Elasticsearch index
-- ✅ Downloads Ollama models (qwen2.5:7b + nomic-embed-text)
 - ✅ Builds frontend assets (Webpack)
 - ✅ Starts 3 Messenger workers for async jobs
 
@@ -41,7 +92,7 @@ That's it! The `make dev` command automatically:
 | **Analytics** | http://localhost/analytics | Search metrics dashboard |
 | **Elasticsearch** | http://localhost:9200 | Search engine |
 | **PostgreSQL** | localhost:5432 | Database |
-| **Ollama** | http://localhost:11435 | AI models |
+| **Ollama** | http://localhost:11434 | AI models (native host) |
 
 ### Adding PDFs
 
@@ -125,7 +176,8 @@ APP_SECRET=change-me-in-env-local  # OK for dev
 
 POSTGRES_PASSWORD=dev_password      # OK for dev
 ELASTICSEARCH_HOST=http://elasticsearch:9200  # No auth in dev
-OLLAMA_MODEL=qwen2.5:7b
+OLLAMA_HOST=http://host.docker.internal:11434
+OLLAMA_MODEL=qwen2.5:3b
 OLLAMA_EMBEDDING_MODEL=nomic-embed-text
 ```
 
@@ -212,17 +264,21 @@ echo 'vm.max_map_count=262144' | sudo tee -a /etc/sysctl.conf
 sudo systemctl start docker
 ```
 
-### Ollama Models Not Downloading
-
-Models download automatically via healthcheck, but if stuck:
+### Ollama Not Reachable from Docker
 
 ```bash
-# Check Ollama logs
-make logs SERVICE=ollama
+# Verify Ollama is running on the host
+systemctl status ollama
 
-# Manual download
-docker compose -p pdf-content-search exec ollama ollama pull qwen2.5:7b
-docker compose -p pdf-content-search exec ollama ollama pull nomic-embed-text
+# Verify it listens on 0.0.0.0 (not just 127.0.0.1)
+systemctl show ollama --property=Environment
+
+# Test from inside the PHP container
+docker compose exec php curl http://host.docker.internal:11434/api/tags
+
+# If models are missing, pull them on the host
+ollama pull qwen2.5:3b
+ollama pull nomic-embed-text
 ```
 
 ### Messenger Workers Not Processing

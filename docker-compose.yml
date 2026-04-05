@@ -89,8 +89,8 @@ services:
       - MESSENGER_TRANSPORT_DSN=${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=0}
       # Mailer
       - MAILER_DSN=${MAILER_DSN:-null://null}
-      # Ollama integration
-      - OLLAMA_HOST=${OLLAMA_HOST:-http://ollama:11434}
+      # Ollama integration (native install on host — not containerized)
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://host.docker.internal:11434}
       # Routing
       - DEFAULT_URI=${DEFAULT_URI:-http://localhost}
     depends_on:
@@ -98,6 +98,9 @@ services:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
+    # Allow the PHP container to reach Ollama running natively on the host (Linux)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - app_network
     expose:
@@ -137,22 +140,6 @@ services:
       start_period: 60s
     restart: unless-stopped
 
-  ollama:
-    build:
-      context: .
-      dockerfile: .docker/ollama/Dockerfile
-    volumes:
-      - ollama_data:/root/.ollama
-    networks:
-      - app_network
-    healthcheck:
-      test: ["CMD-SHELL", "ollama list | grep -q 'nomic-embed-text' || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 300s
-    restart: unless-stopped
-
 volumes:
   app_public:
     driver: local
@@ -165,8 +152,6 @@ volumes:
   elasticsearch_data:
     driver: local
   database_data:
-    driver: local
-  ollama_data:
     driver: local
 
 networks:
