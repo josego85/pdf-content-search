@@ -318,6 +318,6 @@ See [troubleshooting.md](troubleshooting.md) for complete guide.
 - [Translation](features/translation.md) - PDF translation with Ollama
 
 **Development:**
-- [Testing Guide](testing.md) - PHPUnit tests & coverage (87%)
+- [Testing Guide](testing.md) - PHPUnit (93% PHP) + Vitest (89% JS/Vue)
 - [Docker Architecture](reference/docker-architecture.md) - Internal details
 - [Frontend Architecture](reference/frontend-architecture.md) - Webpack, Vue.js

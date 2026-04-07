@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`embedBatch()` from `EmbeddingServiceInterface` and `OllamaEmbeddingService`**: superseded by `embedConcurrentBatches()`; `requestBatch()` private method removed with it
 - **`.docker/ollama/Dockerfile` and `.docker/ollama/entrypoint.sh`**: Ollama runs natively on the host
 
+### Fixed
+- **`Search.vue`**: renamed `import Error from "./states/Error.vue"` → `ErrorState` — the original name shadowed the global `Error` constructor in Vitest SSR mode, causing `throw new Error(...)` to instantiate the Vue component instead (TypeError in error-path tests)
+
 ### Security
 - **`lodash` upgraded** (`4.17.23` → `4.18.1`): fixes [GHSA-r5fr-rjxr-66jc](https://github.com/advisories/GHSA-r5fr-rjxr-66jc) (code injection via `_.template`) and [GHSA-f23m-r3pf-42rh](https://github.com/advisories/GHSA-f23m-r3pf-42rh) (prototype pollution via `_.unset`/`_.omit`) — both high severity
 
@@ -40,6 +43,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - **`docs/getting-started.md`**: new **Ollama Setup** section — install, systemd service configuration (`OLLAMA_HOST=0.0.0.0`, `OLLAMA_NUM_PARALLEL=4`), model pull, and troubleshooting for native host setup
 - **`docs/configuration.md`**, **`docs/production.md`**, **`docs/troubleshooting.md`**, **`README.md`**, **`CLAUDE.md`**: updated all Ollama references to reflect native host deployment, `qwen2.5:3b`, and `host.docker.internal` endpoint
+- **`docs/testing.md`**: rewritten to cover both PHPUnit and Vitest suites — commands, test structure, coverage thresholds, Vue test patterns, common issues
+- **`README.md`**: separate PHP (93%) and JS (89%) coverage badges; Vitest added to Features and Stack
+- **`CLAUDE.md`**: new JS/Vue testing section; updated CI requirements, Husky hook table, pitfalls #17/#18, key files reference
 
 ---
 

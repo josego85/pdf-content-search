@@ -1,264 +1,215 @@
 # Testing Guide
 
-Comprehensive testing suite for PDF Content Search application using PHPUnit.
-
-## Quick Start
-
-```bash
-# Run all tests
-./vendor/bin/phpunit
-
-# Run specific test suites
-./vendor/bin/phpunit --testsuite=Unit
-./vendor/bin/phpunit --testsuite=Functional
-
-# Run with coverage
-./vendor/bin/phpunit --coverage-html coverage/
-
-# Run with testdox (readable output)
-./vendor/bin/phpunit --testdox
-```
-
-## Quick Start with Docker
-
-```bash
-# Run tests inside Docker container
-docker compose exec php vendor/bin/phpunit
-
-# Run with coverage (PCOV enabled in dev environment)
-docker compose exec php vendor/bin/phpunit --coverage-html coverage/
-
-# Or use the helper script
-./.docker/dev/scripts/coverage.sh
-
-# Open coverage report in browser
-open coverage/index.html
-
-# Generate XML coverage for CI
-./.docker/dev/scripts/coverage.sh --xml
-```
-
-**Note:** PCOV is pre-installed in the dev Docker image for fast code coverage reports. It's significantly faster than Xdebug and has zero runtime overhead.
-
-## Test Structure
-
-```
-tests/
-├── Unit/                  # Isolated unit tests (no external dependencies)
-│   ├── Search/           # Query parsing and building logic
-│   ├── Service/          # Service layer tests
-│   └── Shared/           # Shared traits and utilities
-├── Functional/           # HTTP endpoint tests
-│   └── Controller/       # Controller action tests
-└── Fixtures/             # Test data factories and helpers
-    ├── Factory/          # Data factories (SearchResult, PdfDocument)
-    └── TestPdfs/         # Sample PDF files for testing
-```
-
-## Test Coverage Goals
-
-| Component | Target Coverage | Rationale |
-|-----------|----------------|-----------|
-| Business Logic (Search, Query) | **100%** | Critical functionality |
-| Services | **90%+** | Core application layer |
-| Controllers | **85%+** | API endpoints |
-| Commands | **80%+** | Batch processes |
-| Overall Project | **85%+** | Professional standard |
-
-## Running Specific Tests
-
-```bash
-# Single test file
-./vendor/bin/phpunit tests/Unit/Search/QueryParserTest.php
-
-# Specific test method
-./vendor/bin/phpunit --filter testParseSimpleQueries
-
-# Test group (if defined)
-./vendor/bin/phpunit --group elasticsearch
-```
-
-## Writing Tests
-
-### Unit Test Example
-
-```php
-final class QueryParserTest extends TestCase
-{
-    private QueryParser $parser;
-
-    protected function setUp(): void
-    {
-        $this->parser = new QueryParser();
-    }
-
-    /**
-     * @dataProvider queryProvider
-     */
-    public function testParseQueryWithOperators(string $input, array $expected): void
-    {
-        // Arrange - prepare test data
-        $query = $input;
-
-        // Act - execute the code under test
-        $result = $this->parser->parse($query);
-
-        // Assert - verify the outcome
-        $this->assertSame($expected, $result['required']);
-    }
-
-    public static function queryProvider(): array
-    {
-        return [
-            'required terms' => ['+must +have', ['must', 'have']],
-            'excluded terms' => ['-not -this', ['not', 'this']],
-        ];
-    }
-}
-```
-
-### Best Practices
-
-1. **AAA Pattern**: Arrange, Act, Assert
-2. **One Assertion Per Concept**: Focus each test on a single behavior
-3. **Descriptive Names**: `testSearchReturnsResultsWhenQueryMatches()`
-4. **Use Constants**: Avoid magic numbers/strings
-5. **Data Providers**: Test multiple scenarios efficiently
-6. **No Code Duplication**: Use `setUp()`, helper methods, and traits
-
-## Test Environment
-
-### Configuration
-
-- **Environment**: `APP_ENV=test` (`.env.test`)
-- **Database**: SQLite in-memory (future use)
-- **Elasticsearch**: Mocked in all tests
-
-### Environment Variables
-
-```bash
-# .env.test
-APP_ENV=test
-DATABASE_URL="sqlite:///:memory:"
-ELASTICSEARCH_HOST=http://elasticsearch-test:9200
-ELASTICSEARCH_INDEX_PDFS=pdf_pages_test
-```
-
-## Continuous Integration
-
-Tests run automatically on:
-- Every push to any branch
-- Every pull request
-
-See `.github/workflows/ci.yml` for CI configuration.
-
-## Code Coverage
-
-Generate detailed coverage reports:
-
-```bash
-# HTML report (open coverage/index.html in browser)
-./vendor/bin/phpunit --coverage-html coverage/
-
-# Terminal summary
-./vendor/bin/phpunit --coverage-text
-
-# XML (for CI/CD tools)
-./vendor/bin/phpunit --coverage-clover coverage.xml
-```
-
-## Debugging Tests
-
-```bash
-# Verbose output
-./vendor/bin/phpunit -v
-
-# Stop on first failure
-./vendor/bin/phpunit --stop-on-failure
-
-# Show detailed failure information
-./vendor/bin/phpunit --testdox-text results.txt
-```
-
-## Mocking Strategy
-
-- **PHPUnit Built-in Mocks**: For interfaces and simple classes
-- **Test Doubles**: Manual mocks for complex Elasticsearch responses
-- **Traits**: `ElasticsearchTestTrait` for consistent Elasticsearch mocking
-
-Example:
-
-```php
-use App\Tests\Fixtures\ElasticsearchTestTrait;
-
-final class ServiceTest extends TestCase
-{
-    use ElasticsearchTestTrait;
-
-    public function testSearch(): void
-    {
-        $client = $this->createElasticsearchClientMock();
-        $response = $this->createSearchResponse($hits);
-
-        $client->expects($this->once())
-            ->method('search')
-            ->willReturn($response);
-
-        // ... test logic
-    }
-}
-```
-
-## Common Issues
-
-### Issue: Elasticsearch Connection Errors
-
-**Solution**: All tests use mocks, no real Elasticsearch connection needed
-
-### Issue: Functional Tests Fail (Missing Assets)
-
-**Solution**: Build frontend assets or skip functional tests in CI
-
-```bash
-npm run build  # or: yarn build
-```
-
-### Issue: PDF Processing Tests
-
-**Solution**: `pdftotext` not required for unit tests (mocked).
-
-## Factories and Fixtures
-
-Reusable test data creation:
-
-```php
-use App\Tests\Fixtures\Factory\SearchResultFactory;
-
-$result = SearchResultFactory::create()
-    ->withTitle('test.pdf')
-    ->withPage(5)
-    ->withHighlight(['<mark>search</mark> term'])
-    ->build();
-
-$response = SearchResultFactory::create()
-    ->buildEsResponse($hits);
-```
-
-## Performance
-
-- **Unit tests**: < 1 second
-- **Functional tests**: < 5 seconds
-- **Full suite**: < 5 seconds
-
-Slow tests indicate architectural issues requiring refactoring.
-
-## Resources
-
-- [PHPUnit Documentation](https://phpunit.de/documentation.html)
-- [Symfony Testing Best Practices](https://symfony.com/doc/current/testing.html)
-- [Martin Fowler: Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html)
+Full test suite for PDF Content Search: PHPUnit (PHP) + Vitest (JavaScript/Vue).
 
 ---
 
-**Maintained by**: Development Team
-**Last Updated**: 2025-11-09
+## PHP Tests (PHPUnit)
+
+### Quick Start
+
+```bash
+# Run all PHP tests (inside Docker)
+make test
+# or:
+docker compose exec php php bin/phpunit
+
+# With HTML coverage report
+docker compose exec php php bin/phpunit --coverage-html var/coverage
+
+# Specific suite
+docker compose exec php php bin/phpunit tests/Unit
+docker compose exec php php bin/phpunit tests/Integration
+docker compose exec php php bin/phpunit tests/Functional
+
+# Verbose / stop on failure
+docker compose exec php php bin/phpunit -v
+docker compose exec php php bin/phpunit --stop-on-failure
+```
+
+### Test Structure
+
+```
+tests/
+├── Unit/                  # Isolated — all external deps mocked
+│   ├── Search/            # Query builder + strategy logic
+│   ├── Service/           # Service layer (Elasticsearch, Ollama, Analytics…)
+│   └── Shared/            # SafeCallerTrait and utilities
+├── Integration/           # Real PostgreSQL — requires running database service
+│   └── Repository/        # SearchAnalyticsRepository, TranslationJobRepository
+├── Functional/            # Full Symfony kernel via BrowserKit (HTTP)
+│   └── Controller/        # SearchController, AnalyticsController, etc.
+└── Fixtures/              # Elasticsearch mock responses
+```
+
+### Coverage Targets
+
+| Suite | CI Minimum | Project Target |
+|---|---|---|
+| Overall | **85%** | **93%** |
+| Services | 90%+ | 95%+ |
+| Controllers | 85%+ | 90%+ |
+
+### Writing PHP Tests
+
+**Rules:**
+- Always mock the **interface**, never the concrete class (`SearchEngineInterface`, not `ElasticsearchService`)
+- Unit tests: no real DB, no real Elasticsearch, no real Ollama — mock everything external
+- Integration tests: use `KernelTestCase` + real `database` service
+- Functional tests: use `WebTestCase`; Elasticsearch is always mocked
+
+```php
+final class OllamaEmbeddingServiceTest extends TestCase
+{
+    public function testGenerateEmbedding(): void
+    {
+        $client = $this->createMock(HttpClientInterface::class);
+        // ... arrange, act, assert
+    }
+}
+```
+
+### Mocking Strategy
+
+- Elasticsearch → mock `SearchEngineInterface` / `PdfIndexerInterface`
+- Ollama → mock `EmbeddingServiceInterface` / `TranslationServiceInterface`
+- PDF processing → mock `PdfProcessorInterface`
+- Language detection → mock `LanguageDetectorInterface`
+
+Never use `new ConcreteService()` in tests — inject mocked interfaces.
+
+---
+
+## JavaScript / Vue Tests (Vitest)
+
+### Quick Start
+
+```bash
+# Run all JS/Vue tests (must run inside Docker)
+docker compose exec php npm run test
+
+# With coverage report (v8, HTML + terminal)
+docker compose exec php npm run test:coverage
+
+# Watch mode
+docker compose exec php npm run test:watch
+```
+
+> **Why inside Docker?** `node_modules` is installed inside the Alpine container. The host lacks the native `@rolldown/binding-linux-x64-gnu` binding — running on the host throws `MODULE_NOT_FOUND`.
+
+### Test Structure
+
+```
+tests/Javascript/
+├── components/
+│   ├── analytics/         # ClickPositionChart, ExportButtons, KPICard, StrategyDistribution, TopQueriesChart, TrendsChart
+│   └── search/
+│       ├── states/        # Empty, Error, Initial, Loading
+│       ├── Bar, Controls, Hero, Pagination, ResultCard, Results, Search, Suggestions
+├── constants/             # api, languages, pagination
+├── services/              # TranslationApiService
+└── setup.js               # Global setup (apexchart stub)
+```
+
+**172 tests — 22 test files**
+
+### Coverage Thresholds (enforced in CI)
+
+| Metric | Threshold | Current |
+|---|---|---|
+| Statements | 80% | ~89% |
+| Branches | 80% | ~87% |
+| Functions | 80% | ~81% |
+| Lines | 80% | ~89% |
+
+### Configuration
+
+`vitest.config.js` key settings:
+- **Environment:** `happy-dom` (jsdom@29 incompatible with Node 24 due to ESM top-level await)
+- **Alias:** `@` → `assets/`
+- **Setup file:** `tests/Javascript/setup.js` — stubs `apexchart` globally
+- **Navigation:** `disableMainFrameNavigation: true` — prevents ECONNREFUSED from `<a target="_blank">` clicks
+
+### Writing Vue Tests
+
+```js
+import { mount } from "@vue/test-utils"
+import { beforeEach, afterEach, describe, expect, it, vi } from "vitest"
+import MyComponent from "@/components/search/MyComponent.vue"
+
+describe("MyComponent", () => {
+    beforeEach(() => {
+        globalThis.fetch = vi.fn().mockResolvedValue({ ok: true, json: vi.fn().mockResolvedValue({}) })
+        vi.spyOn(console, "error").mockImplementation(() => {}) // silence expected errors
+    })
+
+    afterEach(() => {
+        vi.restoreAllMocks()
+    })
+
+    it("renders correctly", () => {
+        const wrapper = mount(MyComponent, { props: { value: "test" } })
+        expect(wrapper.exists()).toBe(true)
+    })
+})
+```
+
+**Key patterns:**
+- Stub `apexchart` globally in `setup.js` (not per-test) — globally registered tag, `vi.mock` alone is insufficient
+- Mock `console.error` for error-path tests to suppress expected catch-block output
+- Mock `window.open` when testing `<a target="_blank">` clicks
+- **Never name a Vue import `Error`** — shadows the global `Error` constructor in Vitest SSR mode
+
+---
+
+## Continuous Integration
+
+Both suites run in CI on every push and PR:
+
+```yaml
+# ci.yml jobs
+php-tests:          PHPUnit — ≥85% line coverage
+frontend-tests:     Vitest  — ≥80% all coverage metrics
+```
+
+See `.github/workflows/ci.yml` for full pipeline.
+
+---
+
+## Pre-commit Hook
+
+`.husky/pre-commit` runs all checks when the `php` container is up:
+
+| Step | Command |
+|---|---|
+| PHP-CS-Fixer | `composer cs-check` |
+| PHPStan L8 | `composer phpstan` |
+| Rector | `composer rector-check` |
+| PHPUnit | `composer test` |
+| Biome | `npm run lint` (inside Docker) |
+| Vitest | `npm run test` (inside Docker) |
+
+If the containers are not running, the hook exits 0 and warns — CI is the real quality gate.
+
+---
+
+## Common Issues
+
+### Elasticsearch connection errors in PHP tests
+All PHP tests mock Elasticsearch — no real connection is needed. If you see connection errors, check that you're not accidentally running unit tests without mocks.
+
+### `MODULE_NOT_FOUND @rolldown/binding-linux-x64-gnu`
+Run `npm run test` inside Docker, not on the host:
+```bash
+docker compose exec php npm run test
+```
+
+### ApexChart not found in Vue tests
+The global stub is in `tests/Javascript/setup.js`. If you add a new chart component, ensure the setup file is loaded (it is, via `vitest.config.js` `setupFiles`).
+
+### ECONNREFUSED localhost:3000 in Vitest output
+Covered by `disableMainFrameNavigation: true` in `vitest.config.js`. If the noise reappears, verify the `environmentOptions.happyDOM.settings.navigation` block is present.
+
+---
+
+**Last Updated:** 2026-04-07
