@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`docs/configuration.md`**, **`docs/production.md`**, **`docs/troubleshooting.md`**, **`README.md`**, **`CLAUDE.md`**: updated all Ollama references to reflect native host deployment, `qwen2.5:3b`, and `host.docker.internal` endpoint
 - **`docs/testing.md`**: rewritten to cover both PHPUnit and Vitest suites — commands, test structure, coverage thresholds, Vue test patterns, common issues
 - **`README.md`**: separate PHP (93%) and JS (89%) coverage badges; Vitest added to Features and Stack
-- **`CLAUDE.md`**: new JS/Vue testing section; updated CI requirements, Husky hook table, pitfalls #17/#18, key files reference
+- **`CLAUDE.md`**: new JS/Vue testing section — Vitest setup, Docker requirement for npm commands, happy-dom navigation config, Vue `Error` import shadowing pitfall; updated CI requirements and Husky hook table; added `vitest.config.js` and `tests/Javascript/setup.js` to key files
 
 ---
 
