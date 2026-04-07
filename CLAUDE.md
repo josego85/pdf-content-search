@@ -51,7 +51,8 @@ pdf-content-search/
 ├── tests/
 │   ├── Unit/          # Unit tests (27+ test files)
 │   ├── Integration/   # Integration tests (repository with real DB)
-│   └── Functional/    # Functional/controller tests
+│   ├── Functional/    # Functional/controller tests
+│   └── Javascript/    # Vitest unit tests for Vue components, constants, services
 ├── .env               # Committed — safe defaults only
 ├── .env.test          # Test environment config
 ├── biome.json         # JavaScript/Vue linting (replaces ESLint/Prettier)
@@ -64,6 +65,7 @@ pdf-content-search/
 ├── phpstan.neon       # PHPStan Level 8 config
 ├── phpunit.xml.dist   # Test config, 93% coverage target (85% CI minimum)
 ├── rector.php         # Rector rules (PHP 8.4, Symfony 7.4, Doctrine 3.x)
+├── vitest.config.js   # Vitest: happy-dom, @ alias, setup, v8 coverage, 80% thresholds
 ├── webpack.config.js  # Encore: 3 entries, code splitting
 └── TODO.md            # Prioritized backlog
 ```
@@ -155,11 +157,13 @@ docker compose exec php php bin/phpunit tests/Unit
 - `tests/Unit/` — mock all external dependencies (DB, Elasticsearch, Ollama)
 - `tests/Integration/` — uses real database; requires running `database` service
 - `tests/Functional/` — full Symfony kernel (HTTP tests via BrowserKit)
+- `tests/Javascript/` — Vitest unit tests for Vue components, constants, services
 
 ### What to Test
 - Every new service class must have a Unit test
 - Every new repository method must have an Integration test
 - Every new controller action must have a Functional test
+- Every new Vue component must have a Vitest test in `tests/Javascript/`
 - Use Symfony's `KernelTestCase` for integration, `WebTestCase` for functional
 - Do not test Symfony internals or Doctrine behavior — test your code's logic
 
@@ -167,6 +171,16 @@ docker compose exec php php bin/phpunit tests/Unit
 - Elasticsearch mock responses go in `tests/Fixtures/`
 - Do not use real Elasticsearch in Unit tests — always mock `ElasticsearchService`
 - When mocking services that implement interfaces, **always mock the interface** (`LanguageDetectorInterface`, `PdfProcessorInterface`, etc.) — never the concrete class
+
+### JavaScript / Vue Testing (Vitest)
+- **Framework:** Vitest 4.x with happy-dom (jsdom@29 incompatible with Node 24 — use happy-dom)
+- **Config:** `vitest.config.js` — `@ alias → assets/`, `tests/Javascript/setup.js`, v8 coverage, 80% thresholds
+- **Run tests:** `docker compose exec php npm run test` (must run inside Docker — native rolldown binding absent on host)
+- **Coverage:** `docker compose exec php npm run test:coverage`
+- **Setup file** (`tests/Javascript/setup.js`): stubs `apexchart` globally via `config.global.stubs`
+- **Navigation noise:** `disableMainFrameNavigation: true` in `environmentOptions.happyDOM.settings` prevents ECONNREFUSED errors from `<a target="_blank">` clicks
+- **console.error in error-path tests:** spy with `vi.spyOn(console, 'error').mockImplementation(() => {})` in `beforeEach`; restore with `vi.restoreAllMocks()` in `afterEach`
+- **Never name a Vue component import `Error`** — shadows the global `Error` constructor in Vitest SSR mode; use `ErrorState` instead
 
 ---
 
@@ -396,7 +410,7 @@ Always use `make` for common tasks. Check `Makefile` before running raw docker/c
 ### GitHub Actions Workflows
 | Workflow | Trigger | Checks |
 |---|---|---|
-| `ci.yml` | push / PR | PHPUnit (85% coverage), PHPStan, PHP-CS-Fixer, Rector, Biome, Webpack build |
+| `ci.yml` | push / PR | PHPUnit (85% coverage), PHPStan, PHP-CS-Fixer, Rector, Biome, Webpack build, Vitest (80% coverage) |
 | `security-audit.yml` | push / PR / daily 2am UTC | npm audit, composer audit, dependency-review |
 | `codeql.yml` | push / PR / weekly Monday 6am UTC | SAST (PHP vulnerability scanning) |
 
@@ -410,8 +424,9 @@ Always use `make` for common tasks. Check `Makefile` before running raw docker/c
 4. Rector — zero unapplied changes
 5. Biome — zero lint/format issues
 6. Webpack build — must complete successfully
-7. npm audit — no high/critical CVEs
-8. composer audit — no CVEs, no abandoned packages
+7. Vitest — ≥80% coverage (statements, branches, functions, lines)
+8. npm audit — no high/critical CVEs
+9. composer audit — no CVEs, no abandoned packages
 
 Do not merge pull requests with CI failures.
 
@@ -433,10 +448,14 @@ Do not merge pull requests with CI failures.
 | PHPStan | `composer phpstan` | Fix errors before committing |
 | Rector | `composer rector-check` | `Run: make rector-fix` |
 | PHPUnit | `composer test` | Fix failing tests |
-| Biome | `npm run lint --silent` | `Run: npm run lint` |
+| Biome | `npm run lint --silent` (inside Docker) | `Run: npm run lint` |
+| Vitest | `npm run test --silent` (inside Docker) | Fix failing JS/Vue tests |
+
+### Critical: npm commands run inside Docker
+All `npm run *` commands in pre-commit **must** use `docker compose exec -T php` — running on the host fails with `MODULE_NOT_FOUND @rolldown/binding-linux-x64-gnu` because `node_modules` is installed inside Alpine and the host glibc native binding is absent.
 
 ### Why Keep Husky Separate from `composer ci`
-- `composer ci` is PHP-only — cannot include Biome (Node.js)
+- `composer ci` is PHP-only — cannot include Biome or Vitest (Node.js)
 - Husky provides per-check actionable error messages and graceful skip logic
 - `composer ci` is the local convenience script; Husky is the automated gate
 
@@ -472,10 +491,12 @@ docker compose exec php composer test
 # or: make test
 ```
 
-### Frontend Linting
+### Frontend Linting & Testing
 ```bash
-npm run lint        # Biome lint check
-npm run format      # Biome format check
+# Run inside Docker — host lacks native rolldown binding
+docker compose exec php npm run lint          # Biome lint check
+docker compose exec php npm run test          # Vitest (no coverage)
+docker compose exec php npm run test:coverage # Vitest with v8 coverage report
 ```
 
 ### PHPStan Baseline
@@ -622,13 +643,15 @@ Custom slash commands in `.claude/commands/`. Invoke them by typing `/command-na
 7. **Bypassing IP anonymization** — store masked IPs only (last 80 bits zeroed)
 8. **Changing `int8_hnsw` to `float32` embeddings** — 4x RAM increase; benchmark first
 9. **Modifying existing Dockerfile `FROM` base images** — pin exact versions, test thoroughly
-10. **Adding frontend tests with Jest** — this project uses Biome only; tests not yet implemented (see TODO.md — add Vitest when ready)
+10. **Running `npm run test` on the host** — `node_modules` is installed inside Alpine Docker; the host glibc lacks `@rolldown/binding-linux-x64-gnu`; always use `docker compose exec php npm run test`
 11. **Using `exec()`/`shell_exec()` for system commands** — always use `Symfony\Component\Process\Process` with args as array; prevents shell injection and allows timeout control
 12. **Mocking concrete classes in tests** — mock the interface (`LanguageDetectorInterface`, `PdfProcessorInterface`, `TranslationServiceInterface`); tight coupling to concrete classes hides architectural problems
 13. **Storing dates as `Y-m-d H:i:s` strings in Elasticsearch** — use `DateTimeInterface::ATOM` (ISO 8601) to enable date math, `date_histogram`, and proper timezone handling
 14. **Using `replace_all` on SVG attribute strings ending with `>`** — strips the closing `>` from the tag, corrupting HTML silently and breaking the Webpack build; always use individual targeted edits for SVG attributes
 15. **Serving `robots.txt`/`sitemap.xml` as static files in `public/`** — static files cannot generate absolute URLs; use `SitemapController` with `$request->getSchemeAndHttpHost()`
 16. **Running Lighthouse SEO in `APP_ENV=dev`** — Symfony WebProfiler injects `X-Robots-Tag: noindex` on all responses; SEO scores are only accurate in `APP_ENV=prod`
+17. **Naming a Vue component import `Error`** — shadows the global `Error` constructor in Vitest SSR mode; `new Error(...)` in the component instantiates the component instead; use `ErrorState` or another non-reserved name
+18. **Omitting `disableMainFrameNavigation` in Vitest happy-dom config** — clicking `<a target="_blank">` causes happy-dom to make real TCP connections (ECONNREFUSED noise); set `environmentOptions.happyDOM.settings.navigation.disableMainFrameNavigation: true`
 
 ---
 
@@ -660,6 +683,9 @@ Custom slash commands in `.claude/commands/`. Invoke them by typing `/command-na
 | `TODO.md` | Prioritized backlog |
 | `docs/refactor-contract-first-process-hardening/` | Refactoring session docs (findings, plan, progress log) |
 | `docs/tasks/seo-accessibility-lighthouse/` | SEO + a11y audit session docs (findings, plan, progress log) |
+| `docs/tasks/javascript-vue-testing-vitest/` | Vitest test suite session docs (findings, plan, progress log) |
+| `vitest.config.js` | Vitest config — happy-dom, @ alias, setup file, v8 coverage, 80% thresholds |
+| `tests/Javascript/setup.js` | Global Vitest setup — stubs apexchart for chart components |
 | `templates/base.html.twig` | Master template — SEO meta, canonical, OG, JSON-LD, skip link, `<main>` |
 
 ---
@@ -678,7 +704,7 @@ Custom slash commands in `.claude/commands/`. Invoke them by typing `/command-na
 - [ ] Filter analytics dashboard by search strategy
 
 ### Low Priority
-- [ ] JavaScript/Vue unit tests (Vitest)
+- [x] JavaScript/Vue unit tests (Vitest) — **completed** (172 tests, ~89% coverage)
 - [ ] Real-time analytics dashboard (WebSocket)
 - [ ] Scheduled email reports
 - [ ] ML-powered query suggestions

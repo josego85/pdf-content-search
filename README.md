@@ -7,7 +7,8 @@
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
 [![Ollama](https://img.shields.io/badge/Ollama-AI-000000?logo=ai&logoColor=white)](https://ollama.ai/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![Tests](https://img.shields.io/badge/Coverage-93%25-success?logo=phpunit&logoColor=white)](tests/)
+[![PHP Tests](https://img.shields.io/badge/PHP%20Coverage-93%25-success?logo=phpunit&logoColor=white)](tests/)
+[![JS Tests](https://img.shields.io/badge/JS%20Coverage-89%25-success?logo=vitest&logoColor=white)](tests/Javascript/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 AI-powered PDF search with hybrid semantic capabilities using Elasticsearch 9.3 vector search and Ollama embeddings.
@@ -22,6 +23,7 @@ AI-powered PDF search with hybrid semantic capabilities using Elasticsearch 9.3 
 - 📊 **Analytics Dashboard** - Real-time search metrics: trends, click position distribution, CTR, CSV/JSON export
 - 📝 **OCR for scanned PDFs** - Automatic text layer via `ocrmypdf` (enables search & highlighting)
 - 📱 Responsive Vue.js frontend with in-PDF highlighting
+- 🧪 Full test suite — PHPUnit (93% PHP coverage) + Vitest (89% JS/Vue coverage, 172 tests)
 
 ## Quick Start
 
@@ -57,7 +59,7 @@ make prod          # Start production (http://localhost:8080)
 make down          # Stop environment
 make logs          # View logs (add SERVICE=php for specific service)
 make shell         # Open shell in PHP container
-make test          # Run PHPUnit tests (93% coverage)
+make test          # Run PHPUnit tests (93% PHP coverage)
 make status        # Show all environments status
 
 # Translation monitoring (helper scripts)
@@ -78,6 +80,7 @@ docker compose -p pdf-content-search exec php php bin/console app:translation:mo
 - **AI:** Ollama native (qwen2.5:3b translations, nomic-embed-text embeddings)
 - **Queue:** Symfony Messenger (3 workers)
 - **Analytics:** PostgreSQL 16 (metrics storage), Vue.js dashboard
+- **Testing:** PHPUnit (PHP), Vitest + happy-dom (JS/Vue)
 
 ## Documentation
 
@@ -85,7 +88,7 @@ docker compose -p pdf-content-search exec php php bin/console app:translation:mo
 - [Getting Started](docs/getting-started.md) - Complete setup in 5 minutes
 - [Configuration](docs/configuration.md) - Environment variables & advanced settings
 - [Production](docs/production.md) - Deploy, optimization & security
-- [Testing](docs/testing.md) - PHPUnit tests & coverage (87%)
+- [Testing](docs/testing.md) - PHPUnit (93% PHP) + Vitest (89% JS/Vue, 172 tests)
 - [Troubleshooting](docs/troubleshooting.md) - Common issues & solutions
 
 ### Features

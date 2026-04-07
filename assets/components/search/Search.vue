@@ -32,7 +32,7 @@
       />
 
       <!-- Error Message -->
-      <Error
+      <ErrorState
         v-if="error"
         :message="error"
         @close="error = null"
@@ -80,7 +80,7 @@ import Hero from "./Hero.vue"
 import Pagination from "./Pagination.vue"
 import Results from "./Results.vue"
 import Empty from "./states/Empty.vue"
-import Error from "./states/Error.vue"
+import ErrorState from "./states/Error.vue"
 import Initial from "./states/Initial.vue"
 import Loading from "./states/Loading.vue"
 
@@ -93,7 +93,7 @@ export default {
 		Pagination,
 		Results,
 		Loading,
-		Error,
+		ErrorState,
 		Empty,
 		Initial,
 	},

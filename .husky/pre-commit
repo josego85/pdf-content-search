@@ -39,10 +39,17 @@ fi
 echo "✅ Tests passed."
 
 echo "🎨 Running Biome lint..."
-if ! npm run lint --silent; then
+if ! docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T php npm run lint --silent; then
   echo "❌ Linting errors detected. Run: npm run lint"
   exit 1
 fi
 echo "✅ JS/Vue clean."
+
+echo "🧪 Running Vitest (no coverage — CI handles thresholds)..."
+if ! docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T php npm run test --silent; then
+  echo "❌ JS/Vue tests failed. Fix them before committing."
+  exit 1
+fi
+echo "✅ Vitest passed."
 
 echo "✨ All checks passed."

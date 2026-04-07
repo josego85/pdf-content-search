@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **JavaScript/Vue unit test suite** (Vitest): 172 tests across all 18 Vue components, 3 constants modules, and `TranslationApiService`; centralized in `tests/Javascript/` (Symfony convention); coverage ≥89% statements, ≥87% branches — enforced in CI (`frontend-tests` job) and Husky pre-commit
+- **`vitest.config.js`**: Vitest setup with `happy-dom`, v8 coverage provider, 80% thresholds, `@` alias for `assets/`, global ApexChart stub
 - **`extractAllPages()` in `PdfProcessor`/`PdfProcessorInterface`**: single `pdftotext` call for the entire PDF, splitting pages by form-feed `\f` — ~20x faster than one call per page
 - **`embedConcurrentBatches()` in `OllamaEmbeddingService`/`EmbeddingServiceInterface`**: fires all HTTP requests to Ollama before blocking on any response (curl_multi); infrastructure for future parallel embedding when `OLLAMA_NUM_PARALLEL` is supported on the embed endpoint
 - **`ollama.embed_max_chars`** config param: caps text sent to the embedding model (500 chars ≈ 100 tokens); full text preserved in Elasticsearch for BM25
@@ -27,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`embedBatch()` from `EmbeddingServiceInterface` and `OllamaEmbeddingService`**: superseded by `embedConcurrentBatches()`; `requestBatch()` private method removed with it
 - **`.docker/ollama/Dockerfile` and `.docker/ollama/entrypoint.sh`**: Ollama runs natively on the host
 
+### Fixed
+- **`Search.vue`**: renamed `import Error from "./states/Error.vue"` → `ErrorState` — the original name shadowed the global `Error` constructor in Vitest SSR mode, causing `throw new Error(...)` to instantiate the Vue component instead (TypeError in error-path tests)
+
 ### Security
 - **`lodash` upgraded** (`4.17.23` → `4.18.1`): fixes [GHSA-r5fr-rjxr-66jc](https://github.com/advisories/GHSA-r5fr-rjxr-66jc) (code injection via `_.template`) and [GHSA-f23m-r3pf-42rh](https://github.com/advisories/GHSA-f23m-r3pf-42rh) (prototype pollution via `_.unset`/`_.omit`) — both high severity
 
@@ -38,6 +43,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - **`docs/getting-started.md`**: new **Ollama Setup** section — install, systemd service configuration (`OLLAMA_HOST=0.0.0.0`, `OLLAMA_NUM_PARALLEL=4`), model pull, and troubleshooting for native host setup
 - **`docs/configuration.md`**, **`docs/production.md`**, **`docs/troubleshooting.md`**, **`README.md`**, **`CLAUDE.md`**: updated all Ollama references to reflect native host deployment, `qwen2.5:3b`, and `host.docker.internal` endpoint
+- **`docs/testing.md`**: rewritten to cover both PHPUnit and Vitest suites — commands, test structure, coverage thresholds, Vue test patterns, common issues
+- **`README.md`**: separate PHP (93%) and JS (89%) coverage badges; Vitest added to Features and Stack
+- **`CLAUDE.md`**: new JS/Vue testing section — Vitest setup, Docker requirement for npm commands, happy-dom navigation config, Vue `Error` import shadowing pitfall; updated CI requirements and Husky hook table; added `vitest.config.js` and `tests/Javascript/setup.js` to key files
 
 ---
 
