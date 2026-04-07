@@ -20,12 +20,10 @@
 - [ ] **Filter by Search Strategy** - API endpoint to filter analytics by strategy
 
 ### Performance Optimization
-- [ ] **Optimize Embedding Generation** - Ollama generates embeddings at ~1s/page on CPU (~18 min for 1k pages); consider GPU acceleration or a faster embedding model
+- [x] **Optimize Embedding Generation** - Resolved in PR #131: Ollama migrated to native host + batch embeddings (50 texts/batch) → 6x speedup (~200s for 1k pages, was ~18 min)
 
 ### Testing
-- [ ] **JavaScript/Vue Testing** - Add unit tests for frontend components
-  - Framework: Vitest or Jest
-  - Coverage target: >80%
+- [x] **JavaScript/Vue Testing** - Resolved: Vitest + @vue/test-utils, 172 tests, 89% coverage (all thresholds ≥80%), CI job + Husky hook added
 
 ## 🟢 Low Priority / Future Enhancements
 

@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **JavaScript/Vue unit test suite** (Vitest): 172 tests across all 18 Vue components, 3 constants modules, and `TranslationApiService`; centralized in `tests/Javascript/` (Symfony convention); coverage ≥89% statements, ≥87% branches — enforced in CI (`frontend-tests` job) and Husky pre-commit
+- **`vitest.config.js`**: Vitest setup with `happy-dom`, v8 coverage provider, 80% thresholds, `@` alias for `assets/`, global ApexChart stub
 - **`extractAllPages()` in `PdfProcessor`/`PdfProcessorInterface`**: single `pdftotext` call for the entire PDF, splitting pages by form-feed `\f` — ~20x faster than one call per page
 - **`embedConcurrentBatches()` in `OllamaEmbeddingService`/`EmbeddingServiceInterface`**: fires all HTTP requests to Ollama before blocking on any response (curl_multi); infrastructure for future parallel embedding when `OLLAMA_NUM_PARALLEL` is supported on the embed endpoint
 - **`ollama.embed_max_chars`** config param: caps text sent to the embedding model (500 chars ≈ 100 tokens); full text preserved in Elasticsearch for BM25

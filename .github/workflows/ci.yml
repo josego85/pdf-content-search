@@ -155,6 +155,20 @@ jobs:
       - name: Run Biome linter
         run: npm run lint
 
+  frontend-tests:
+    name: Frontend Tests (Vitest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5.0.0
+
+      - name: Setup Node.js project
+        uses: ./.github/actions/setup-node-project
+
+      - name: Run Vitest with coverage
+        run: npm run test:coverage
+
   frontend-build:
     name: Frontend Build & Check
     runs-on: ubuntu-latest
