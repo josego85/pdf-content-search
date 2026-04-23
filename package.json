@@ -17,11 +17,13 @@
   "dependencies": {
     "apexcharts": "5.3.6",
     "pdfjs-dist": "5.4.449",
+    "uuid": "14.0.0",
     "vue": "3.5.28",
     "vue3-apexcharts": "1.10.0"
   },
   "overrides": {
-    "serialize-javascript": "7.0.5"
+    "serialize-javascript": "7.0.5",
+    "uuid": "14.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.29.0",
