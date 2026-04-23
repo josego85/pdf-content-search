@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.16.0] - 2026-04-23
 
 ### Added
 - **JavaScript/Vue unit test suite** (Vitest): 172 tests across all 18 Vue components, 3 constants modules, and `TranslationApiService`; centralized in `tests/Javascript/` (Symfony convention); coverage ≥89% statements, ≥87% branches — enforced in CI (`frontend-tests` job) and Husky pre-commit
@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`Search.vue`**: renamed `import Error from "./states/Error.vue"` → `ErrorState` — the original name shadowed the global `Error` constructor in Vitest SSR mode, causing `throw new Error(...)` to instantiate the Vue component instead (TypeError in error-path tests)
 
 ### Security
+- **`uuid` dependency upgraded** (npm `overrides` constraint: 8.3.2 → 14.0.0): fixes [GHSA-w5hq-g745-h8pq](https://github.com/advisories/GHSA-w5hq-g745-h8pq) (buffer bounds check missing in v3/v5/v6 with custom buffer) — severity: moderate; backwards-compatible with no breaking changes to API surface
 - **`lodash` upgraded** (`4.17.23` → `4.18.1`): fixes [GHSA-r5fr-rjxr-66jc](https://github.com/advisories/GHSA-r5fr-rjxr-66jc) (code injection via `_.template`) and [GHSA-f23m-r3pf-42rh](https://github.com/advisories/GHSA-f23m-r3pf-42rh) (prototype pollution via `_.unset`/`_.omit`) — both high severity
 
 ### Performance
