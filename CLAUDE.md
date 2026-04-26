@@ -311,6 +311,8 @@ See `TODO.md`. These must be completed before public exposure:
 - `npm audit` — high/critical findings block CI
 - `composer audit` — CVE or abandoned packages block CI
 - Fix vulnerabilities by upgrading; do not suppress audit warnings without justification
+- For transitive deps pinned outside the stated range, `npm audit fix --force` is acceptable — always verify with `npm run build` + `npm run test` after applying
+- Use `overrides` in `package.json` only when a transitive dep cannot be upgraded directly (e.g. `uuid` GHSA-w5hq-g745-h8pq); prefer direct upgrades when available
 
 ---
 
