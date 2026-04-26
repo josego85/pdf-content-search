@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.16.1] - 2026-04-26
+
+### Security
+- **`postcss` upgraded** (`8.5.6` → `8.5.12`): fixes [GHSA-qx2v-qp2m-jg93](https://github.com/advisories/GHSA-qx2v-qp2m-jg93) (XSS via unescaped `</style>` tag in CSS Stringify output) — severity: moderate; upgrade applied via `npm audit fix --force` as the target version falls outside the previous pin range
+
+---
+
 ## [1.16.0] - 2026-04-23
 
 ### Added
