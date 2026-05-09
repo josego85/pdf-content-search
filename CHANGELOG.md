@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.16.2] - 2026-05-09
+
+### Security
+- **`@babel/plugin-transform-modules-systemjs` upgraded** (`7.29.0` → `7.29.4`): fixes [GHSA-fv7c-fp4j-7gwp](https://github.com/advisories/GHSA-fv7c-fp4j-7gwp) (arbitrary code generation when compiling malicious input) — severity: high; build-time only (Webpack/Babel toolchain, not app runtime); patched via `npm audit fix` within semver range `^7.29.0`
+- **`fast-uri` upgraded** (`3.1.0` → `3.1.2`): fixes [GHSA-q3j6-qgpj-74h6](https://github.com/advisories/GHSA-q3j6-qgpj-74h6) (path traversal via percent-encoded dot segments) and [GHSA-v39h-62p7-jpjc](https://github.com/advisories/GHSA-v39h-62p7-jpjc) (host confusion via percent-encoded authority delimiters) — severity: high; build-time only (webpack → schema-utils → ajv → fast-uri, not app runtime); patched via `npm audit fix` within semver range `^3.0.1`
+
+---
+
 ## [1.16.1] - 2026-04-26
 
 ### Security

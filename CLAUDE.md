@@ -312,7 +312,17 @@ See `TODO.md`. These must be completed before public exposure:
 - `composer audit` — CVE or abandoned packages block CI
 - Fix vulnerabilities by upgrading; do not suppress audit warnings without justification
 - For transitive deps pinned outside the stated range, `npm audit fix --force` is acceptable — always verify with `npm run build` + `npm run test` after applying
+- For transitive deps within the stated semver range, `npm audit fix` (no `--force`) is sufficient — no `overrides` or code changes needed
 - Use `overrides` in `package.json` only when a transitive dep cannot be upgraded directly (e.g. `uuid` GHSA-w5hq-g745-h8pq); prefer direct upgrades when available
+
+### Security Patch History
+| Version | Package | Advisory | Fix method |
+|---|---|---|---|
+| 1.16.0 | `uuid` 8.3.2 → 14.0.0 | GHSA-w5hq-g745-h8pq (moderate) | `overrides` in package.json |
+| 1.16.0 | `lodash` 4.17.23 → 4.18.1 | GHSA-r5fr-rjxr-66jc + GHSA-f23m-r3pf-42rh (high) | direct upgrade |
+| 1.16.1 | `postcss` 8.5.6 → ^8.5.12 | GHSA-qx2v-qp2m-jg93 (moderate) | `npm audit fix --force` (outside stated range) |
+| 1.16.2 | `@babel/plugin-transform-modules-systemjs` 7.29.0 → 7.29.4 | GHSA-fv7c-fp4j-7gwp (high, build-time only) | `npm audit fix` (within `^7.29.0`) |
+| 1.16.2 | `fast-uri` 3.1.0 → 3.1.2 | GHSA-q3j6-qgpj-74h6 + GHSA-v39h-62p7-jpjc (high, build-time only) | `npm audit fix` (within `^3.0.1`) |
 
 ---
 
