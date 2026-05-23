@@ -6,7 +6,7 @@
 # ============================================
 # Stage 1: Base Image
 # ============================================
-FROM php:8.4.19-fpm-alpine@sha256:38c3275e8d8fe1b395dd81dccdbdbec6b0fa1fa318e2391c4ad98eae3b6dc0e3 AS base
+FROM php:8.4.21-fpm-alpine@sha256:2e8d5b74437b02cbc3c632903d20a10fdcc956ba56d25bff951cc2b610767c9a AS base
 
 # Install runtime dependencies only
 RUN apk add --no-cache \
@@ -24,9 +24,11 @@ RUN apk add --no-cache \
     tesseract-ocr-data-deu \
     supervisor
 
-# Install PHP extensions (build deps removed after)
-RUN apk add --no-cache --virtual .build-deps \
-    postgresql-dev \
+# Install PHP extensions — nice -n 19 prevents APK3 I/O race condition on gcc/cc1
+# Build deps removed after compilation to keep image lean
+RUN nice -n 19 apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS \
+    libpq-dev \
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \

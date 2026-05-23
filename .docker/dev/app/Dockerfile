@@ -4,11 +4,10 @@
 # ============================================
 
 # Stage 1: Build PHP extensions (cached indefinitely)
-FROM php:8.4.19-fpm-alpine@sha256:38c3275e8d8fe1b395dd81dccdbdbec6b0fa1fa318e2391c4ad98eae3b6dc0e3 AS php-extensions
+FROM php:8.4.21-fpm-alpine@sha256:2e8d5b74437b02cbc3c632903d20a10fdcc956ba56d25bff951cc2b610767c9a AS php-extensions
 
-# Install build + runtime deps in single layer
+# Runtime dependencies
 RUN apk add --no-cache \
-    # Runtime dependencies (permanent)
     postgresql-libs \
     libpng \
     libjpeg-turbo \
@@ -22,10 +21,12 @@ RUN apk add --no-cache \
     npm \
     bash \
     vim \
-    unzip \
-    # Build dependencies (for compilation)
+    unzip
+
+# Build dependencies — nice -n 19 prevents APK3 I/O race condition when extracting gcc/cc1
+RUN nice -n 19 apk add --no-cache \
     $PHPIZE_DEPS \
-    postgresql-dev \
+    libpq-dev \
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \
@@ -49,7 +50,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-enable pcov
 
 # Stage 2: Final development image
-FROM php:8.4.19-fpm-alpine@sha256:38c3275e8d8fe1b395dd81dccdbdbec6b0fa1fa318e2391c4ad98eae3b6dc0e3
+FROM php:8.4.21-fpm-alpine@sha256:2e8d5b74437b02cbc3c632903d20a10fdcc956ba56d25bff951cc2b610767c9a
 
 # Copy compiled extensions from stage 1 (instant!)
 COPY --from=php-extensions /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/

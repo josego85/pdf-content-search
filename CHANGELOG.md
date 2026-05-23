@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Changed
+- **PHP upgraded** (`8.4.19` → `8.4.21`) in both dev and prod Dockerfiles — pinned to exact digest `sha256:2e8d5b74...`
+
+### Fixed
+- **APK 3.x I/O race condition on Alpine 3.23**: `apk add` for build dependencies now runs under `nice -n 19`, preventing intermittent extraction failures on large binaries (GCC's `cc1`, ~100 MB) introduced by APK 3.0's faster I/O path in Docker BuildKit containers
+- **`postgresql-dev` → `libpq-dev`** in both Dockerfiles: `postgresql-dev` on Alpine 3.23 resolves to `postgresql18-dev`, which pulls in `llvm20` + `clang20` (~2–3 GB of JIT toolchain) as transitive dependencies — unnecessary for PHP extension compilation; `libpq-dev` provides only the required `libpq-fe.h` headers
+- **Missing `$PHPIZE_DEPS` in prod Dockerfile**: the `.build-deps` virtual group was missing `autoconf`, `gcc`, `g++`, `make`, and friends — `docker-php-ext-install` would silently fail without them
+
+---
+
 ## [1.16.2] - 2026-05-09
 
 ### Security
