@@ -314,6 +314,8 @@ See `TODO.md`. These must be completed before public exposure:
 - For transitive deps pinned outside the stated range, `npm audit fix --force` is acceptable — always verify with `npm run build` + `npm run test` after applying
 - For transitive deps within the stated semver range, `npm audit fix` (no `--force`) is sufficient — no `overrides` or code changes needed
 - Use `overrides` in `package.json` only when a transitive dep cannot be upgraded directly (e.g. `uuid` GHSA-w5hq-g745-h8pq); prefer direct upgrades when available
+- For Symfony coordinated security releases: not all `symfony/*` packages reach the same patch version simultaneously — always run `composer update --dry-run` first to discover actual available versions, then pin those exact resolved versions in `composer.json`
+- Always use exact version pins in `composer.json` (e.g. `"7.4.12"` not `"^7.4"`) — reproducible builds, no silent upgrades between deploys
 
 ### Security Patch History
 | Version | Package | Advisory | Fix method |
@@ -323,6 +325,8 @@ See `TODO.md`. These must be completed before public exposure:
 | 1.16.1 | `postcss` 8.5.6 → ^8.5.12 | GHSA-qx2v-qp2m-jg93 (moderate) | `npm audit fix --force` (outside stated range) |
 | 1.16.2 | `@babel/plugin-transform-modules-systemjs` 7.29.0 → 7.29.4 | GHSA-fv7c-fp4j-7gwp (high, build-time only) | `npm audit fix` (within `^7.29.0`) |
 | 1.16.2 | `fast-uri` 3.1.0 → 3.1.2 | GHSA-q3j6-qgpj-74h6 + GHSA-v39h-62p7-jpjc (high, build-time only) | `npm audit fix` (within `^3.0.1`) |
+| 1.16.3 | Symfony 7.4.x batch (12 packages) | 28 CVEs — 2026-05-20 coordinated disclosure (incl. SQL injection, auth bypass, XSS) | `composer update --with-all-dependencies "symfony/*" "twig/twig" "twig/extra-bundle"` — pin exact resolved versions; NO code/config changes needed |
+| 1.16.3 | `twig/twig` 3.24.0 → 3.26.0 | 10 advisories incl. CVE-2026-46633 (critical, PHP code injection via `{% use %}`), CVE-2026-46640 (high) | same batch update — NO code/config changes needed |
 
 ---
 

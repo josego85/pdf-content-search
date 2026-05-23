@@ -17,6 +17,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`postgresql-dev` → `libpq-dev`** in both Dockerfiles: `postgresql-dev` on Alpine 3.23 resolves to `postgresql18-dev`, which pulls in `llvm20` + `clang20` (~2–3 GB of JIT toolchain) as transitive dependencies — unnecessary for PHP extension compilation; `libpq-dev` provides only the required `libpq-fe.h` headers
 - **Missing `$PHPIZE_DEPS` in prod Dockerfile**: the `.build-deps` virtual group was missing `autoconf`, `gcc`, `g++`, `make`, and friends — `docker-php-ext-install` would silently fail without them
 
+### Security
+- **Symfony batch upgrade** (2026-05-20 coordinated disclosure — 28 advisories, 12 packages):
+  - `symfony/cache` → `7.4.12`: fixes [CVE-2026-45073](https://symfony.com/cve-2026-45073) — SQL injection in `PdoAdapter::doClear()` via unsanitized `$prefix` (project uses filesystem adapter, not PdoAdapter — included for completeness)
+  - `symfony/dom-crawler` → `7.4.12`: fixes [CVE-2026-45071](https://symfony.com/cve-2026-45071) — XXE local file disclosure in `addXmlContent()` when `validateOnParse=true`
+  - `symfony/http-kernel` → `7.4.12`: fixes [CVE-2026-45075](https://symfony.com/cve-2026-45075) — HEAD request bypasses `methods: ['GET']` filter in `#[IsGranted]` / `#[IsSignatureValid]` / `#[IsCsrfTokenValid]`
+  - `symfony/mailer` → `7.4.12`: fixes [CVE-2026-45068](https://symfony.com/cve-2026-45068) — argument injection in `SendmailTransport` via dash-prefixed recipient address
+  - `symfony/mime` → `7.4.12`: fixes [CVE-2026-45067](https://symfony.com/cve-2026-45067) (email header / SMTP command injection via CRLF in `Address`) and [CVE-2026-45070](https://symfony.com/cve-2026-45070) (email header injection via non-token characters in MIME parameter names)
+  - `symfony/monolog-bridge` → `7.4.12`: fixes [CVE-2026-45077](https://symfony.com/cve-2026-45077) — unauthenticated PHP object deserialization in `server:log` listener
+  - `symfony/routing` → `7.4.12`: fixes [CVE-2026-45065](https://symfony.com/cve-2026-45065) — `UrlGenerator` route-requirement bypass via unanchored regex alternation leading to off-site URL injection
+  - `symfony/runtime` → `7.4.12`: fixes [CVE-2026-46626](https://symfony.com/cve-2026-46626) — web requests can set `APP_ENV`/`APP_DEBUG` via `parse_str`/SAPI argv mismatch (bypass of CVE-2024-50340 patch)
+  - `symfony/security-http` → `7.4.12`: fixes [CVE-2026-45063](https://symfony.com/cve-2026-45063) (identity spoofing via unanchored DN regex in `X509Authenticator`), [CVE-2026-45069](https://symfony.com/cve-2026-45069) (`OidcTokenHandler` accepts JWTs missing `aud`/`iss`/`exp`), [CVE-2026-45074](https://symfony.com/cve-2026-45074) (`Cas2Handler` derives service URL from client `Host` header), and [CVE-2026-45075](https://symfony.com/cve-2026-45075) (same HEAD bypass as http-kernel)
+  - `symfony/web-profiler-bundle` → `7.4.12`: fixes [CVE-2026-45072](https://symfony.com/cve-2026-45072) — stored XSS in `CodeExtension::fileExcerpt()` via unescaped non-PHP file rendering (dev-only profiler)
+  - `symfony/yaml` → `7.4.12`: fixes [CVE-2026-45304](https://symfony.com/cve-2026-45304) ("Billion Laughs" exponential memory via recursive collection-alias expansion), [CVE-2026-45305](https://symfony.com/cve-2026-45305) (ReDoS via catastrophic backtracking in `Parser::cleanup()` regex), and [CVE-2026-45133](https://symfony.com/cve-2026-45133) (stack exhaustion via unbounded recursion in nested blocks)
+- **`twig/twig` upgraded** (`3.24.0` → `3.26.0`): fixes 10 advisories including [CVE-2026-46633](https://symfony.com/cve-2026-46633) (critical — PHP code injection via `{% use %}` template name), [CVE-2026-46640](https://symfony.com/cve-2026-46640) (high — arbitrary PHP code execution via `_self.(<string>)` macro-reference compilation), [CVE-2026-46639](https://symfony.com/cve-2026-46639) (high — sandbox property/method bypass via object-destructuring assignment), and multiple sandbox escapes and XSS issues
+- No code or configuration changes required — all fixes are contained within the upgraded libraries; security-sensitive features (PdoAdapter, OIDC, CAS, X.509 auth, Twig sandbox) are either unused or not configured in this application
+
 ---
 
 ## [1.16.2] - 2026-05-09
