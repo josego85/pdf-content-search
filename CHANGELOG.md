@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.16.3] - 2026-05-23
 
 ### Changed
 - **PHP upgraded** (`8.4.19` → `8.4.21`) in both dev and prod Dockerfiles — pinned to exact digest `sha256:2e8d5b74...`

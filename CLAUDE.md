@@ -314,6 +314,7 @@ See `TODO.md`. These must be completed before public exposure:
 - For transitive deps pinned outside the stated range, `npm audit fix --force` is acceptable — always verify with `npm run build` + `npm run test` after applying
 - For transitive deps within the stated semver range, `npm audit fix` (no `--force`) is sufficient — no `overrides` or code changes needed
 - Use `overrides` in `package.json` only when a transitive dep cannot be upgraded directly (e.g. `uuid` GHSA-w5hq-g745-h8pq); prefer direct upgrades when available
+- For vulnerabilities in devDependency testing toolchain only (e.g. `js-cookie` via `@vue/test-utils`, `ws` via `happy-dom`): confirm with `npm ls <package>` that the dep is not reachable from production code, then `npm audit fix`; no code or config changes needed
 - For Symfony coordinated security releases: not all `symfony/*` packages reach the same patch version simultaneously — always run `composer update --dry-run` first to discover actual available versions, then pin those exact resolved versions in `composer.json`
 - Always use exact version pins in `composer.json` (e.g. `"7.4.12"` not `"^7.4"`) — reproducible builds, no silent upgrades between deploys
 
