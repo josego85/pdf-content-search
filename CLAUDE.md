@@ -327,6 +327,8 @@ See `TODO.md`. These must be completed before public exposure:
 | 1.16.2 | `fast-uri` 3.1.0 → 3.1.2 | GHSA-q3j6-qgpj-74h6 + GHSA-v39h-62p7-jpjc (high, build-time only) | `npm audit fix` (within `^3.0.1`) |
 | 1.16.3 | Symfony 7.4.x batch (12 packages) | 28 CVEs — 2026-05-20 coordinated disclosure (incl. SQL injection, auth bypass, XSS) | `composer update --with-all-dependencies "symfony/*" "twig/twig" "twig/extra-bundle"` — pin exact resolved versions; NO code/config changes needed |
 | 1.16.3 | `twig/twig` 3.24.0 → 3.26.0 | 10 advisories incl. CVE-2026-46633 (critical, PHP code injection via `{% use %}`), CVE-2026-46640 (high) | same batch update — NO code/config changes needed |
+| 1.16.3 | `js-cookie` 3.0.5 → 3.0.7 | GHSA-qjx8-664m-686j (high, cookie-attribute injection) | `npm audit fix` — devDep only (`@vue/test-utils` → `js-beautify`), not app runtime |
+| 1.16.3 | `ws` 8.20.0 → 8.21.0 | GHSA-58qx-3vcg-4xpx (moderate, uninitialized memory disclosure) | `npm audit fix` — devDep only (`happy-dom` → Vitest), not app runtime |
 
 ---
 
