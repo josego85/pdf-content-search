@@ -654,7 +654,10 @@ Custom slash commands in `.claude/commands/`. Invoke them by typing `/command-na
 6. **Hardcoding credentials** — use environment variable injection always
 7. **Bypassing IP anonymization** — store masked IPs only (last 80 bits zeroed)
 8. **Changing `int8_hnsw` to `float32` embeddings** — 4x RAM increase; benchmark first
-9. **Modifying existing Dockerfile `FROM` base images** — pin exact versions, test thoroughly
+9. **Modifying existing Dockerfile `FROM` base images** — pin exact versions (tag + digest), test thoroughly; always run `make rebuild` after any `FROM` change to verify the full multi-stage build
+19. **Using `postgresql-dev` as a build dependency on Alpine 3.22+** — resolves to `postgresql18-dev`, which pulls `llvm20` + `clang20` + `clang20-libs` (~2–3 GB) as JIT compilation dependencies; use `libpq-dev` instead, which provides only `libpq-fe.h` (what `pdo_pgsql` actually needs)
+20. **APK 3.x I/O race condition on large binaries** — Alpine 3.22+ ships APK 3.0.x, whose faster I/O path causes intermittent extraction failures for large binaries (e.g. GCC's `cc1`, ~100 MB) inside Docker BuildKit containers; prefix the build-dep `apk add` layer with `nice -n 19` (busybox built-in, no extra install) to throttle throughput and eliminate the race
+21. **Missing `$PHPIZE_DEPS` in prod Dockerfile `.build-deps`** — `docker-php-ext-install` requires `gcc`, `g++`, `autoconf`, `make`, etc. at compile time; always include `$PHPIZE_DEPS` in the virtual `.build-deps` group or extension compilation will fail silently
 10. **Running `npm run test` on the host** — `node_modules` is installed inside Alpine Docker; the host glibc lacks `@rolldown/binding-linux-x64-gnu`; always use `docker compose exec php npm run test`
 11. **Using `exec()`/`shell_exec()` for system commands** — always use `Symfony\Component\Process\Process` with args as array; prevents shell injection and allows timeout control
 12. **Mocking concrete classes in tests** — mock the interface (`LanguageDetectorInterface`, `PdfProcessorInterface`, `TranslationServiceInterface`); tight coupling to concrete classes hides architectural problems
