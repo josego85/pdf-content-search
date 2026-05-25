@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Changed
+
+- **GitHub Actions dependencies updated** ([#134](https://github.com/josego85/pdf-content-search/pull/134)):
+  - **`github/codeql-action`** (`4.32.6` → `4.36.0`): applies upstream CodeQL SAST engine improvements and reliability fixes to the static analysis workflow
+  - **`ossf/scorecard-action`** (`2.4.2` → `2.4.3`): patch release — updated OpenSSF Scorecard checks and scoring heuristics
+  - **`actions/upload-artifact`** (`7.0.0` → `7.0.1`): patch release — reliability and compatibility fixes for artifact uploads
+
+---
+
 ## [1.16.3] - 2026-05-23
 
 ### Changed
