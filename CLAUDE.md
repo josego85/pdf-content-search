@@ -330,6 +330,9 @@ See `TODO.md`. These must be completed before public exposure:
 | 1.16.3 | `twig/twig` 3.24.0 → 3.26.0 | 10 advisories incl. CVE-2026-46633 (critical, PHP code injection via `{% use %}`), CVE-2026-46640 (high) | same batch update — NO code/config changes needed |
 | 1.16.3 | `js-cookie` 3.0.5 → 3.0.7 | GHSA-qjx8-664m-686j (high, cookie-attribute injection) | `npm audit fix` — devDep only (`@vue/test-utils` → `js-beautify`), not app runtime |
 | 1.16.3 | `ws` 8.20.0 → 8.21.0 | GHSA-58qx-3vcg-4xpx (moderate, uninitialized memory disclosure) | `npm audit fix` — devDep only (`happy-dom` → Vitest), not app runtime |
+| 1.16.4 | Symfony 7.4.x batch (http-foundation, routing, security-http, polyfill-intl-idn) | CVE-2026-48736 (SSRF bypass), CVE-2026-48784 (UrlGenerator dot-segment collapse), CVE-2026-48489 (firewall bypass via failure_forward), CVE-2026-46644 (Punycode equivalence) — 2026-05-26 coordinated disclosure | `composer update --with-all-dependencies "symfony/*" "twig/twig" "twig/extra-bundle"` — NO code/config changes needed |
+| 1.16.4 | `twig/twig` 3.26.0 → 3.27.0 | 5 CVEs — CVE-2026-48808/48805/46636/48806/48807 (sandbox bypasses via column filter, deprecated wrappers, state change, dynamic mapping keys, Traversable) | same batch update — NO code/config changes needed |
+| 1.16.4 | `tmp` 0.2.5 → 0.2.7 | GHSA-ph9p-34f9-6g65 (high, path traversal via unsanitized prefix/postfix) | `npm audit fix` (within `^0.2.5`) — build-time only (`@symfony/webpack-encore`), not app runtime |
 
 ---
 
