@@ -9,12 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.16.4] - 2026-05-29
+
 ### Changed
 
 - **GitHub Actions dependencies updated** ([#134](https://github.com/josego85/pdf-content-search/pull/134)):
   - **`github/codeql-action`** (`4.32.6` → `4.36.0`): applies upstream CodeQL SAST engine improvements and reliability fixes to the static analysis workflow
   - **`ossf/scorecard-action`** (`2.4.2` → `2.4.3`): patch release — updated OpenSSF Scorecard checks and scoring heuristics
   - **`actions/upload-artifact`** (`7.0.0` → `7.0.1`): patch release — reliability and compatibility fixes for artifact uploads
+
+### Security
+
+- **Symfony batch upgrade** (2026-05-26 coordinated disclosure — 3 advisories, 3 packages upgraded to `7.4.13`):
+  - `symfony/http-foundation` → `7.4.13`: fixes [CVE-2026-48736](https://symfony.com/cve-2026-48736) — `IpUtils::PRIVATE_SUBNETS` omits IPv6 transition forms (6to4, NAT64, Teredo, IPv4-compatible), allowing SSRF bypass in `NoPrivateNetworkHttpClient`; this project does not use `NoPrivateNetworkHttpClient` — included for completeness
+  - `symfony/routing` → `7.4.13`: fixes [CVE-2026-48784](https://symfony.com/cve-2026-48784) — `UrlGenerator` silently drops every other chained `../` or `./` dot-segment, causing generated URLs to collapse off-route under RFC 3986 normalization; this project generates only simple flat-path routes with no dot-segments — included for completeness
+  - `symfony/security-http` → `7.4.13`: fixes [CVE-2026-48489](https://symfony.com/cve-2026-48489) — security firewall bypass via `failure_forward` subrequest grants unauthenticated access to `access_control`-protected GET routes; this project does not configure `failure_forward` and has no active `access_control` rules — included for completeness
+  - `symfony/polyfill-intl-idn` → `1.38.1`: fixes [CVE-2026-46644](https://symfony.com/cve-2026-46644) — polyfill accepts `xn--` labels whose Punycode payload decodes to ASCII-only, creating insecure domain equivalence; this project does not validate internationalized domain names — included for completeness
+- **`twig/twig` upgraded** (`3.26.0` → `3.27.0`): fixes 5 advisories — [CVE-2026-48808](https://symfony.com/blog/cve-2026-48808-sandbox-property-allowlist-bypass-via-the-column-filter-under-sourcepolicyinterface) (sandbox property allowlist bypass via `column` filter under `SourcePolicyInterface`), [CVE-2026-48805](https://symfony.com/blog/cve-2026-48805-sandbox-state-regression-in-deprecated-internal-wrappers-in-src-resources-core-php) (sandbox state regression in deprecated `core.php` wrappers), [CVE-2026-46636](https://symfony.com/blog/cve-2026-46636-sandbox-filter-tag-and-function-allow-list-bypass-when-sandbox-state-changes-between-renders) (sandbox filter/tag/function allowlist bypass when state changes between renders), [CVE-2026-48806](https://symfony.com/blog/cve-2026-48806-sandbox-tostring-policy-bypass-via-dynamic-mapping-keys) (`__toString()` policy bypass via dynamic mapping keys), [CVE-2026-48807](https://symfony.com/blog/cve-2026-48807-sandbox-tostring-policy-bypass-via-traversable-in-join-replace-and-in-not-in-operators) (`__toString()` policy bypass via `Traversable` in `join`/`replace` and `in`/`not in` operators); this project does not use the Twig sandbox — templates are rendered from a trusted source directory — included for completeness
+- No code or configuration changes required — all fixes are contained within the upgraded libraries; security-sensitive features (`NoPrivateNetworkHttpClient`, `failure_forward`, Twig sandbox, IDN validation) are not used or configured in this application
 
 ---
 
