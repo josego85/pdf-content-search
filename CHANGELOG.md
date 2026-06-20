@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.16.5] - 2026-06-20
+
+### Fixed
+
+- **APK HTTP client broken for large packages on Linux 7.x**: `nice -n 19` (the previous workaround) does not address the real failure mode. On kernel 7.0.0 with Alpine 3.23 / APK 3.0.6, APK's own HTTP client fails with an I/O error when downloading large packages (`gcc` ~60 MB, `g++` ~18 MB); `curl` is unaffected. The fix installs all build deps except gcc/g++ via APK, pre-creates the `.phpize-deps` virtual package so `docker-php-ext-{configure,install}` skip their internal `apk add $PHPIZE_DEPS` call, then downloads and extracts gcc/g++ via `curl` + `tar` (standard `write()` syscalls). Prod Dockerfile refactored to use a dedicated `compiler` stage so gcc/g++ never land in the final image.
+
+### Security
+
+- **`@babel/core` upgraded** (`7.29.0` → `7.29.7`): fixes [GHSA-4x5r-pxfx-6jf8](https://github.com/advisories/GHSA-4x5r-pxfx-6jf8) (arbitrary file read via crafted `sourceMappingURL` comment in processed source files) — severity: high; build-time only (Webpack Encore / `babel-loader`), not app runtime; `@babel/preset-env` upgraded to `7.29.7` in lockstep; patched via direct pin update in `package.json`
+- **`js-yaml` upgraded** (transitive: `postcss-loader → cosmiconfig → js-yaml@4.1.1`): fixes [GHSA-h67p-54hq-rp68](https://github.com/advisories/GHSA-h67p-54hq-rp68) (moderate — quadratic-complexity DoS via repeated YAML merge-key aliases) — build-time only (`postcss-loader`), not app runtime; patched via `npm audit fix` within range
+- **`undici` upgraded** (`7.24.7` → patched, transitive: `jsdom → undici`): fixes 7 advisories including TLS bypass, cross-user cache disclosure, HTTP header injection, cookie SameSite downgrade, and HTTP response queue poisoning — test toolchain only (`jsdom` is a devDependency), not app runtime; patched via `npm audit fix` within range
+- **`vite` upgraded** (transitive: `vitest + @vitejs/plugin-vue → vite@8.0.5`): fixes [GHSA-v6wh-96g9-6wx3](https://github.com/advisories/GHSA-v6wh-96g9-6wx3) + [GHSA-fx2h-pf6j-xcff](https://github.com/advisories/GHSA-fx2h-pf6j-xcff) (NTLMv2 hash disclosure and `server.fs.deny` bypass — both Windows-specific, not applicable on Linux) — test toolchain only, not app runtime; patched via `npm audit fix` within range
 
 ---
 
