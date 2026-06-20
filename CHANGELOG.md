@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **APK HTTP client broken for large packages on Linux 7.x**: `nice -n 19` (the previous workaround) does not address the real failure mode. On kernel 7.0.0 with Alpine 3.23 / APK 3.0.6, APK's own HTTP client fails with an I/O error when downloading large packages (`gcc` ~60 MB, `g++` ~18 MB); `curl` is unaffected. The fix installs all build deps except gcc/g++ via APK, pre-creates the `.phpize-deps` virtual package so `docker-php-ext-{configure,install}` skip their internal `apk add $PHPIZE_DEPS` call, then downloads and extracts gcc/g++ via `curl` + `tar` (standard `write()` syscalls). Prod Dockerfile refactored to use a dedicated `compiler` stage so gcc/g++ never land in the final image.
+
 ---
 
 ## [1.16.4] - 2026-05-29

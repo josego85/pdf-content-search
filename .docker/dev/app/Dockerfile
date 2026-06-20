@@ -23,17 +23,28 @@ RUN apk add --no-cache \
     vim \
     unzip
 
-# Build dependencies — nice -n 19 prevents APK3 I/O race condition when extracting gcc/cc1
-RUN nice -n 19 apk add --no-cache \
-    $PHPIZE_DEPS \
-    libpq-dev \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    icu-dev \
-    libxml2-dev \
-    oniguruma-dev \
-    linux-headers
+# Build dependencies: APK's HTTP client fails on large packages (gcc/g++) on Linux 7.x.
+# Strategy:
+#   1. Install all build deps EXCEPT gcc/g++ via APK (small packages, no issue).
+#   2. Create .phpize-deps virtual package WITHOUT gcc/g++ so docker-php-ext-{configure,install}
+#      see it installed and skip their internal "apk add $PHPIZE_DEPS" call.
+#   3. Download gcc/g++ via curl and extract via tar (standard I/O, not APK's broken path).
+# $PHPIZE_DEPS expands to: autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c
+RUN apk update -q \
+ && apk add --no-cache \
+    autoconf dpkg-dev dpkg file libc-dev make pkgconf re2c \
+    gmp isl26 mpfr4 mpc1 libatomic libgomp libstdc++ libstdc++-dev jansson binutils musl-dev \
+    libpq-dev libpng-dev libjpeg-turbo-dev freetype-dev icu-dev libxml2-dev oniguruma-dev linux-headers \
+ && apk add --no-cache --virtual .phpize-deps autoconf dpkg-dev dpkg file libc-dev make pkgconf re2c \
+ && ARCH=$(uname -m) \
+ && ALPINE=$(cat /etc/alpine-release | cut -d. -f1,2) \
+ && GCC_PKG=$(apk search -e gcc | grep "^gcc-" | head -1) \
+ && GPP_PKG=$(apk search -e "g++" | grep "^g++-" | head -1) \
+ && curl -sfL "https://dl-cdn.alpinelinux.org/alpine/v${ALPINE}/main/${ARCH}/${GCC_PKG}.apk" -o /tmp/gcc.apk \
+ && curl -sfL "https://dl-cdn.alpinelinux.org/alpine/v${ALPINE}/main/${ARCH}/${GPP_PKG}.apk" -o /tmp/gpp.apk \
+ && tar -xzf /tmp/gcc.apk -C / --exclude=".PKGINFO" --exclude=".SIGN.*" \
+ && tar -xzf /tmp/gpp.apk -C / --exclude=".PKGINFO" --exclude=".SIGN.*" \
+ && rm -f /tmp/gcc.apk /tmp/gpp.apk
 
 # Compile ALL PHP extensions + PCOV in parallel
 # This layer is cached and NEVER recompiles unless PHP version changes
