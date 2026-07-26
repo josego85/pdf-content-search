@@ -9,16 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.16.6] - 2026-07-26
 
-- chore(ci)(deps): bump actions/dependency-review-action from 4.9.0 to 5.0.0#15
-- chore(ci)(deps): bump codecov/codecov-action from 5 to 7#159
-- chore(ci)(deps): bump the github-actions group across 1 directory with 4 updates#165
-  - Updates github/codeql-action/init from 4.36.0 to 4.36.2
-  - Updates github/codeql-action/autobuild from 4.36.0 to 4.36.2
-  - Updates github/codeql-action/analyze from 4.36.0 to 4.36.2
-  - Updates github/codeql-action/upload-sarif from 4.36.0 to 4.36.2
-
 ### Changed
 
+- **GitHub Actions dependencies updated**:
+  - **`actions/dependency-review-action`** (`4.9.0` → `5.0.0`) ([#156](https://github.com/josego85/pdf-content-search/pull/156))
+  - **`codecov/codecov-action`** (`5` → `7`) ([#159](https://github.com/josego85/pdf-content-search/pull/159))
+  - **`github/codeql-action/*`** (`init`, `autobuild`, `analyze`, `upload-sarif`, `4.36.0` → `4.36.2`) ([#165](https://github.com/josego85/pdf-content-search/pull/165))
 - **PHP base image bumped** `8.4.21` → `8.4.23` in both dev and prod Dockerfiles
 - **`httpd` bumped** `2.4.66` → `2.4.68` in `docker-compose.yml` / `docker-compose.dev.yml`
 - **`elasticsearch` bumped** `9.3.0` → `9.3.8` in `docker-compose.yml` and CI (`ci.yml`)

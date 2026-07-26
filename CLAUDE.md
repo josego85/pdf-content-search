@@ -337,6 +337,9 @@ See `TODO.md`. These must be completed before public exposure:
 | 1.16.5 | `js-yaml` (transitive: `postcss-loader → cosmiconfig → js-yaml@4.1.1`) | GHSA-h67p-54hq-rp68 (moderate, DoS via YAML merge-key repeated aliases) | `npm audit fix` (within range) — build-time only, not app runtime |
 | 1.16.5 | `undici` (transitive: `jsdom → undici@7.24.7`) | 7 advisories — TLS bypass, cross-user cache disclosure, HTTP header injection, cookie SameSite downgrade, response queue poisoning | `npm audit fix` (within range) — test toolchain only (`jsdom` is devDep), not app runtime |
 | 1.16.5 | `vite` (transitive: `vitest + @vitejs/plugin-vue → vite@8.0.5`) | GHSA-v6wh-96g9-6wx3 (NTLMv2 hash via UNC path) + GHSA-fx2h-pf6j-xcff (`server.fs.deny` bypass) — both Windows-specific, not applicable on Linux | `npm audit fix` (within range) — test toolchain only, not app runtime |
+| 1.16.6 (pending) | `brace-expansion`, `fast-uri`, `immutable`, `js-yaml`, `svgo` | 5 high-severity DoS/path-traversal advisories — transitive build-time/test-toolchain deps (Webpack, Sass, `@vue/test-utils`), not app runtime | `npm audit fix` within range |
+| 1.16.6 (pending) | `postcss` 8.5.12 → 8.5.23 | GHSA-r28c-9q8g-f849 (high, arbitrary `.map` file disclosure via `sourceMappingURL`) | `npm audit fix --force` (outside stated range) — build-time only, verified with `npm run build` + `npm run test` |
+| 1.16.6 (pending) | `@vue/test-utils` → `js-beautify` chain — **unresolved** | remaining `brace-expansion` finding: every `@vue/test-utils` release (`2.4.0`–`2.4.11`) pins a vulnerable `js-beautify` range; forced downgrade suggested by `npm audit fix --force` reproduces the same findings (verified via `--dry-run`) | no fix available upstream — left pending, test toolchain only |
 
 ---
 
