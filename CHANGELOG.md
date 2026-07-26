@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.16.6] - 2026-07-26
+
+- chore(ci)(deps): bump actions/dependency-review-action from 4.9.0 to 5.0.0#15
+- chore(ci)(deps): bump codecov/codecov-action from 5 to 7#159
+- chore(ci)(deps): bump the github-actions group across 1 directory with 4 updates#165
+  - Updates github/codeql-action/init from 4.36.0 to 4.36.2
+  - Updates github/codeql-action/autobuild from 4.36.0 to 4.36.2
+  - Updates github/codeql-action/analyze from 4.36.0 to 4.36.2
+  - Updates github/codeql-action/upload-sarif from 4.36.0 to 4.36.2
+
+### Changed
+
+- **PHP base image bumped** `8.4.21` → `8.4.23` in both dev and prod Dockerfiles
+- **`httpd` bumped** `2.4.66` → `2.4.68` in `docker-compose.yml` / `docker-compose.dev.yml`
+- **`elasticsearch` bumped** `9.3.0` → `9.3.8` in `docker-compose.yml` and CI (`ci.yml`)
+
+### Security
+
+- **`brace-expansion`, `fast-uri`, `immutable`, `js-yaml`, `svgo` upgraded**: 5 high-severity DoS/path-traversal advisories fixed via `npm audit fix` within range — all build-time/test-toolchain transitive deps (Webpack, Sass, `@vue/test-utils`), not app runtime
+- **`postcss` upgraded** (`8.5.12` → `8.5.23`): fixes [GHSA-r28c-9q8g-f849](https://github.com/advisories/GHSA-r28c-9q8g-f849) (arbitrary `.map` file disclosure via `sourceMappingURL`) — build-time only; patched via `npm audit fix --force`, verified with `npm run build` + `npm run test`
+- **`@vue/test-utils` → `js-beautify` chain — no fix applied**: remaining `brace-expansion` finding has no real fix upstream; every `@vue/test-utils` release (`2.4.0`–`2.4.11`) still pins a vulnerable `js-beautify` range, so the `--force` downgrade it suggests reproduces the same findings. Test toolchain only — left pending upstream
+
+---
+
 ## [1.16.5] - 2026-06-20
 
 ### Fixed

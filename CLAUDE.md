@@ -399,9 +399,9 @@ make prod
 | Service | Image | Notes |
 |---|---|---|
 | `php` | Custom (`.docker/dev/app/Dockerfile`) | PHP 8.4-FPM |
-| `apache` | httpd:2.4.66-alpine | Reverse proxy to FPM |
+| `apache` | httpd:2.4.68-alpine | Reverse proxy to FPM |
 | `database` | postgres:16-alpine | PostgreSQL |
-| `elasticsearch` | elasticsearch:9.3.0 | Search + vectors |
+| `elasticsearch` | elasticsearch:9.3.8 | Search + vectors |
 
 ### Docker Composition Pattern
 - `docker-compose.yml` — base (production defaults, no port exposure)
