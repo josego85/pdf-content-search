@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.16.7] - 2026-08-15
+
+### Fixed
+
+- **`composer:latest` unpinned base image**: pinned to exact `tag@digest` in dev Dockerfile (`composer:2.10.2`) and corrected a mislabeled digest in the prod Dockerfile (`composer:2.9.5`); prod's final stage now reuses the already-pinned `composer-builder` stage instead of re-pulling the image
+
+### Security
+
+- **`brace-expansion`, `undici`, `js-yaml`, `nanoid`, `fast-uri` upgraded**: 5 high-severity advisories fixed via `npm audit fix` within range — all build-time/test-toolchain transitive deps (Webpack, PostCSS, Vitest/jsdom, `@vue/test-utils`), not app runtime; verified with `npm run build` + `npm run test` (172 passing)
+
+---
+
 ## [1.16.6] - 2026-07-26
 
 ### Changed

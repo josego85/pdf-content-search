@@ -89,7 +89,7 @@ RUN npm run build
 # ============================================
 # Stage 3: Composer Builder - PHP dependencies
 # ============================================
-FROM composer:latest@sha256:743aebe48ca67097c36819040633ea77e44a561eca135e4fc84c002e63a1ba07 AS composer-builder
+FROM composer:2.9.5@sha256:743aebe48ca67097c36819040633ea77e44a561eca135e4fc84c002e63a1ba07 AS composer-builder
 
 WORKDIR /build
 
@@ -107,8 +107,8 @@ RUN composer install \
 # ============================================
 FROM base AS production
 
-# Copy Composer binary temporarily
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Copy Composer binary temporarily (reuse pinned stage — no second image pull)
+COPY --from=composer-builder /usr/bin/composer /usr/bin/composer
 
 # Copy composer files
 COPY composer.json composer.lock ./
