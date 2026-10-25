@@ -37,6 +37,104 @@ function isWordBoundary(text, pos) {
 	return /[\s.,;:!?¿¡\-–—()[\]{}"'/\\•◦○●∙·<>«»°*+=@#$%^&|~`]/.test(char)
 }
 
+function isHybridMatch(text, index, term) {
+	const beforePos = index - 1
+	const afterPos = index + term.length
+	const contextStart = Math.max(0, index - 30)
+	const contextEnd = Math.min(text.length, index + term.length + 30)
+	const context = text.substring(contextStart, contextEnd)
+	const spaceRatio = (context.match(/\s/g) || []).length / context.length
+
+	if (spaceRatio >= 0.15) {
+		return false
+	}
+
+	const beforeChar = beforePos >= 0 ? text[beforePos] : ""
+	const afterChar = afterPos < text.length ? text[afterPos] : ""
+	const beforeIsAlpha = /[a-z0-9]/.test(beforeChar)
+	const afterIsAlpha = /[a-z0-9]/.test(afterChar)
+
+	return !(afterIsAlpha && term.length < 8) && !(beforeIsAlpha && term.length < 8)
+}
+
+function findMatchesForTerm(text, term) {
+	const matches = []
+	let startIndex = 0
+	let index = text.indexOf(term, startIndex)
+
+	while (index !== -1) {
+		const beforePos = index - 1
+		const afterPos = index + term.length
+		const isValidMatch = isWordBoundary(text, beforePos) && isWordBoundary(text, afterPos)
+
+		if (isValidMatch || isHybridMatch(text, index, term)) {
+			matches.push({
+				startPos: index,
+				endPos: index + term.length - 1,
+			})
+		}
+
+		startIndex = index + 1
+		index = text.indexOf(term, startIndex)
+	}
+
+	return matches
+}
+
+function addSpanHighlight(spanHighlights, spanIndex, range) {
+	if (!spanHighlights.has(spanIndex)) {
+		spanHighlights.set(spanIndex, [])
+	}
+
+	spanHighlights.get(spanIndex).push(range)
+}
+
+function getHighlightRangeForSpan(spanIndex, startMapping, endMapping, spans) {
+	if (spanIndex === startMapping.spanIndex) {
+		return {
+			start: startMapping.originalPos,
+			end: spans[spanIndex].textContent.length,
+		}
+	}
+
+	if (spanIndex === endMapping.spanIndex) {
+		return {
+			start: 0,
+			end: endMapping.originalPos + 1,
+		}
+	}
+
+	return {
+		start: 0,
+		end: spans[spanIndex].textContent.length,
+	}
+}
+
+function addMatchHighlights(match, positionMap, spans, spanHighlights) {
+	const startMapping = positionMap.find((position) => position.normalizedPos === match.startPos)
+	const endMapping = positionMap.find((position) => position.normalizedPos === match.endPos)
+
+	if (!startMapping || !endMapping) {
+		return
+	}
+
+	if (startMapping.spanIndex === endMapping.spanIndex) {
+		addSpanHighlight(spanHighlights, startMapping.spanIndex, {
+			start: startMapping.originalPos,
+			end: endMapping.originalPos + 1,
+		})
+		return
+	}
+
+	for (let spanIndex = startMapping.spanIndex; spanIndex <= endMapping.spanIndex; spanIndex++) {
+		addSpanHighlight(
+			spanHighlights,
+			spanIndex,
+			getHighlightRangeForSpan(spanIndex, startMapping, endMapping, spans),
+		)
+	}
+}
+
 const highlightTerms = JSON.parse(decodeURIComponent(window.highlight || "[]"))
 	.map((term) => normalize(term))
 	.filter((term) => term.length > 0)
@@ -120,97 +218,14 @@ pdfjsLib
 				})
 
 				const normalizedFullText = positionMap.map((p) => p.char).join("")
-				const allMatches = []
-
-				highlightTerms.forEach((term) => {
-					let startIndex = 0
-
-					while (true) {
-						const index = normalizedFullText.indexOf(term, startIndex)
-						if (index === -1) {
-							break
-						}
-
-						const beforePos = index - 1
-						const afterPos = index + term.length
-						const isValidMatch =
-							isWordBoundary(normalizedFullText, beforePos) &&
-							isWordBoundary(normalizedFullText, afterPos)
-
-						let isHybridMatch = false
-						if (!isValidMatch) {
-							const contextStart = Math.max(0, index - 30)
-							const contextEnd = Math.min(normalizedFullText.length, index + term.length + 30)
-							const context = normalizedFullText.substring(contextStart, contextEnd)
-							const spaceCount = (context.match(/\s/g) || []).length
-							const spaceRatio = spaceCount / context.length
-
-							if (spaceRatio < 0.15) {
-								const beforeChar = beforePos >= 0 ? normalizedFullText[beforePos] : ""
-								const afterChar =
-									afterPos < normalizedFullText.length ? normalizedFullText[afterPos] : ""
-								const beforeIsAlpha = /[a-z0-9]/.test(beforeChar)
-								const afterIsAlpha = /[a-z0-9]/.test(afterChar)
-
-								if (!(afterIsAlpha && term.length < 8) && !(beforeIsAlpha && term.length < 8)) {
-									isHybridMatch = true
-								}
-							}
-						}
-
-						if (isValidMatch || isHybridMatch) {
-							allMatches.push({
-								startPos: index,
-								endPos: index + term.length - 1,
-							})
-						}
-
-						startIndex = index + 1
-					}
-				})
+				const allMatches = highlightTerms.flatMap((term) =>
+					findMatchesForTerm(normalizedFullText, term),
+				)
 
 				const spanHighlights = new Map()
 
 				allMatches.forEach((match) => {
-					const startMapping = positionMap.find((p) => p.normalizedPos === match.startPos)
-					const endMapping = positionMap.find((p) => p.normalizedPos === match.endPos)
-
-					if (startMapping && endMapping) {
-						const startSpanIdx = startMapping.spanIndex
-						const endSpanIdx = endMapping.spanIndex
-
-						if (startSpanIdx === endSpanIdx) {
-							if (!spanHighlights.has(startSpanIdx)) {
-								spanHighlights.set(startSpanIdx, [])
-							}
-							spanHighlights.get(startSpanIdx).push({
-								start: startMapping.originalPos,
-								end: endMapping.originalPos + 1,
-							})
-						} else {
-							for (let i = startSpanIdx; i <= endSpanIdx; i++) {
-								if (!spanHighlights.has(i)) {
-									spanHighlights.set(i, [])
-								}
-								if (i === startSpanIdx) {
-									spanHighlights.get(i).push({
-										start: startMapping.originalPos,
-										end: spans[i].textContent.length,
-									})
-								} else if (i === endSpanIdx) {
-									spanHighlights.get(i).push({
-										start: 0,
-										end: endMapping.originalPos + 1,
-									})
-								} else {
-									spanHighlights.get(i).push({
-										start: 0,
-										end: spans[i].textContent.length,
-									})
-								}
-							}
-						}
-					}
+					addMatchHighlights(match, positionMap, spans, spanHighlights)
 				})
 
 				// Insert <mark> tags for precise character-level matching

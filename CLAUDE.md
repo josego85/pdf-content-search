@@ -10,7 +10,7 @@ Read this before making any changes. Follow every instruction precisely.
 **PDF Content Search** is a production-grade, AI-powered PDF search application.
 
 - **Backend:** PHP 8.4 / Symfony 7.4
-- **Frontend:** Vue.js 3.5 / Tailwind CSS 3.4 / Webpack Encore
+- **Frontend:** Vue.js 3.5 / Tailwind CSS 4.3 / Webpack Encore
 - **Database:** PostgreSQL 16
 - **Search Engine:** Elasticsearch 9.3 (hybrid lexical + semantic / kNN vector)
 - **AI/ML:** Ollama (native host) — `qwen2.5:3b` (translation), `nomic-embed-text` (embeddings, 768d)
@@ -311,8 +311,8 @@ See `TODO.md`. These must be completed before public exposure:
 - `npm audit` — high/critical findings block CI
 - `composer audit` — CVE or abandoned packages block CI
 - Fix vulnerabilities by upgrading; do not suppress audit warnings without justification
-- For transitive deps pinned outside the stated range, `npm audit fix --force` is acceptable — always verify with `npm run build` + `npm run test` after applying
-- For transitive deps within the stated semver range, `npm audit fix` (no `--force`) is sufficient — no `overrides` or code changes needed
+- Do not use `npm audit fix --force`; upgrade direct dependencies to exact patched versions and use `npm audit fix` without `--force` for compatible transitive updates
+- If a vulnerability cannot be fixed without a breaking or out-of-range change, report the dependency conflict and available options before changing ranges
 - Use `overrides` in `package.json` only when a transitive dep cannot be upgraded directly (e.g. `uuid` GHSA-w5hq-g745-h8pq); prefer direct upgrades when available
 - For vulnerabilities in devDependency testing toolchain only (e.g. `js-cookie` via `@vue/test-utils`, `ws` via `happy-dom`): confirm with `npm ls <package>` that the dep is not reachable from production code, then `npm audit fix`; no code or config changes needed
 - For Symfony coordinated security releases: not all `symfony/*` packages reach the same patch version simultaneously — always run `composer update --dry-run` first to discover actual available versions, then pin those exact resolved versions in `composer.json`
@@ -340,8 +340,10 @@ See `TODO.md`. These must be completed before public exposure:
 | 1.16.6 | `brace-expansion`, `fast-uri`, `immutable`, `js-yaml`, `svgo` | 5 high-severity DoS/path-traversal advisories — transitive build-time/test-toolchain deps (Webpack, Sass, `@vue/test-utils`), not app runtime | `npm audit fix` within range |
 | 1.16.6 | `postcss` 8.5.12 → 8.5.23 | GHSA-r28c-9q8g-f849 (high, arbitrary `.map` file disclosure via `sourceMappingURL`) | `npm audit fix --force` (outside stated range) — build-time only, verified with `npm run build` + `npm run test` |
 | 1.16.6 | `@vue/test-utils` → `js-beautify` chain — **unresolved** | remaining `brace-expansion` finding: every `@vue/test-utils` release (`2.4.0`–`2.4.11`) pins a vulnerable `js-beautify` range; forced downgrade suggested by `npm audit fix --force` reproduces the same findings (verified via `--dry-run`) | no fix available upstream — left pending, test toolchain only |
-| 1.16.7 (pending) | `brace-expansion` 2.1.2 → 2.1.4, `undici` 7.28.0 → 7.29.0, `js-yaml` 4.3.0 → 4.3.1, `nanoid` 3.3.16 → 3.3.18, `fast-uri` 3.1.4 → 3.1.5 | 5 high-severity advisories — transitive build-time/test-toolchain deps (Webpack, PostCSS, Vitest/jsdom, `@vue/test-utils`), not app runtime | `npm audit fix` within range — verified with `npm run build` + `npm run test` (172 passing) |
-| 1.16.7 (pending) | `composer:latest` unpinned base image (dev + prod Dockerfiles) | not a CVE — unpinned `FROM`/`COPY --from` tag violated project's own pinning convention and masked a stale DNS cache in the buildx builder container as a registry resolution failure | pinned to exact `tag@digest` (`composer:2.10.2` dev, `composer:2.9.5` prod); prod final stage now reuses the `composer-builder` stage instead of re-pulling |
+| 1.16.7 | `brace-expansion`, `undici`, `js-yaml`, `nanoid`, `fast-uri` | 5 high-severity advisories — transitive build-time/test-toolchain deps (Webpack, PostCSS, Vitest/jsdom, `@vue/test-utils`), not app runtime | `npm audit fix` within range — verified with `npm run build` + `npm run test` (172 passing) |
+| 1.16.7 | Composer image pinning (dev + prod Dockerfiles) | unpinned image tags violated the exact image pinning convention | pinned to exact tag and digest |
+| 1.16.8 | Symfony 7.4 components | CVE-2026-109449 (ExpressionLanguage nesting), CVE-2026-108082 (HttpFoundation ReDoS), CVE-2026-109413 (YAML recursion) | exact patched component versions; no `--force` |
+| 1.16.8 | Vue, Vitest, happy-dom, and npm transitive dependencies | 21 npm advisories, including XSS, path traversal, code execution, and denial of service | exact direct dependency pins plus compatible `npm audit fix`; verified with clean `npm audit` and production build |
 
 ---
 
@@ -403,8 +405,8 @@ make prod
 ### Services
 | Service | Image | Notes |
 |---|---|---|
-| `php` | Custom (`.docker/dev/app/Dockerfile`) | PHP 8.4-FPM |
-| `apache` | httpd:2.4.68-alpine | Reverse proxy to FPM |
+| `php` | Custom (`.docker/dev/app/Dockerfile`) | PHP 8.4.27-FPM |
+| `apache` | httpd:2.4.69-alpine | Reverse proxy to FPM |
 | `database` | postgres:16-alpine | PostgreSQL |
 | `elasticsearch` | elasticsearch:9.3.8 | Search + vectors |
 

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.16.8] - 2026-10-25
+
+### Changed
+
+- **Tailwind CSS upgraded** from 3.4 to 4.3, including the PostCSS plugin and CSS entry-point migration
+- **Docker images updated** to PHP 8.4.27, Node 24, Composer 2.10.3, and Apache 2.4.69; runtime PostgreSQL library corrected to `libpq`
+
+### Security
+
+- **Symfony 7.4 components updated to exact patched versions** (7.4.21 where available; component-specific patch versions otherwise), addressing CVE-2026-109449, CVE-2026-108082, and CVE-2026-109413
+- **JavaScript dependencies updated** to resolve all 21 reported npm advisories, including Vue 3.5.44, Vitest 4.1.12, and happy-dom 21.0.4; `npm audit` reports no vulnerabilities
+
 ## [1.16.7] - 2026-08-15
 
 ### Fixed

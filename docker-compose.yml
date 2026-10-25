@@ -43,7 +43,7 @@ services:
     restart: unless-stopped
 
   apache:
-    image: httpd:2.4.68-alpine
+    image: httpd:2.4.69-alpine
     ports:
       - "${APACHE_PORT:-8080}:80"
     volumes:
