@@ -159,6 +159,8 @@ export default {
 </script>
 
 <style scoped>
+@reference "../../styles/app.css";
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;

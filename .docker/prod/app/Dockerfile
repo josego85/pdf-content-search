@@ -8,7 +8,7 @@
 # Separate stage so gcc/g++ never land in the production image.
 # APK's HTTP client fails on large packages (gcc/g++) on Linux 7.x; use curl+tar instead.
 # ============================================
-FROM php:8.4.23-fpm-alpine@sha256:2e8d5b74437b02cbc3c632903d20a10fdcc956ba56d25bff951cc2b610767c9a AS compiler
+FROM php:8.4.27-fpm-alpine@sha256:a58708a9676c18f3f3dab3b9b49e39044d7d2b239543122094314dffb0ae05a7 AS compiler
 
 # Build dependencies: APK's HTTP client fails on large packages (gcc/g++) on Linux 7.x.
 # Strategy:
@@ -45,7 +45,7 @@ RUN apk update -q \
 # ============================================
 # Stage 2: Base Image — lean runtime, no build deps
 # ============================================
-FROM php:8.4.23-fpm-alpine@sha256:2e8d5b74437b02cbc3c632903d20a10fdcc956ba56d25bff951cc2b610767c9a AS base
+FROM php:8.4.27-fpm-alpine@sha256:a58708a9676c18f3f3dab3b9b49e39044d7d2b239543122094314dffb0ae05a7 AS base
 
 # Copy compiled extensions from compiler stage (gcc/g++ never touch this image)
 COPY --from=compiler /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
@@ -53,7 +53,7 @@ COPY --from=compiler /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
 # Install runtime dependencies only
 RUN apk add --no-cache \
-    postgresql-libs \
+    libpq \
     libpng \
     libjpeg-turbo \
     freetype \

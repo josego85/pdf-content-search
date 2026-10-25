@@ -3,12 +3,14 @@
 # Strategy: Extensions cached + deps via entrypointd
 # ============================================
 
+FROM node:24-alpine@sha256:1200d815de24f8dcca745fbf7651d166034a35adbcad8860a8538ffff44f1420 AS node-runtime
+
 # Stage 1: Build PHP extensions (cached indefinitely)
-FROM php:8.4.23-fpm-alpine@sha256:2e8d5b74437b02cbc3c632903d20a10fdcc956ba56d25bff951cc2b610767c9a AS php-extensions
+FROM php:8.4.27-fpm-alpine@sha256:a58708a9676c18f3f3dab3b9b49e39044d7d2b239543122094314dffb0ae05a7 AS php-extensions
 
 # Runtime dependencies
 RUN apk add --no-cache \
-    postgresql-libs \
+    libpq \
     libpng \
     libjpeg-turbo \
     freetype \
@@ -17,8 +19,6 @@ RUN apk add --no-cache \
     oniguruma \
     poppler-utils \
     git \
-    nodejs \
-    npm \
     bash \
     vim \
     unzip
@@ -28,7 +28,7 @@ RUN apk add --no-cache \
 #   1. Install all build deps EXCEPT gcc/g++ via APK (small packages, no issue).
 #   2. Create .phpize-deps virtual package WITHOUT gcc/g++ so docker-php-ext-{configure,install}
 #      see it installed and skip their internal "apk add $PHPIZE_DEPS" call.
-#   3. Download gcc/g++ via curl and extract via tar (standard I/O, not APK's broken path).
+#   3. Download gcc/g++ via curl, then install the local APKs to bypass APK's broken HTTP client.
 # $PHPIZE_DEPS expands to: autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c
 RUN apk update -q \
     && apk add --no-cache \
@@ -40,10 +40,9 @@ RUN apk update -q \
     && ALPINE=$(cat /etc/alpine-release | cut -d. -f1,2) \
     && GCC_PKG=$(apk search -e gcc | grep "^gcc-" | head -1) \
     && GPP_PKG=$(apk search -e "g++" | grep "^g++-" | head -1) \
-    && curl -sfL "https://dl-cdn.alpinelinux.org/alpine/v${ALPINE}/main/${ARCH}/${GCC_PKG}.apk" -o /tmp/gcc.apk \
-    && curl -sfL "https://dl-cdn.alpinelinux.org/alpine/v${ALPINE}/main/${ARCH}/${GPP_PKG}.apk" -o /tmp/gpp.apk \
-    && tar -xzf /tmp/gcc.apk -C / --exclude=".PKGINFO" --exclude=".SIGN.*" \
-    && tar -xzf /tmp/gpp.apk -C / --exclude=".PKGINFO" --exclude=".SIGN.*" \
+    && curl -sfL --retry 5 --retry-all-errors --retry-delay 2 --retry-max-time 60 "https://dl-cdn.alpinelinux.org/alpine/v${ALPINE}/main/${ARCH}/${GCC_PKG}.apk" -o /tmp/gcc.apk \
+    && curl -sfL --retry 5 --retry-all-errors --retry-delay 2 --retry-max-time 60 "https://dl-cdn.alpinelinux.org/alpine/v${ALPINE}/main/${ARCH}/${GPP_PKG}.apk" -o /tmp/gpp.apk \
+    && apk add --no-cache /tmp/gcc.apk /tmp/gpp.apk \
     && rm -f /tmp/gcc.apk /tmp/gpp.apk
 
 # Compile ALL PHP extensions + PCOV in parallel
@@ -61,7 +60,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-enable pcov
 
 # Stage 2: Final development image
-FROM php:8.4.23-fpm-alpine@sha256:2e8d5b74437b02cbc3c632903d20a10fdcc956ba56d25bff951cc2b610767c9a
+FROM php:8.4.27-fpm-alpine@sha256:a58708a9676c18f3f3dab3b9b49e39044d7d2b239543122094314dffb0ae05a7
 
 # Copy compiled extensions from stage 1 (instant!)
 COPY --from=php-extensions /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
@@ -69,7 +68,7 @@ COPY --from=php-extensions /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 
 # Install ONLY runtime dependencies (no build-deps = smaller image)
 RUN apk add --no-cache \
-    postgresql-libs \
+    libpq \
     libpng \
     libjpeg-turbo \
     freetype \
@@ -82,17 +81,22 @@ RUN apk add --no-cache \
     tesseract-ocr-data-spa \
     tesseract-ocr-data-deu \
     git \
-    nodejs \
-    npm \
     bash \
     vim \
     unzip \
     supervisor
 
+# Reuse Node from the pinned Node image to avoid APK extraction failures on nodejs.
+COPY --from=node-runtime /usr/local/bin/node /usr/local/bin/node
+COPY --from=node-runtime /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
+RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+
 # Install Composer
-COPY --from=composer:2.10.2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.10.3@sha256:66c00f4ea1c6a01364d75460bb2837886388e1d5b2b1b6e0f22c8788eb4e73ad /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
+RUN git config --system --add safe.directory /var/www/html
 
 # Copy PHP configuration files
 COPY .docker/dev/php/php.ini /usr/local/etc/php/conf.d/custom.ini
