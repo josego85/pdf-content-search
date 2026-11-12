@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.16.9] - 2026-11-12
+
+### Changed
+
+- **PHP upgraded to 8.5.12** in dev and production Docker images; Composer requires PHP 8.5+, CI targets PHP 8.5, and Rector applies PHP 8.5 rules
+- **Composer upgraded to 2.11.2** in dev, production, and CI; Docker image digests are pinned
+- **Apache httpd upgraded to 2.4.71** in dev and production with pinned official image digests
+- **AI coding instructions standardized** in `AGENTS.md` for Codex, Claude Code, and other agents; `CLAUDE.md` now points to the shared guide
+- **GitHub Actions dependencies updated**:
+  - Group #198: CodeQL actions 4.36.2 → 4.38.3, Scorecard 2.4.3 → 2.4.4, and upload-artifact 7.0.1 → 7.0.2
+  - Group #214: CodeQL actions 4.38.3 → 4.39.1, Scorecard 2.4.4 → 2.5.0
+
+### Security
+
+- **Affected Symfony components updated** to patched releases (7.4.22/7.4.23 where available), resolving the reported Composer advisories; `composer audit` reports no advisories
+- **npm dependencies updated** with lockfile overrides for vulnerable transitive packages; `npm audit` reports zero vulnerabilities
+
+---
+
 ## [1.16.8] - 2026-10-25
 
 ### Changed
@@ -18,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Symfony 7.4 components updated to exact patched versions** (7.4.21 where available; component-specific patch versions otherwise), addressing CVE-2026-109449, CVE-2026-108082, and CVE-2026-109413
 - **JavaScript dependencies updated** to resolve all 21 reported npm advisories, including Vue 3.5.44, Vitest 4.1.12, and happy-dom 21.0.4; `npm audit` reports no vulnerabilities
+
+---
 
 ## [1.16.7] - 2026-08-15
 

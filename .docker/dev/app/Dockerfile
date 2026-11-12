@@ -6,7 +6,7 @@
 FROM node:24-alpine@sha256:1200d815de24f8dcca745fbf7651d166034a35adbcad8860a8538ffff44f1420 AS node-runtime
 
 # Stage 1: Build PHP extensions (cached indefinitely)
-FROM php:8.4.27-fpm-alpine@sha256:a58708a9676c18f3f3dab3b9b49e39044d7d2b239543122094314dffb0ae05a7 AS php-extensions
+FROM php:8.5.12-fpm-alpine3.23@sha256:619ba0e2ca1c5debd940479226bd419e9db0931154d2b002fdc94e28fa341c55 AS php-extensions
 
 # Runtime dependencies
 RUN apk add --no-cache \
@@ -60,7 +60,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-enable pcov
 
 # Stage 2: Final development image
-FROM php:8.4.27-fpm-alpine@sha256:a58708a9676c18f3f3dab3b9b49e39044d7d2b239543122094314dffb0ae05a7
+FROM php:8.5.12-fpm-alpine3.23@sha256:619ba0e2ca1c5debd940479226bd419e9db0931154d2b002fdc94e28fa341c55
 
 # Copy compiled extensions from stage 1 (instant!)
 COPY --from=php-extensions /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
@@ -93,7 +93,7 @@ RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
     && ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
 # Install Composer
-COPY --from=composer:2.10.3@sha256:66c00f4ea1c6a01364d75460bb2837886388e1d5b2b1b6e0f22c8788eb4e73ad /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.11.2@sha256:5bcb28b8d0edc4091125f8218f9d088f998bdfc843f8fbb9a4beb4dcd8625684 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 RUN git config --system --add safe.directory /var/www/html

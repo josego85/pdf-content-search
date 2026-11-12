@@ -12,7 +12,7 @@ services:
     restart: "no"
 
   apache:
-    image: httpd:2.4.69
+    image: httpd:2.4.71@sha256:07e4ec0094d8bca9765fae74ce33d2be5341884048f265ff9dc1d1177a4256c9
     ports:
       - "80:80"
     volumes: !override
