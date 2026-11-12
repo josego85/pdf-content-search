@@ -49,13 +49,13 @@ make prod
 ### Services
 
 ```
-Apache (httpd:2.4-alpine)
+Apache (httpd:2.4.71-alpine)
   ├─ Brotli compression (quality 11)
   ├─ HTTP/2 enabled
   ├─ Security headers
   └─ Proxies to → PHP-FPM
 
-PHP-FPM (php:8.4-fpm-alpine)
+PHP-FPM (php:8.5.12-fpm-alpine3.23)
   ├─ Opcache enabled
   ├─ 512M memory limit
   └─ Supervisor manages:

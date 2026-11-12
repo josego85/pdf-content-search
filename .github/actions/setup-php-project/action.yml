@@ -6,15 +6,15 @@ inputs:
   php-version:
     description: 'PHP version to use'
     required: false
-    default: '8.4'
+    default: '8.5'
   extensions:
     description: 'PHP extensions to install (comma-separated)'
     required: false
     default: 'ctype, iconv'
   tools:
-    description: 'Tools to install (e.g., composer:v2)'
+    description: 'Tools to install (e.g., composer:2.11.2)'
     required: false
-    default: 'composer:v2'
+    default: 'composer:2.11.2'
   install-dependencies:
     description: 'Whether to run composer install'
     required: false

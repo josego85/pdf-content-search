@@ -18,12 +18,11 @@ return RectorConfig::configure()
     ])
 
     // ----------------------------------------------------------------
-    // PHP 8.4 — apply all improvements up to and including PHP 8.4:
-    //   readonly properties, intersection types, fibers, enums,
-    //   match expressions, nullsafe operator, named arguments, etc.
-    //   Already required in composer.json (>=8.4), so this is safe.
+    // PHP 8.5 — apply all improvements up to and including PHP 8.5.
+    //   The project requires PHP 8.5 in composer.json, so these changes
+    //   are supported by every configured runtime.
     // ----------------------------------------------------------------
-    ->withPhpSets(php84: true)
+    ->withPhpSets(php85: true)
 
     ->withSets([
         // ----------------------------------------------------------------

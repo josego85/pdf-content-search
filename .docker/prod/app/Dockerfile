@@ -8,7 +8,7 @@
 # Separate stage so gcc/g++ never land in the production image.
 # APK's HTTP client fails on large packages (gcc/g++) on Linux 7.x; use curl+tar instead.
 # ============================================
-FROM php:8.4.27-fpm-alpine@sha256:a58708a9676c18f3f3dab3b9b49e39044d7d2b239543122094314dffb0ae05a7 AS compiler
+FROM php:8.5.12-fpm-alpine3.23@sha256:619ba0e2ca1c5debd940479226bd419e9db0931154d2b002fdc94e28fa341c55 AS compiler
 
 # Build dependencies: APK's HTTP client fails on large packages (gcc/g++) on Linux 7.x.
 # Strategy:
@@ -45,7 +45,7 @@ RUN apk update -q \
 # ============================================
 # Stage 2: Base Image — lean runtime, no build deps
 # ============================================
-FROM php:8.4.27-fpm-alpine@sha256:a58708a9676c18f3f3dab3b9b49e39044d7d2b239543122094314dffb0ae05a7 AS base
+FROM php:8.5.12-fpm-alpine3.23@sha256:619ba0e2ca1c5debd940479226bd419e9db0931154d2b002fdc94e28fa341c55 AS base
 
 # Copy compiled extensions from compiler stage (gcc/g++ never touch this image)
 COPY --from=compiler /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
@@ -89,7 +89,7 @@ RUN npm run build
 # ============================================
 # Stage 3: Composer Builder - PHP dependencies
 # ============================================
-FROM composer:2.9.5@sha256:743aebe48ca67097c36819040633ea77e44a561eca135e4fc84c002e63a1ba07 AS composer-builder
+FROM composer:2.11.2@sha256:5bcb28b8d0edc4091125f8218f9d088f998bdfc843f8fbb9a4beb4dcd8625684 AS composer-builder
 
 WORKDIR /build
 

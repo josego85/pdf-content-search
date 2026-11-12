@@ -1,7 +1,7 @@
 # PDF Content Search
 
-[![Version](https://img.shields.io/badge/Version-1.16.8-blue.svg)](https://github.com/josego85/pdf-content-search)
-[![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![Version](https://img.shields.io/badge/Version-1.16.9-blue.svg)](https://github.com/josego85/pdf-content-search)
+[![PHP](https://img.shields.io/badge/PHP-8.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-7.4-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![Elasticsearch](https://img.shields.io/badge/Elasticsearch-9.3-005571?logo=elasticsearch&logoColor=white)](https://www.elastic.co/)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
@@ -74,9 +74,9 @@ docker compose -p pdf-content-search exec php php bin/console app:translation:mo
 
 ## Stack
 
-- **Backend:** PHP 8.4, Symfony 7.4, PostgreSQL 16
+- **Backend:** PHP 8.5, Symfony 7.4, PostgreSQL 16
 - **Search:** Elasticsearch 9.3 (vector search, HNSW)
-- **Frontend:** Vue.js 3.5, Tailwind CSS 3.4, PDF.js 5.4, ApexCharts
+- **Frontend:** Vue.js 3.5, Tailwind CSS 4.3, PDF.js 5.4, ApexCharts
 - **AI:** Ollama native (qwen2.5:3b translations, nomic-embed-text embeddings)
 - **Queue:** Symfony Messenger (3 workers)
 - **Analytics:** PostgreSQL 16 (metrics storage), Vue.js dashboard
