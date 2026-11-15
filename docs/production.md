@@ -71,7 +71,7 @@ Elasticsearch 9.3
   └─ Vector search (768 dimensions)
 
 Ollama (native host)
-  ├─ qwen2.5:3b (translation, ~52s/page)
+  ├─ translategemma:4b (translation, ~3.3GB)
   └─ nomic-embed-text (embeddings, 768d)
 ```
 
@@ -518,9 +518,8 @@ top -p $(pgrep ollama)
 # Check active Ollama requests
 curl http://localhost:11434/api/ps
 
-# Consider smaller model — pull on host first, then set in .env.prod.local
-ollama pull llama3.2:1b
-OLLAMA_MODEL=llama3.2:1b  # Faster, less accurate
+# Confirm the configured translation model is installed on the host
+ollama list | grep translategemma:4b
 ```
 
 ### Failed Messenger Jobs

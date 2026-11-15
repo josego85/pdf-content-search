@@ -158,7 +158,7 @@ final readonly class TranslationService implements TranslationServiceInterface
         string $targetLanguage,
         string $cacheKey
     ): array {
-        $translatedText = $this->ollama->translate($originalText, $targetLanguage);
+        $translatedText = $this->ollama->translate($originalText, $sourceLanguage, $targetLanguage);
 
         $translation = new PdfPageTranslation();
         $translation->setPdfFilename($pdfFilename);

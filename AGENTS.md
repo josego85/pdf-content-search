@@ -13,7 +13,7 @@ Read this before making any changes. Follow every instruction precisely.
 - **Frontend:** Vue.js 3.5 / Tailwind CSS 4.3 / Webpack Encore
 - **Database:** PostgreSQL 16
 - **Search Engine:** Elasticsearch 9.3 (hybrid lexical + semantic / kNN vector)
-- **AI/ML:** Ollama (native host) — `qwen2.5:3b` (translation), `nomic-embed-text` (embeddings, 768d)
+- **AI/ML:** Ollama (native host) — `translategemma:4b` (translation), `nomic-embed-text` (embeddings, 768d)
 - **Queue:** Symfony Messenger + Doctrine transport
 - **Containerization:** Docker (multi-stage builds, Alpine Linux)
 
@@ -353,7 +353,7 @@ docker compose exec php php bin/console doctrine:migrations:migrate --no-interac
 | `ELASTICSEARCH_INDEX_PDFS` | `pdf_pages` | Main search index |
 | `ELASTICSEARCH_MAX_RESULTS` | `100` | Safety cap — do not raise without load testing |
 | `OLLAMA_HOST` | `http://host.docker.internal:11434` | Native Ollama on host (PHP container uses `extra_hosts: host-gateway`) |
-| `OLLAMA_MODEL` | `qwen2.5:3b` | Translation model (~52s/page on Core Ultra 7 155U) |
+| `OLLAMA_MODEL` | `translategemma:4b` | Translation model (about 3.3 GB) |
 | `OLLAMA_EMBEDDING_MODEL` | `nomic-embed-text` | Embedding model (768d) |
 | `MESSENGER_TRANSPORT_DSN` | `doctrine://default?auto_setup=0` | Async queue |
 
@@ -520,7 +520,7 @@ Ollama runs **natively on the host** (not in Docker). The PHP container reaches 
 
 Install and pull models manually on the host:
 ```bash
-ollama pull qwen2.5:3b
+ollama pull translategemma:4b
 ollama pull nomic-embed-text
 ```
 
@@ -535,7 +535,7 @@ Environment="OLLAMA_NUM_PARALLEL=4"
 Models in use:
 | Model | Size | Purpose |
 |---|---|---|
-| `qwen2.5:3b` | ~1.9 GB | Translation (~52s/page on Core Ultra 7 155U) |
+| `translategemma:4b` | ~3.3 GB | PDF translation |
 | `nomic-embed-text` | ~274 MB | Embeddings (768d, ~190ms/embed on CPU) |
 
 **`keep_alive` must be integer `-1`** (never string `'-1'`): Go's `time.ParseDuration` rejects the string form → HTTP 400 on every request.
@@ -573,7 +573,7 @@ docker compose exec php php bin/console app:translation:monitor --watch
 ./bin/worker-logs.sh -f
 ```
 
-- Translation model: Ollama `qwen2.5:3b` (1.9GB, 120s timeout per page, ~52s typical on Core Ultra 7 155U)
+- Translation model: Ollama `translategemma:4b` (~3.3GB; translation time depends on page length and hardware)
 - Cache TTL: 7 days (no re-translation of same page+language)
 - Deduplication TTL: 5 minutes (prevents duplicate queue entries)
 - Job statuses: `pending` → `processing` → `completed` / `failed`

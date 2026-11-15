@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Changed
+
+- **PDF translation model switched to `translategemma:4b`**; Ollama prompts include detected source and target languages using the model's translation format
+
+---
+
 ## [1.16.9] - 2026-11-12
 
 ### Changed

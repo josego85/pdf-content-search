@@ -18,7 +18,7 @@ AI-powered PDF search with hybrid semantic capabilities using Elasticsearch 9.3 
 - 🧠 **AI Hybrid Search** - Combines keyword matching with semantic understanding (RRF algorithm)
 - 📄 Page-level PDF search with Elasticsearch 9.3 vector search
 - 🔍 Multiple search modes: Hybrid AI, Exact match, Prefix match
-- 🌍 AI-powered PDF translation (Ollama qwen2.5:3b, ~52s/page on CPU)
+- 🌍 AI-powered PDF translation (Ollama TranslateGemma 4B)
 - 🔄 Async job processing with Symfony Messenger
 - 📊 **Analytics Dashboard** - Real-time search metrics: trends, click position distribution, CTR, CSV/JSON export
 - 📝 **OCR for scanned PDFs** - Automatic text layer via `ocrmypdf` (enables search & highlighting)
@@ -77,7 +77,7 @@ docker compose -p pdf-content-search exec php php bin/console app:translation:mo
 - **Backend:** PHP 8.5, Symfony 7.4, PostgreSQL 16
 - **Search:** Elasticsearch 9.3 (vector search, HNSW)
 - **Frontend:** Vue.js 3.5, Tailwind CSS 4.3, PDF.js 5.4, ApexCharts
-- **AI:** Ollama native (qwen2.5:3b translations, nomic-embed-text embeddings)
+- **AI:** Ollama native (TranslateGemma 4B translations, nomic-embed-text embeddings)
 - **Queue:** Symfony Messenger (3 workers)
 - **Analytics:** PostgreSQL 16 (metrics storage), Vue.js dashboard
 - **Testing:** PHPUnit (PHP), Vitest + happy-dom (JS/Vue)

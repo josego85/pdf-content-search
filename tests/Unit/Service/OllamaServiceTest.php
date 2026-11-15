@@ -54,7 +54,7 @@ final class OllamaServiceTest extends TestCase
         $httpClient = new MockHttpClient($mockResponse);
         $service = $this->makeService($httpClient);
 
-        $result = $service->translate('Original text', 'es');
+        $result = $service->translate('Original text', 'en', 'es');
 
         self::assertSame('Texto traducido', $result);
     }
@@ -69,7 +69,7 @@ final class OllamaServiceTest extends TestCase
         $httpClient = new MockHttpClient($mockResponse);
         $service = $this->makeService($httpClient);
 
-        $result = $service->translate('Text', 'es');
+        $result = $service->translate('Text', 'en', 'es');
 
         self::assertSame('Translated with spaces', $result);
     }
@@ -84,7 +84,7 @@ final class OllamaServiceTest extends TestCase
         $httpClient = new MockHttpClient($mockResponse);
         $service = $this->makeService($httpClient);
 
-        $result = $service->translate('Text to translate', 'fr');
+        $result = $service->translate('Text to translate', 'en', 'fr');
 
         self::assertNotEmpty($result);
     }
@@ -99,7 +99,7 @@ final class OllamaServiceTest extends TestCase
         $httpClient = new MockHttpClient($mockResponse);
         $service = $this->makeService($httpClient);
 
-        $result = $service->translate('Test', 'es');
+        $result = $service->translate('Test', 'en', 'es');
 
         self::assertSame('Translated', $result);
     }
@@ -114,7 +114,7 @@ final class OllamaServiceTest extends TestCase
         $httpClient = new MockHttpClient($mockResponse);
         $service = $this->makeService($httpClient);
 
-        $result = $service->translate('Text', 'es');
+        $result = $service->translate('Text', 'en', 'es');
 
         self::assertSame('', $result);
     }
@@ -128,7 +128,7 @@ final class OllamaServiceTest extends TestCase
         $httpClient = new MockHttpClient($mockResponse);
         $service = $this->makeService($httpClient);
 
-        $result = $service->translate('Text', 'es');
+        $result = $service->translate('Text', 'en', 'es');
 
         self::assertSame('', $result);
     }
@@ -153,7 +153,7 @@ final class OllamaServiceTest extends TestCase
             numCtx: 2048,
         );
 
-        $result = $service->translate('Test', 'es');
+        $result = $service->translate('Test', 'en', 'es');
 
         self::assertSame('Result', $result);
     }

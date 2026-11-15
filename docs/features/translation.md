@@ -1,13 +1,13 @@
 # PDF Translation with Ollama
 
-Complete guide to AI-powered PDF page translation using Ollama (qwen2.5:7b).
+Complete guide to AI-powered PDF page translation using Ollama (TranslateGemma 4B).
 
 ## Overview
 
 The translation feature allows translating individual PDF pages to different languages using Ollama's local AI models. Translations are processed asynchronously via Symfony Messenger with full job tracking.
 
 **Key Features:**
-- ✅ **Async processing** - No blocking UI during translation (60-80s per page)
+- ✅ **Async processing** - No blocking UI while a page is translated
 - ✅ **Job tracking** - Real-time visibility into translation status
 - ✅ **3 Workers** - Parallel processing via Supervisor
 - ✅ **Memory-safe** - Workers restart hourly to prevent leaks
@@ -17,7 +17,7 @@ The translation feature allows translating individual PDF pages to different lan
 
 ```
 User clicks "Translate" → Job queued → Worker picks job → Ollama translates → Result stored
-                         (instant)      (< 1s)          (60-80s)        (complete)
+                         (instant)      (< 1s)       (model-dependent) (complete)
 ```
 
 ### Architecture
@@ -37,7 +37,7 @@ User clicks "Translate" → Job queued → Worker picks job → Ollama translate
 │                      │         │         │             │
 └──────────────────────┼─────────┼─────────┼─────────────┘
                        │         │         │
-                       └─────────┴─────────┴──── → Ollama (qwen2.5:7b)
+                       └─────────┴─────────┴──── → Ollama (translategemma:4b)
 ```
 
 ## Job Lifecycle
@@ -49,7 +49,7 @@ queued → processing → completed/failed
 ```
 
 - **queued**: Job created, waiting for worker
-- **processing**: Worker actively translating with Ollama (60-80s)
+- **processing**: Worker actively translating with Ollama; duration depends on page length and hardware
 - **completed**: Translation finished successfully
 - **failed**: Translation encountered an error
 
@@ -91,19 +91,12 @@ $job->markAsProcessing(getmypid());  // Set worker PID
 
 ### 4. Ollama Translation
 
-Worker calls Ollama API:
+Worker passes the detected source language and requested target language to `OllamaService`:
 ```php
-$response = $ollamaService->generateChat([
-    'model' => 'qwen2.5:7b',
-    'messages' => [
-        ['role' => 'system', 'content' => 'Translate to ' . $language],
-        ['role' => 'user', 'content' => $pdfText]
-    ],
-    'options' => ['temperature' => 0.3]
-]);
+$translatedText = $ollamaService->translate($pdfText, $sourceLanguage, $targetLanguage);
 ```
 
-**Timeout:** 300s (5 minutes) for CPU processing
+**Timeout:** 120s by default; page length and hardware affect processing time
 
 ### 5. Result Stored
 
@@ -256,20 +249,17 @@ make rebuild-dev
 **Models:**
 ```env
 # In .env
-OLLAMA_MODEL=qwen2.5:7b              # Translation model (4.7GB)
+OLLAMA_MODEL=translategemma:4b       # Translation model (~3.3GB)
 OLLAMA_EMBEDDING_MODEL=nomic-embed-text  # Not used for translation
 ```
 
-**Alternative models:**
-```env
-OLLAMA_MODEL=llama3.2:1b  # Smaller (1.3GB), faster, less accurate
-```
+The application formats prompts with the detected source language and selected target language, as expected by TranslateGemma.
 
 **Timeout:**
 ```php
 // src/Service/OllamaService.php
 $this->client->request('POST', ..., [
-    'timeout' => 300,  // 5 minutes for CPU processing
+    'timeout' => 120,  // Default configured timeout in seconds
 ]);
 ```
 
@@ -359,12 +349,7 @@ make rebuild-dev
 
 ### Slow Translations
 
-**Normal:** 60-80 seconds per page with qwen2.5:7b on CPU
-
-**Speed up:**
-1. Use smaller model: `OLLAMA_MODEL=llama3.2:1b` (1.3GB, ~30s per page)
-2. Add GPU support (if available)
-3. Increase worker count (`numprocs=5`)
+Translation time depends on page length and hardware. Check host CPU/GPU load before changing worker counts.
 
 ### Queue Not Consuming
 

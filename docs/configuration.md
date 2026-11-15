@@ -54,18 +54,14 @@ Ollama runs **natively on the host**. The PHP container reaches it via `host.doc
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `OLLAMA_HOST` | `http://host.docker.internal:11434` | Ollama API endpoint (native host) |
-| `OLLAMA_MODEL` | `qwen2.5:3b` | Translation model (1.9GB, ~52s/page on CPU) |
+| `OLLAMA_MODEL` | `translategemma:4b` | Translation model (~3.3GB) |
 | `OLLAMA_EMBEDDING_MODEL` | `nomic-embed-text` | Embedding model (274MB, 768d) |
 
 **Models must be pulled manually on the host:**
 ```bash
-ollama pull qwen2.5:3b
+ollama pull translategemma:4b
 ollama pull nomic-embed-text
 ```
-
-**Alternative translation models:**
-- `qwen2.5:7b` (4.7GB, higher quality, ~3min/page on CPU)
-- `llama3.2:1b` (1.3GB, fastest, lower accuracy)
 
 **Important:** `keep_alive` in Ollama API calls must be the integer `-1`, not the string `'-1'`. Go's `time.ParseDuration` rejects the string form and returns HTTP 400.
 
@@ -214,14 +210,14 @@ make restart
 
 Configure your IDE to listen on port `9003`.
 
-### Change Ollama Model
+### Install or Override the Translation Model
 
 ```bash
 # Pull the desired model on the host first
-ollama pull llama3.2:1b
+ollama pull translategemma:4b
 
 # Then set it in .env.local
-OLLAMA_MODEL=llama3.2:1b
+OLLAMA_MODEL=translategemma:4b
 
 # Restart PHP container
 make restart
