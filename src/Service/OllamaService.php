@@ -36,10 +36,10 @@ class OllamaService
         $sourceLanguageName = $this->languageMapper->getFullName($sourceLanguage);
         $targetLanguageName = $this->languageMapper->getFullName($targetLanguage);
         $prompt = sprintf(
-            "You are a professional %s (%s) to %s (%s) translator. "
-            . "Your goal is to accurately convey the meaning and nuances of the original %s text "
+            'You are a professional %s (%s) to %s (%s) translator. '
+            . 'Your goal is to accurately convey the meaning and nuances of the original %s text '
             . "while adhering to %s grammar, vocabulary, and cultural sensitivities.\n"
-            . "Produce only the %s translation, without any additional explanations or commentary. "
+            . 'Produce only the %s translation, without any additional explanations or commentary. '
             . "Please translate the following %s text into %s:\n\n\n%s",
             $sourceLanguageName,
             $sourceLanguage,
@@ -70,11 +70,13 @@ class OllamaService
         ]);
 
         $data = $response->toArray();
+
         if (($data['done'] ?? true) !== true || ($data['done_reason'] ?? null) === 'length') {
             throw new \RuntimeException('Ollama stopped translation before completion.');
         }
 
         $translatedText = $data['response'] ?? null;
+
         if (!is_string($translatedText) || trim($translatedText) === '') {
             throw new \RuntimeException('Ollama returned an empty translation.');
         }
