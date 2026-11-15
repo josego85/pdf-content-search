@@ -70,7 +70,15 @@ class OllamaService
         ]);
 
         $data = $response->toArray();
+        if (($data['done'] ?? true) !== true || ($data['done_reason'] ?? null) === 'length') {
+            throw new \RuntimeException('Ollama stopped translation before completion.');
+        }
 
-        return trim($data['response'] ?? '');
+        $translatedText = $data['response'] ?? null;
+        if (!is_string($translatedText) || trim($translatedText) === '') {
+            throw new \RuntimeException('Ollama returned an empty translation.');
+        }
+
+        return trim($translatedText);
     }
 }
