@@ -1,10 +1,5 @@
 # Changelog
 
-## [Unreleased]
-
-- **Ollama translations**: Reject empty and incomplete generations; raise the translation timeout to 300 seconds after a 3,514-character PDF page took 131 seconds on the development host.
-- **OllamaService tests**: Cover empty, missing, unfinished, and output-token-limit responses.
-
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -16,7 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **PDF translation model switched to `translategemma:4b`**; Ollama prompts include detected source and target languages using the model's translation format
+- **PDF translation uses `translategemma:4b`** with prompts that include the detected source and requested target languages.
+- **Translation timeout increased from 120 to 300 seconds** after a representative 3,514-character PDF page took 131 seconds on the development host.
+
+### Fixed
+
+- **Incomplete Ollama translations are rejected** when generation reaches the output-token limit, stops before completion, or returns empty text.
 
 ---
 
