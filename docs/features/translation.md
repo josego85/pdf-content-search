@@ -96,7 +96,7 @@ Worker passes the detected source language and requested target language to `Oll
 $translatedText = $ollamaService->translate($pdfText, $sourceLanguage, $targetLanguage);
 ```
 
-**Timeout:** 120s by default; page length and hardware affect processing time
+**Timeout:** 300s by default; a representative 3,514-character page took 131s on the development host. Page length and hardware affect processing time.
 
 ### 5. Result Stored
 
@@ -259,7 +259,7 @@ The application formats prompts with the detected source language and selected t
 ```php
 // src/Service/OllamaService.php
 $this->client->request('POST', ..., [
-    'timeout' => 120,  // Default configured timeout in seconds
+    'timeout' => 300,  // Default configured timeout in seconds
 ]);
 ```
 

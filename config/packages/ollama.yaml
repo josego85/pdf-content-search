@@ -3,8 +3,8 @@ parameters:
     ollama.host: '%env(OLLAMA_HOST)%'
     # TranslateGemma 4B — 3.3GB, tuned for translation
     ollama.model: '%env(OLLAMA_MODEL)%'
-    # CPU translation time varies with page length and available hardware.
-    ollama.timeout: 120
+    # A long representative PDF page took 131s on the development host.
+    ollama.timeout: 300
 
     # Embedding model configuration for semantic search
     ollama.embedding_model: 'nomic-embed-text'  # 768 dimensions, ~50-100ms per embedding

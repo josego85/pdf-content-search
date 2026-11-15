@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+- **Ollama translations**: Reject empty and incomplete generations; raise the translation timeout to 300 seconds after a 3,514-character PDF page took 131 seconds on the development host.
+- **OllamaService tests**: Cover empty, missing, unfinished, and output-token-limit responses.
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

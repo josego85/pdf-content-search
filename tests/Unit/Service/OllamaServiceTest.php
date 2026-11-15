@@ -104,7 +104,7 @@ final class OllamaServiceTest extends TestCase
         self::assertSame('Translated', $result);
     }
 
-    public function testTranslateHandlesEmptyResponse(): void
+    public function testTranslateRejectsEmptyResponse(): void
     {
         $mockResponse = new MockResponse(json_encode([
             'response' => '',
@@ -114,12 +114,13 @@ final class OllamaServiceTest extends TestCase
         $httpClient = new MockHttpClient($mockResponse);
         $service = $this->makeService($httpClient);
 
-        $result = $service->translate('Text', 'en', 'es');
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Ollama returned an empty translation.');
 
-        self::assertSame('', $result);
+        $service->translate('Text', 'en', 'es');
     }
 
-    public function testTranslateHandlesMissingResponseKey(): void
+    public function testTranslateRejectsMissingResponseKey(): void
     {
         $mockResponse = new MockResponse(json_encode([
             'done' => true,
@@ -128,9 +129,43 @@ final class OllamaServiceTest extends TestCase
         $httpClient = new MockHttpClient($mockResponse);
         $service = $this->makeService($httpClient);
 
-        $result = $service->translate('Text', 'en', 'es');
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Ollama returned an empty translation.');
 
-        self::assertSame('', $result);
+        $service->translate('Text', 'en', 'es');
+    }
+
+    public function testTranslateRejectsGenerationStoppedBeforeCompletion(): void
+    {
+        $mockResponse = new MockResponse(json_encode([
+            'response' => 'Incomplete translation',
+            'done' => false,
+        ]));
+
+        $httpClient = new MockHttpClient($mockResponse);
+        $service = $this->makeService($httpClient);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Ollama stopped translation before completion.');
+
+        $service->translate('Text', 'en', 'es');
+    }
+
+    public function testTranslateRejectsOutputTokenLimit(): void
+    {
+        $mockResponse = new MockResponse(json_encode([
+            'response' => 'Incomplete translation',
+            'done' => true,
+            'done_reason' => 'length',
+        ]));
+
+        $httpClient = new MockHttpClient($mockResponse);
+        $service = $this->makeService($httpClient);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Ollama stopped translation before completion.');
+
+        $service->translate('Text', 'en', 'es');
     }
 
     public function testTranslateUsesConfiguredParameters(): void
