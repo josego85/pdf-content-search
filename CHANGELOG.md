@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Changed
+
+- **PDF translation uses `translategemma:4b`** with prompts that include the detected source and requested target languages.
+- **Translation timeout increased from 120 to 300 seconds** after a representative 3,514-character PDF page took 131 seconds on the development host.
+
+### Fixed
+
+- **Incomplete Ollama translations are rejected** when generation reaches the output-token limit, stops before completion, or returns empty text.
+
+---
+
 ## [1.16.9] - 2026-11-12
 
 ### Changed

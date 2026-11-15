@@ -276,20 +276,20 @@ Common issues and solutions for PDF Content Search.
 
 **Solutions:**
 
-1. **Verify qwen2.5:3b is installed on the host:**
+1. **Verify translategemma:4b is installed on the host:**
    ```bash
-   ollama list | grep qwen2.5
+   ollama list | grep translategemma
    ```
 
 2. **Pull the model if missing:**
    ```bash
-   ollama pull qwen2.5:3b
+   ollama pull translategemma:4b
    ```
 
 3. **Test Ollama directly:**
    ```bash
    curl http://localhost:11434/api/generate -d '{
-     "model": "qwen2.5:3b",
+     "model": "translategemma:4b",
      "prompt": "Hello",
      "stream": false
    }'

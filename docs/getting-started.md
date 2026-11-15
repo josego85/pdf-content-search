@@ -53,11 +53,11 @@ systemctl show ollama --property=Environment
 ### 3. Pull the required models
 
 ```bash
-ollama pull qwen2.5:3b        # Translation model (~1.9 GB)
+ollama pull translategemma:4b # Translation model (~3.3 GB)
 ollama pull nomic-embed-text  # Embedding model (~274 MB)
 ```
 
-> **Note:** `qwen2.5:3b` translates a full PDF page in ~52s on a Core Ultra 7 155U (CPU-only). `nomic-embed-text` generates 768-dimensional embeddings in ~190ms per batch on the same hardware.
+> **Note:** Translation time depends on page length and hardware. `nomic-embed-text` generates 768-dimensional embeddings; a local batch of 50 short page samples took about 9.8s.
 
 ---
 
@@ -177,7 +177,7 @@ APP_SECRET=change-me-in-env-local  # OK for dev
 POSTGRES_PASSWORD=dev_password      # OK for dev
 ELASTICSEARCH_HOST=http://elasticsearch:9200  # No auth in dev
 OLLAMA_HOST=http://host.docker.internal:11434
-OLLAMA_MODEL=qwen2.5:3b
+OLLAMA_MODEL=translategemma:4b
 OLLAMA_EMBEDDING_MODEL=nomic-embed-text
 ```
 
@@ -277,7 +277,7 @@ systemctl show ollama --property=Environment
 docker compose exec php curl http://host.docker.internal:11434/api/tags
 
 # If models are missing, pull them on the host
-ollama pull qwen2.5:3b
+ollama pull translategemma:4b
 ollama pull nomic-embed-text
 ```
 

@@ -31,11 +31,25 @@ class OllamaService
      *
      * @throws \Exception if translation fails
      */
-    public function translate(string $text, string $targetLanguage): string
+    public function translate(string $text, string $sourceLanguage, string $targetLanguage): string
     {
+        $sourceLanguageName = $this->languageMapper->getFullName($sourceLanguage);
+        $targetLanguageName = $this->languageMapper->getFullName($targetLanguage);
         $prompt = sprintf(
-            "Translate the ENTIRE following text to %s. Translate ALL paragraphs and ALL sentences. Do NOT summarize. Respond ONLY with the complete translation:\n\n%s",
-            $this->languageMapper->getFullName($targetLanguage),
+            'You are a professional %s (%s) to %s (%s) translator. '
+            . 'Your goal is to accurately convey the meaning and nuances of the original %s text '
+            . "while adhering to %s grammar, vocabulary, and cultural sensitivities.\n"
+            . 'Produce only the %s translation, without any additional explanations or commentary. '
+            . "Please translate the following %s text into %s:\n\n\n%s",
+            $sourceLanguageName,
+            $sourceLanguage,
+            $targetLanguageName,
+            $targetLanguage,
+            $sourceLanguageName,
+            $targetLanguageName,
+            $targetLanguageName,
+            $sourceLanguageName,
+            $targetLanguageName,
             $text
         );
 
@@ -57,6 +71,16 @@ class OllamaService
 
         $data = $response->toArray();
 
-        return trim($data['response'] ?? '');
+        if (($data['done'] ?? true) !== true || ($data['done_reason'] ?? null) === 'length') {
+            throw new \RuntimeException('Ollama stopped translation before completion.');
+        }
+
+        $translatedText = $data['response'] ?? null;
+
+        if (!is_string($translatedText) || trim($translatedText) === '') {
+            throw new \RuntimeException('Ollama returned an empty translation.');
+        }
+
+        return trim($translatedText);
     }
 }

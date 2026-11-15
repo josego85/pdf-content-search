@@ -234,7 +234,7 @@ final class TranslationServiceTest extends TestCase
         $this->ollamaService
             ->expects(self::once())
             ->method('translate')
-            ->with('Original text', 'es')
+            ->with('Original text', 'en', 'es')
             ->willReturn('Nueva traducción');
 
         $this->entityManager
@@ -307,7 +307,7 @@ final class TranslationServiceTest extends TestCase
 
         $this->ollamaService
             ->method('translate')
-            ->with('', 'es')
+            ->with('', 'en', 'es')
             ->willReturn('');
 
         $result = $this->service->getTranslation(
